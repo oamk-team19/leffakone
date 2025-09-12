@@ -5,13 +5,15 @@ export const dataForSignIn = async (email) => {
   try {
     // Get by email
     const result = await pool.query('SELECT password from users WHERE email=$1;', [email]);
-    //const result = await pool.query('SELECT password from users WHERE $1 = ANY(email);', [email]);
-    console.log('rows:', result.rows);
-    console.log('salanasa:', result.rows[0].password);
+
+    //console.log('rows:', result.rows);        ---> [ { password: '123' } ]
+    //console.log('rows[0]:', result.rows[0]);  ---> { password: '123' }
+    //console.log('Password:', result.rows[0].password); --->123
+
     return {
-      data: result.rows
+      data: result.rows[0].password //sends { data: '123' }
     };
   } catch (error) {
-    console.error('Cannot get data for sign in', error.message);
+    console.error('Cound not find user by emai', error.message);
   }
 };

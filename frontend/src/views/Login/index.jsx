@@ -15,7 +15,10 @@ export const Login = () => {
       email, password
     }).then((res) => {
       //then tehdään jos onnistuu
-      console.log(res);
+      console.log(res.status + ' ' + res.statusText); //200 OK
+      console.log(res.data); //200 OK
+
+      //set token to storage
     }).catch((error) =>{
       //jos epäonistuu
       console.log(error)

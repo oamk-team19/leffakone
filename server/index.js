@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { dbMigrate, pool } from './helpers/db.js';
 import rootRouter from './routers/rootRouter.js';
+import moviesRouter from './routers/movieRouter.js';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', rootRouter);
+app.use('/movies', moviesRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

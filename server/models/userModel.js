@@ -14,7 +14,7 @@ export const dataForSignIn = async (email) => {
     //console.log('Password:', result.rows[0].password); --->123
 
     return {
-      data: result.rows[0].password, //sends { data: '123' }
+      data: result.rows[0].password //sends { data: '123' }
     };
   } catch (error) {
     console.error('Cound not find user by emai', error.message);

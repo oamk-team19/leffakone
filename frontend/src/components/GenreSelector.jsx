@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Typography, TextField, Autocomplete } from '@mui/material';
+import { TextField, Autocomplete } from '@mui/material';
 import { getGenres } from '../utils/genres';
 
 const GenreSelector = ({

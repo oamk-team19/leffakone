@@ -1,8 +1,8 @@
 import { Chip } from '@mui/material';
 import { getGenre } from '../utils/genres';
 
-const GenreChip = () => {
-  return <Chip label={getGenre(16)}> </Chip>;
+const GenreChip = ({ genreid }) => {
+  return <Chip label={getGenre(genreid)}> </Chip>;
 };
 
 export default GenreChip;

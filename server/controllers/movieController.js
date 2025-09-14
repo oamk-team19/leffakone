@@ -5,7 +5,7 @@ dotenv.config();
 
 export const searchMovies = async (req, res) => {
   const { query, page = 1, primary_release_year } = req.query;
-  console.log(req.query);
+
   if (!query) {
     return res.status(400).json({ error: 'Query parameter is required' });
   }
@@ -20,10 +20,7 @@ export const searchMovies = async (req, res) => {
 
   fetch(url, options)
     .then((result) => result.json())
-    .then((json) => {
-      console.log(json);
-      res.json(json);
-    })
+    .then((json) => res.json(json))
     .catch((err) => {
       console.error(JSON.stringify(err));
       res.status(500);

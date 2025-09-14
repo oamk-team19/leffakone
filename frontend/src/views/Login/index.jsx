@@ -1,66 +1,67 @@
 import * as React from 'react';
-import { Button, Typography, TextField, Link } from '@mui/material';
+import { Button, Typography, TextField, Box } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault(); //prevents refresh
 
-    await axios.post('http://localhost:3001/auth/signin', {
-      email, password
-    }).then((res) => {
-      //then tehdään jos onnistuu
-      console.log(res.status + ' ' + res.statusText); //200 OK
-      console.log(res.data); //200 OK
+    await axios
+      .post('http://localhost:3001/auth/signin', {
+        email,
+        password,
+      })
+      .then((res) => {
+        //is done when success
+        console.log(res.status + ' ' + res.statusText); //200 OK
+        //console.log(res); //data
 
-      //set token to storage
-    }).catch((error) =>{
-      //jos epäonistuu
-      console.log(error)
-    }).finally( () => {
-      //tehdään aina, esim tyhjätään hakukenttä
-    }) 
+        //set token to session storage
+        sessionStorage.setItem('user',JSON.stringify(res.data));
+
+        navigate('/'); //Change if you want somewhere else than home page
+      })
+      .catch((error) => {
+        //if fails
+        console.log(error);
+      })
+      .finally(() => {
+        //Done always, for example empty textfield/input
+      });
   };
 
   return (
-    <>
-      <Typography variant="h4">Login</Typography>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <TextField
-            id="outlined-email-input"
-            label="Email"
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div></div>
+    <form onSubmit={handleSubmit}>
+      <Box
+        display={'flex'}
+        flexDirection={'column'}
+        alignItems={'center'}
+        gap={2}
+      >
+        <Typography variant="h4">Login</Typography>
+        <TextField
+          id="outlined-email-input"
+          label="Email"
+          type="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <TextField
           id="outlined-password-input"
           label="Password"
           type="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <div>
-          <Button variant="contained" type="submit">
-            Sign in
-          </Button>
-        </div>
-        <Link
-          component="button"
-          variant="body2"
-          onClick={() => {
-            console.info("I'm a button.");
-          }}
-        >
-          Don't have an account? Sign up!
-        </Link>
-      </form>
-    </>
+        <Button variant="contained" type="submit">
+          Sign in
+        </Button>
+        <Link to={'/register'}>Don't have an account? Sign up!</Link>
+      </Box>
+    </form>
   );
 };

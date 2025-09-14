@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { dbMigrate, pool } from './helpers/db.js';
 import rootRouter from './routers/rootRouter.js';
+import authRouter from './routers/authRouter.js';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', rootRouter);
+app.use('/auth', authRouter); //for signin and signup
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

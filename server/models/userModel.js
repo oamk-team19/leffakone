@@ -4,7 +4,10 @@ import { pool } from '../helpers/db.js';
 export const dataForSignIn = async (email) => {
   try {
     // Get by email
-    const result = await pool.query('SELECT password from users WHERE email=$1;', [email]);
+    const result = await pool.query(
+      'SELECT password from users WHERE email=$1;',
+      [email]
+    );
 
     //console.log('rows:', result.rows);        ---> [ { password: '123' } ]
     //console.log('rows[0]:', result.rows[0]);  ---> { password: '123' }
@@ -15,5 +18,32 @@ export const dataForSignIn = async (email) => {
     };
   } catch (error) {
     console.error('Cound not find user by emai', error.message);
+  }
+};
+
+// Insert user registration data into db
+export const insertRegistration = async (email, username, hashedPassword) => {
+  try {
+    const emailCheck = await pool.query(
+      'SELECT email FROM users WHERE email=$1',
+      [email]
+    );
+    const usernameCheck = await pool.query(
+      'SELECT username FROM users WHERE username=$1',
+      [username]
+    );
+    if (emailCheck.rows.length !== 0) {
+      return { error: 'Email is already in use' };
+    } else if (usernameCheck.rows.length !== 0) {
+      return { error: 'Username is already in use' };
+    } else {
+      const result = await pool.query(
+        'INSERT INTO users (email, username, password) VALUES ($1,$2,$3) RETURNING *',
+        [email, username, hashedPassword]
+      );
+      return result.rows[0];
+    }
+  } catch (error) {
+    throw error;
   }
 };

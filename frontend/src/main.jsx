@@ -9,10 +9,33 @@ import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
 
+import ProtectedRoute from './components/ProtectedRoute.jsx/'
+import { UserProvider } from './context/UserProvider.jsx'
+
 const router = createBrowserRouter([
   {
+    /* 
+    
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/",
+        element: < App />,
+      }
+    ]
+    
+   
     path: '/',
     element: <MainPage />,
+
+     */
+
+
+    element: <ProtectedRoute />,
+    children: [{
+      path: "/",
+      element: <MainPage />,
+    }]
   },
   {
     path: '/register',
@@ -34,6 +57,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   </StrictMode>
 );

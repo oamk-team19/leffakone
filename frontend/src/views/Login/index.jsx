@@ -3,11 +3,11 @@ import { Button, Typography, TextField, Box } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from "../../context/useUser" //add useUser
+import { useUser } from '../../context/useUser'; //add useUser
 
 export const Login = () => {
   const { user, setUser } = useUser();
-  
+
   //const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
@@ -22,11 +22,12 @@ export const Login = () => {
       .then((res) => {
         //is done when success
         console.log(res.status + ' ' + res.statusText); //200 OK
-        //console.log(res); //data
+        //console.log(res.data); //data
 
         //set token to session storage
+        setUser(res.data);
 
-        sessionStorage.setItem('user',JSON.stringify(res.data));
+        sessionStorage.setItem('user', JSON.stringify(res.data));
 
         navigate('/'); //Change if you want somewhere else than home page
       })
@@ -52,13 +53,13 @@ export const Login = () => {
           id="outlined-email-input"
           label="Email"
           type="email"
-          onChange={e => setUser({...user, email: e.target.value})}
+          onChange={(e) => setUser({ ...user, email: e.target.value })}
         />
         <TextField
           id="outlined-password-input"
           label="Password"
           type="password"
-          onChange={e => setUser({...user, password: e.target.value})}
+          onChange={(e) => setUser({ ...user, password: e.target.value })}
         />
         <Button variant="contained" type="submit">
           Sign in

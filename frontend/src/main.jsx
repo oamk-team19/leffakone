@@ -14,30 +14,8 @@ import { Profile } from './views/Profile';
 
 const router = createBrowserRouter([
   {
-    /* 
-    
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: "/",
-        element: < App />,
-      }
-    ]
-    
-   
     path: '/',
     element: <MainPage />,
-
-     
-*/
-
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: '/',
-        element: <MainPage />,
-      },
-    ],
   },
   {
     path: '/register',

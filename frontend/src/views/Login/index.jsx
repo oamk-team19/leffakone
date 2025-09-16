@@ -7,8 +7,6 @@ import { useUser } from '../../context/useUser'; //add useUser
 
 export const Login = () => {
   const { user, setUser } = useUser();
-
-  //const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,12 +22,11 @@ export const Login = () => {
         console.log(res.status + ' ' + res.statusText); //200 OK
         //console.log(res.data); //data
 
-        //set token to session storage
+        //set token to userprovider and session storage 
         setUser(res.data);
-
         sessionStorage.setItem('user', JSON.stringify(res.data));
 
-        navigate('/'); //Change if you want somewhere else than home page
+        navigate('/Profile'); //Change if you want somewhere else than home page
       })
       .catch((error) => {
         //if fails

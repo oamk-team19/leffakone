@@ -95,89 +95,91 @@ export const MainPage = () => {
         </Grid>
       </Box>
       <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {filteredResults.map((movie) => (
-          <Card
-            key={movie.id}
-            sx={{
-              display: 'flex',
-              mb: 1,
-              width: '100%',
-              height: IMG_HEIGHT,
-            }}
-          >
-            {/* Poster Section */}
-            <Box sx={{ flexShrink: 0, width: IMG_WIDTH }}>
-              {movie.poster_path ? (
-                <CardMedia
-                  component="img"
-                  sx={{
-                    height: IMG_HEIGHT,
-                    width: IMG_WIDTH,
-                    objectFit: 'cover',
-                  }}
-                  image={`https://image.tmdb.org/t/p/w${IMG_WIDTH < 200 ? 200 : IMG_WIDTH}/${movie.poster_path}`}
-                  alt={`${movie.title} poster`}
-                />
-              ) : (
-                <Skeleton
-                  variant="rectangular"
-                  width={IMG_WIDTH}
-                  height={IMG_HEIGHT}
-                />
-              )}
-            </Box>
-
-            {/* Content section */}
-            <CardContent
+        {filteredResults &&
+          filteredResults.map((movie) => (
+            <Card
+              key={movie.id}
               sx={{
-                flexGrow: 1,
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                p: 2,
+                mb: 1,
+                width: '100%',
+                height: IMG_HEIGHT,
               }}
             >
-              {/* Top part of content */}
-              <Box>
-                <Typography variant="h6">{movie.title}</Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    display: '-webkit-box',
-                    overflow: 'hidden',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3,
-                    mb: 1,
-                  }}
-                >
-                  {movie.overview}
-                </Typography>
+              {/* Poster Section */}
+              <Box sx={{ flexShrink: 0, width: IMG_WIDTH }}>
+                {movie.poster_path ? (
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      height: IMG_HEIGHT,
+                      width: IMG_WIDTH,
+                      objectFit: 'cover',
+                    }}
+                    image={`https://image.tmdb.org/t/p/w${IMG_WIDTH < 200 ? 200 : IMG_WIDTH}/${movie.poster_path}`}
+                    alt={`${movie.title} poster`}
+                  />
+                ) : (
+                  <Skeleton
+                    variant="rectangular"
+                    width={IMG_WIDTH}
+                    height={IMG_HEIGHT}
+                  />
+                )}
               </Box>
 
-              {/* Bottom part for genres and actions */}
-              <Box
+              {/* Content section */}
+              <CardContent
                 sx={{
+                  flexGrow: 1,
                   display: 'flex',
+                  flexDirection: 'column',
                   justifyContent: 'space-between',
-                  alignItems: 'flex-end',
-                  mt: 2,
+                  p: 2,
                 }}
               >
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {movie.genre_ids.map((genreid) => (
-                    <GenreChip key={genreid} genreid={genreid} />
-                  ))}
+                {/* Top part of content */}
+                <Box>
+                  <Typography variant="h6">{movie.title}</Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: '-webkit-box',
+                      overflow: 'hidden',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 3,
+                      mb: 1,
+                    }}
+                  >
+                    {movie.overview}
+                  </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton>
-                    <FavoriteBorderIcon />
-                  </IconButton>
+
+                {/* Bottom part for genres and actions */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    mt: 2,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {movie.genre_ids &&
+                      movie.genre_ids.map((genreid) => (
+                        <GenreChip key={genreid} genreid={genreid} />
+                      ))}
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton>
+                      <FavoriteBorderIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))}
       </Box>
       {searchQuery.length > 0 && filteredResults.length === 0 && (
         <Alert severity="info">

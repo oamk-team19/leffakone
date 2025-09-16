@@ -9,6 +9,8 @@ import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
 import UserProvider from  './context/UserProvider'
+import ProtectedRoute from './components/ProtectedRoute';
+
 
 
 const router = createBrowserRouter([
@@ -22,21 +24,21 @@ const router = createBrowserRouter([
         element: < App />,
       }
     ]
-    */
+    
    
     path: '/',
     element: <MainPage />,
 
      
-
-    /*
+*/
+    
     element: <ProtectedRoute />,
     children: [{
       path: "/",
       element: <MainPage />,
     }]
 
-    */
+    
   },
   {
     path: '/register',

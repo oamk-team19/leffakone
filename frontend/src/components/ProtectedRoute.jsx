@@ -7,7 +7,7 @@ export default function ProtectedRoute() {
   const { user } = useUser();
 
   if (!user || !user.token) {
-    alert('ProtectedRoute error');
+    //alert('ProtectedRoute error');
     return <Navigate to="/login" replace />;
   }
   return <Outlet />;

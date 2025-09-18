@@ -4,11 +4,27 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/useUser'; //add useUser
+import { useEffect } from 'react';
 
 export const Login = () => {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-  //autoLogin();
+  const [isAutoLogin, setIsAutoLogin] = useState(true);
+
+  useEffect(() => {
+    async function loginasyncFunction() {
+      try {
+        console.log('loginasyncFunction');
+        await autoLogin();
+      } catch {
+        console.log("false testi");
+        setIsAutoLogin(false);
+        return;
+      }
+      navigate('/');
+    };
+    loginasyncFunction();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); //prevents refresh
@@ -54,10 +70,14 @@ export const Login = () => {
         }
       )
       .then((res) => {
+        console.log('success', res);
         saveUser(res);
       })
       .catch((error) => {
+        
+        console.log('error', error);
         console.log(error);
+        throw (error);
       });
   };
 
@@ -70,31 +90,37 @@ export const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        alignItems={'center'}
-        gap={2}
-      >
-        <Typography variant="h4">Login</Typography>
-        <TextField
-          id="outlined-email-input"
-          label="Email"
-          type="email"
-          onChange={(e) => setUser({ ...user, email: e.target.value })}
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          type="password"
-          onChange={(e) => setUser({ ...user, password: e.target.value })}
-        />
-        <Button variant="contained" type="submit">
-          Sign in
-        </Button>
-        <Link to={'/register'}>Don't have an account? Sign up!</Link>
-      </Box>
-    </form>
+    <>
+      {isAutoLogin ? (
+        <p>Logging in...</p>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            gap={2}
+          >
+            <Typography variant="h4">Login</Typography>
+            <TextField
+              id="outlined-email-input"
+              label="Email"
+              type="email"
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+            />
+            <TextField
+              id="outlined-password-input"
+              label="Password"
+              type="password"
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
+            />
+            <Button variant="contained" type="submit">
+              Sign in
+            </Button>
+            <Link to={'/register'}>Don't have an account? Sign up!</Link>
+          </Box>
+        </form>
+      )}
+    </>
   );
 };

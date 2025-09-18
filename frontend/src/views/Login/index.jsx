@@ -8,33 +8,65 @@ import { useUser } from '../../context/useUser'; //add useUser
 export const Login = () => {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
+  //autoLogin();
 
   const handleSubmit = async (e) => {
     e.preventDefault(); //prevents refresh
+    signIn();
+  };
 
+  const signIn = async () => {
     await axios
-      .post('http://localhost:3001/auth/signin', {
-        email: user.email,
-        password: user.password,
-      })
+      .post(
+        'http://localhost:3001/auth/signin',
+        {
+          email: user.email,
+          password: user.password,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         //is done when success
         console.log(res.status + ' ' + res.statusText); //200 OK
-        //console.log(res.data); //data
-
-        //set token to userprovider and session storage 
-        setUser(res.data);
-        sessionStorage.setItem('user', JSON.stringify(res.data));
-
+        saveUser(res);
         navigate('/Profile'); //Change if you want somewhere else than home page
       })
+
       .catch((error) => {
         //if fails
         console.log(error);
+        setUser({ email: '', password: '', token: '' });
       })
       .finally(() => {
         //Done always, for example empty textfield/input
       });
+  };
+  const autoLogin = async () => {
+    await axios
+      .post(
+        'http://localhost:3001/autologin',
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        saveUser(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const saveUser = async (response) => {
+    const getToken = response.headers['authorization'];
+    const usersData = { email: response.data.email, token: getToken };
+
+    setUser(usersData);
+    sessionStorage.setItem('user', JSON.stringify(usersData));
   };
 
   return (

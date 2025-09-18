@@ -13,10 +13,9 @@ dotenv.config();
 const env = process.env.NODE_ENV;
 const port = process.env.PORT || 3001;
 const jwt_secret = process.env.JWT_SECRET;
-const dbpool = pool;
 await dbMigrate();
 const app = express();
-app.use(cors({ credentials: true, origin: 'http://localhost:5173/' }));
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -48,6 +47,24 @@ app.use((req, res, next) => {
   };
 
   next();
+});
+
+app.post('/autologin', (req, res) => {
+  if (req.cookies['refreshToken']) {
+    try {
+      const refresh_token = req.cookies['refreshToken'];
+      const decodedUser = verify(refresh_token, jwt_secret);
+      return res
+        .exposeHeaders()
+        .authorizationHeader(decodedUser.email)
+        .status(200)
+        .json({ message: 'Valid refreshtoken' });
+    } catch (error) {
+      return res.status(401).json({ email: decodedUser.email });
+    }
+  } else {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 });
 
 app.use('/', rootRouter);

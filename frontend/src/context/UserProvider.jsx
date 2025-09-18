@@ -5,11 +5,19 @@ import { UserContext } from './UserContext';
 export default function UserProvider({ children }) {
   const userFromStorage = sessionStorage.getItem('user');
   const [user, setUser] = useState(
-    userFromStorage ? JSON.parse(userFromStorage) : { email: '', password: '' }
+    userFromStorage
+      ? JSON.parse(userFromStorage)
+      : { email: '', password: '', token: '' }
   );
 
+  const LogOut = () => {
+    //empty login data
+    setUser({ email: '', password: '', token: '' });
+    sessionStorage.removeItem('user'); 
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, LogOut }}>
       {children}
     </UserContext.Provider>
   );

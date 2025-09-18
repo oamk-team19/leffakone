@@ -1,9 +1,6 @@
 import { dataForSignIn } from '../models/userModel.js';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { insertRegistration } from '../models/userModel.js';
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export const signin = async (req, res) => {
   try {
@@ -19,7 +16,6 @@ export const signin = async (req, res) => {
 
     const match = await bcrypt.compare(password, result.data);
     if (match) {
-      //if (password === result.data) {
       //if passwords match --> create a token
       return res
         .exposeHeaders()

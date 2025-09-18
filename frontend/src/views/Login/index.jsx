@@ -14,10 +14,8 @@ export const Login = () => {
   useEffect(() => {
     async function loginasyncFunction() {
       try {
-        console.log('loginasyncFunction');
         await autoLogin();
       } catch {
-        console.log("false testi");
         setIsAutoLogin(false);
         return;
       }
@@ -70,12 +68,9 @@ export const Login = () => {
         }
       )
       .then((res) => {
-        console.log('success', res);
         saveUser(res);
       })
       .catch((error) => {
-        
-        console.log('error', error);
         console.log(error);
         throw (error);
       });

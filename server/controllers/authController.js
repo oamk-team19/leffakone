@@ -49,3 +49,8 @@ export const signup = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const signout = async (req, res) => {
+  res.clearCookie('refreshToken', { path: '/' });
+  res.status(200).json({ message: 'Logged out' });
+};

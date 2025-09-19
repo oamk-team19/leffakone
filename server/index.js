@@ -54,7 +54,6 @@ app.post('/autologin', (req, res) => {
     try {
       const refresh_token = req.cookies['refreshToken'];
       const decodedUser = jwt.verify(refresh_token, jwt_secret);
-      console.log(decodedUser);
       return res
         .exposeHeaders()
         .authorizationHeader(decodedUser.email)

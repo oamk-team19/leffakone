@@ -9,9 +9,19 @@ export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
 
-  const buttonPressed = () => {
-    navigate('/login');
-    LogOut();
+  const buttonPressed = async () => {
+    try {
+      await axios.post(
+        'http://localhost:3001/auth/signout',
+        {},
+        { withCredentials: true }
+      );
+      LogOut();
+      navigate('/login');
+    } catch (error) {
+      console.log('Error while signing out: ', error);
+      return;
+    }
   };
 
   return (

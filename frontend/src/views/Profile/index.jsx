@@ -9,8 +9,20 @@ export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
 
+  const buttonPressedDeleteMe = async () => {
+    try {
+      const res = await axios.delete('http://localhost:3001/auth/deleteuser', {
+        data: { email: user.email },
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      });
+      buttonPressedLogOut();
+    } catch (error) {
+      console.log('Error in deleting the user: ' + error);
+    }
+  };
 
-  const buttonPressed = async () => {
+  const buttonPressedLogOut = async () => {
     try {
       await axios.post(
         'http://localhost:3001/auth/signout',

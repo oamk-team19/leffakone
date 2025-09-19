@@ -8,6 +8,9 @@ import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
+import UserProvider from './context/UserProvider';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Profile } from './views/Profile';
 
 const router = createBrowserRouter([
   {
@@ -30,10 +33,21 @@ const router = createBrowserRouter([
     path: '/muidemo',
     element: <MuiDemo />,
   },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/profile',
+        element: <Profile />,
+      },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   </StrictMode>
 );

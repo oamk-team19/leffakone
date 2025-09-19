@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { UserContext } from './UserContext';
+import { useNavigate } from 'react-router-dom';
+//const navigate = useNavigate();
 
 /*UserProvider component will provide context wrapping in all components in this application. */
 export default function UserProvider({ children }) {
@@ -12,6 +14,7 @@ export default function UserProvider({ children }) {
     //empty login data
     setUser({ email: '', token: '' });
     sessionStorage.removeItem('user');
+    //navigate('/');
   };
 
   return (

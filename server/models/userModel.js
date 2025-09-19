@@ -47,3 +47,22 @@ export const insertRegistration = async (email, username, hashedPassword) => {
     throw error;
   }
 };
+
+// Insert user registration data into db
+export const deleteUserDb = async (email) => {
+  try {
+    const deleteByEmail = await pool.query(
+      'DELETE FROM users WHERE email=$1 RETURNING *',
+      [email]
+    );
+
+    if(deleteByEmail.rows.length === 0){
+      return { error: 'Not find user by email'}
+    }
+
+    return deleteByEmail.rows[0]; //return deleted data
+
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,6 +1,7 @@
 import { dataForSignIn } from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import { insertRegistration } from '../models/userModel.js';
+import { deleteUserDb } from '../models/userModel.js';
 
 export const signin = async (req, res) => {
   try {
@@ -53,4 +54,20 @@ export const signup = async (req, res) => {
 export const signout = async (req, res) => {
   res.clearCookie('refreshToken', { path: '/' });
   res.status(200).json({ message: 'Logged out' });
+}
+
+export const deleteuser = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { email } = req.body;
+    const result = await deleteUserDb(email);
+
+    if (result.error) {
+      return res.status(409).json({ error: result.error });
+    }
+    res.status(201).json({ message: 'User deletion completed' });
+  } catch (error) {
+    console.error('User deletion failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
 };

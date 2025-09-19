@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Box } from '@mui/material';
+import { Button, Box, Grid } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
+
 
   const buttonPressed = async () => {
     try {
@@ -25,16 +26,21 @@ export const Profile = () => {
   };
 
   return (
-    <Box
-      display={'flex'}
-      flexDirection={'column'}
-      alignItems={'center'}
-      gap={2}
-    >
-      <h2>Omasivu</h2>
-      <Button variant="contained" onClick={buttonPressed}>
-        Sign out
-      </Button>
-    </Box>
+    <div>
+      <Box
+        display={'flex'}
+        flexDirection={'column'}
+        alignItems={'center'}
+        gap={2}
+      >
+        <h2>My profile</h2>
+        <Button variant="outlined" onClick={buttonPressedDeleteMe}>
+          Delete my profile
+        </Button>
+        <Button variant="contained" onClick={buttonPressedLogOut}>
+          Sign out
+        </Button>
+      </Box>
+    </div>
   );
 };

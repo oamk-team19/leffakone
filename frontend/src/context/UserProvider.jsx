@@ -14,7 +14,6 @@ export default function UserProvider({ children }) {
     //empty login data
     setUser({ email: '', token: '' });
     sessionStorage.removeItem('user');
-    //navigate('/');
   };
 
   return (

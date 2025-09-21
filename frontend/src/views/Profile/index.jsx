@@ -4,12 +4,17 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
 import { useNavigate } from 'react-router-dom';
+import { AccessAlarm, ThreeDRotation } from '@mui/icons-material';
+import ShareIcon from '@mui/icons-material/Share';
 
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
 
   const buttonPressedDeleteMe = async () => {
+    /*11 Poista leffaarvostelu, joka sis. tekstin ja tähdet (1-5). Arvostelussa näkyy myös käyttäjänsähköpostiosoite sekä ajankohta, jolloin arvostelu on annettu.
+13 Poista suosikkilista
+14 Poista suosikkilistan jakaminen ja se uri*/
     try {
       const res = await axios.delete('http://localhost:3001/auth/deleteuser', {
         data: { email: user.email },
@@ -46,6 +51,9 @@ export const Profile = () => {
         gap={2}
       >
         <h2>My profile</h2>
+        <h3>My favorite movie list</h3>
+        <p>Insert a list here...</p>
+        <ShareIcon />
         <Button variant="outlined" onClick={buttonPressedDeleteMe}>
           Delete my profile
         </Button>

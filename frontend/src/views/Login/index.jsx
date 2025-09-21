@@ -71,7 +71,6 @@ export const Login = () => {
         saveUser(res);
       })
       .catch((error) => {
-        console.log(error);
         throw (error);
       });
   };

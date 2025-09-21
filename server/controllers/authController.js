@@ -58,7 +58,6 @@ export const signout = async (req, res) => {
 
 export const deleteuser = async (req, res) => {
   try {
-    console.log(req.body);
     const { email } = req.body;
     const result = await deleteUserDb(email);
 

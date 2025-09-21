@@ -3,6 +3,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Container from '@mui/material/Container';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import CopyrightIcon from '@mui/icons-material/Copyright';
 
 const Footer = () => {
   return (
@@ -11,7 +13,7 @@ const Footer = () => {
       sx={{
         py: 3,
         px: 2,
-        mt: 'auto', // Pushes the footer to the bottom
+        mt: 'auto',
         backgroundColor: (theme) =>
           theme.palette.mode === 'light'
             ? theme.palette.grey[200]
@@ -20,11 +22,20 @@ const Footer = () => {
     >
       <Container maxWidth="sm">
         <Typography variant="body2" color="text.secondary" align="center">
-          {'Copyright © '}
-          <Link color="inherit" href="https://mui.com/">
-            Your Website
+          {'Made with  '}{' '}
+          <FavoriteIcon
+            fontSize="small"
+            sx={{ verticalAlign: 'middle', color: 'red' }}
+          />{' '}
+          <Link color="inherit" href="https://github.com/oamk-team19">
+            By Group 17 Productions
           </Link>{' '}
-          {new Date().getFullYear()}
+          {`, Copyright `}
+          <CopyrightIcon
+            fontSize="small"
+            sx={{ verticalAlign: 'middle', mb: 0.3 }}
+          />
+          {` ${new Date().getFullYear()}`}
           {'.'}
         </Typography>
       </Container>

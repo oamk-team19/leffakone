@@ -11,15 +11,21 @@ import {
   Skeleton,
   Alert,
   IconButton,
+  Select,
+  MenuItem,
+  Rating,
+  Autocomplete,
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useState } from 'react';
 import GenreChip from '../../components/GenreChip';
 import GenreSelector from '../../components/GenreSelector';
-
+import { getLangs } from '../../utils/langCodes';
 const IMG_HEIGHT = 200;
 const IMG_WIDTH = IMG_HEIGHT / 1.5;
+
+const ratings = [...Array(20).keys()].map((x) => x / 2).reverse();
 
 export const MainPage = () => {
   const [wantedGenres, setWantedGenres] = useState([]);
@@ -28,6 +34,8 @@ export const MainPage = () => {
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const [searchResults, setSearchResults] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
+  const [minRating, setMinRating] = useState(0);
+  const [langFilters, setLangFilters] = useState([]);
 
   useEffect(() => {
     if (debouncedSearchQuery && debouncedSearchQuery.length > 1) {
@@ -55,15 +63,27 @@ export const MainPage = () => {
     setFilteredResults(
       searchResults
         .filter((movie) =>
-          wantedGenres.every((wanted) => movie.genre_ids.includes(wanted.id))
+          wantedGenres.every(
+            (wanted) => movie?.genre_ids && movie.genre_ids.includes(wanted.id)
+          )
         )
         .filter((movie) =>
           unwantedGenres.every(
-            (unwanted) => !movie.genre_ids.includes(unwanted.id)
+            (unwanted) =>
+              movie?.genre_ids && !movie.genre_ids.includes(unwanted.id)
           )
         )
+        .filter((movie) =>
+          minRating > 0 ? movie.vote_average >= minRating : true
+        )
+        .filter((movie) =>
+          langFilters.length > 0
+            ? movie.original_language &&
+              langFilters.map((l) => l.code).includes(movie.original_language)
+            : true
+        )
     );
-  }, [wantedGenres, unwantedGenres, searchResults]);
+  }, [wantedGenres, unwantedGenres, searchResults, minRating, langFilters]);
   return (
     <Box>
       <Typography variant="h4">Welcome to Leffakone</Typography>
@@ -76,21 +96,58 @@ export const MainPage = () => {
       />
       <Box sx={{ mt: 2, width: '100%' }}>
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }}>
             <GenreSelector
               disabledOptions={[...wantedGenres, ...unwantedGenres]}
               label={'Wanted tags'}
               selectedGenres={wantedGenres}
               onChange={(_e, newValue) => setWantedGenres(newValue)}
-            ></GenreSelector>
+            />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+
+          <Grid size={{ xs: 12, md: 6, lg: 4 }}>
             <GenreSelector
               disabledOptions={[...wantedGenres, ...unwantedGenres]}
               label={'Unwanted tags'}
               selectedGenres={unwantedGenres}
-              onChange={(event, newValue) => setUnwantedGenres(newValue)}
-            ></GenreSelector>
+              onChange={(_e, newValue) => setUnwantedGenres(newValue)}
+            />
+          </Grid>
+          <Grid size={{ xs: 3, md: 2, lg: 1 }}>
+            <Select
+              labelId="select-rating"
+              id="select-rating"
+              value={minRating}
+              label="Minimum rating"
+              onChange={(e) => setMinRating(e.target.value)}
+              fullWidth
+            >
+              {ratings.map((rating) => (
+                <MenuItem key={rating} value={rating}>
+                  {rating ? `≥ ${rating}` : `All`}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid size={{ xs: 9, md: 10, lg: 3 }}>
+            <Autocomplete
+              multiple
+              fullWidth
+              id="langSelect"
+              options={getLangs() ?? []}
+              getOptionLabel={(option) => option.name}
+              defaultValue={langFilters}
+              value={langFilters}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Languages" />
+              )}
+              renderOption={(props, option) => (
+                <Box component="li" {...props} key={option.code}>
+                  {option.code.toUpperCase()} - {option.name}
+                </Box>
+              )}
+              onChange={(_e, newValue) => setLangFilters(newValue)}
+            />
           </Grid>
         </Grid>
       </Box>
@@ -139,7 +196,21 @@ export const MainPage = () => {
             >
               {/* Top part of content */}
               <Box>
-                <Typography variant="h6">{movie.title}</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="h6">{movie.title}</Typography>
+                  <Rating
+                    sx={{ display: { xs: 'none', md: 'flex' } }}
+                    precision={0.1}
+                    name="customized-10"
+                    value={movie.vote_average}
+                    max={10}
+                    readOnly
+                  />
+                  <Typography sx={{ display: { xs: 'flex', md: 'none' } }}>
+                    <Rating value={1} max={1} readOnly></Rating>{' '}
+                    {`${movie.vote_average.toFixed(1)}/10`}
+                  </Typography>
+                </Box>
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -165,9 +236,10 @@ export const MainPage = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {movie.genre_ids.map((genreid) => (
-                    <GenreChip key={genreid} genreid={genreid} />
-                  ))}
+                  {movie &&
+                    movie.genre_ids.map((genreid) => (
+                      <GenreChip key={genreid} genreid={genreid} />
+                    ))}
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton>

@@ -22,21 +22,20 @@ const Footer = () => {
     >
       <Container maxWidth="sm">
         <Typography variant="body2" color="text.secondary" align="center">
-          {'Made with  '}{' '}
+          {'Made with  '}
           <FavoriteIcon
             fontSize="small"
             sx={{ verticalAlign: 'middle', color: 'red' }}
           />{' '}
           <Link color="inherit" href="https://github.com/oamk-team19">
             By Group 19 Productions
-          </Link>{' '}
+          </Link>
           {`, Copyright `}
           <CopyrightIcon
             fontSize="small"
             sx={{ verticalAlign: 'middle', mb: 0.3 }}
           />
-          {` ${new Date().getFullYear()}`}
-          {'.'}
+          {` ${new Date().getFullYear()}.`}
         </Typography>
       </Container>
     </Box>

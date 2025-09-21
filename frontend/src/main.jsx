@@ -10,6 +10,10 @@ import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
 import NotFound from './views/NotFound';
 import MainLayout from './Layouts/MainLayout';
+import UserProvider from './context/UserProvider';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Profile } from './views/Profile';
+
 
 const router = createBrowserRouter([
   {
@@ -42,10 +46,21 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/profile',
+        element: <Profile />,
+      },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   </StrictMode>
 );

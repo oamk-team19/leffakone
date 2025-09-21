@@ -8,30 +8,43 @@ import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
+import NotFound from './views/NotFound';
+import MainLayout from './Layouts/MainLayout';
 import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
 
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainPage />,
-  },
-  {
-    path: '/register',
-    element: <Register />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-  {
-    path: '/showtime',
-    element: <Showtime />,
-  },
-  {
-    path: '/muidemo',
-    element: <MuiDemo />,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <MainPage />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'showtime',
+        element: <Showtime />,
+      },
+      {
+        path: 'muidemo',
+        element: <MuiDemo />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
+      },
+    ],
   },
   {
     element: <ProtectedRoute />,

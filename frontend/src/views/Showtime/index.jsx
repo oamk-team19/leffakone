@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import React from 'react'
 import { Button, MenuItem, Select, FormControl, InputLabel,
-  Box, Typography, List, ListItem, ListItemText, Divider
+  Box, Typography, List, ListItem, ListItemText, Divider,
+  ListItemButton, Link
  } from '@mui/material'
  import './index.css'
 
@@ -141,6 +142,11 @@ const handleSelectMovie = (event) => {
   setSelectedMovie(event.target.value)
 }
 
+  function decodeHTMLEntities(text) {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = text;
+  return txt.value;
+  }
 
   return (
     <>
@@ -159,36 +165,32 @@ const handleSelectMovie = (event) => {
           flexDirection="column"
           minHeight="30vh"
         >
-          <Typography variant="h4">Etsi näytösaikoja</Typography>
+          <Typography variant="h4">Search showtimes</Typography>
         </Box >
         <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="area-select-label">Valitse Alue/Teatteri</InputLabel>
+          <InputLabel id="area-select-label">Select Area/Theater</InputLabel>
           <Select
             labelId="area-select-label"
             id="area-select"
             value={selectedArea}
-            label="Valitse alue/teatteri"
+            label="Select Area/Theater"
             onChange={handleSelect1}
           >
-            {areas.map((area) => (
-              <MenuItem key={area.ID} value={area.ID} sx={{
-                backgroundColor: '#333',
-                '&.Mui-selected': {
-                  backgroundColor: '#333',
-                }
-              }}>
-                {area.Name}
+            {areas.map((area, index) => (
+              <MenuItem key={area.ID} value={area.ID} 
+              >
+                {index === 0 ? 'All areas/theaters' : area.Name}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="day-select-label">Valitse päivä</InputLabel>
+          <InputLabel id="day-select-label">Select day</InputLabel>
           <Select
             labelId="day-select-label"
             id="day-select"
             value={selectedDay}
-            label="Valitse päivä"
+            label="Select day"
             onChange={handleSelectDay}
           >
             {days.map((date, index) => {
@@ -207,7 +209,7 @@ const handleSelectMovie = (event) => {
           </Select>
         </FormControl>
         <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="movie-select-label">Valitse elokuva</InputLabel>
+          <InputLabel id="movie-select-label">Select movie</InputLabel>
           <Select
             labelId="movie-select-label"
             id="movie-select"
@@ -215,7 +217,7 @@ const handleSelectMovie = (event) => {
             label="Valitse elokuva"
             onChange={handleSelectMovie}
           >
-            <MenuItem value="all">Kaikki elokuvat</MenuItem>
+            <MenuItem value="all">All movies</MenuItem>
             {movies.map((movie) => (
               <MenuItem key={movie.ID} value={movie.ID}>
                 {movie.Title}
@@ -225,7 +227,7 @@ const handleSelectMovie = (event) => {
         </FormControl>
         {/* <p>{selectedArea}+{selectedDay}+{selectedMovie}</p> */}
         <Button variant="contained" size='large' onClick={showTimes}>
-          Näytä elokuvat
+          Show showtimes
         </Button>
         <Box>
           {message && (
@@ -239,7 +241,10 @@ const handleSelectMovie = (event) => {
               <React.Fragment key={show.ID}>
                 <ListItem alignItems="flex-start">
                   <ListItemText
-                    primary={show.Title}
+                    primary={
+                      <ListItemButton component={Link} to={`/shows/${show.EventID}`}>
+                        {decodeHTMLEntities(show.Title)}
+                      </ListItemButton>}
                     secondary={
                       <>
                         <Typography component="span" variant="body2" color="text.primary">

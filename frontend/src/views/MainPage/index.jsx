@@ -11,12 +11,14 @@ import {
   Skeleton,
   Alert,
   IconButton,
+  ListItemButton,
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useState } from 'react';
 import GenreChip from '../../components/GenreChip';
 import GenreSelector from '../../components/GenreSelector';
+import { Link } from 'react-router-dom';
 
 const IMG_HEIGHT = 200;
 const IMG_WIDTH = IMG_HEIGHT / 1.5;
@@ -139,7 +141,9 @@ export const MainPage = () => {
             >
               {/* Top part of content */}
               <Box>
+                <ListItemButton component={Link} to={`/movies/${movie.id}`}>
                 <Typography variant="h6">{movie.title}</Typography>
+                </ListItemButton>
                 <Typography
                   variant="body2"
                   color="text.secondary"

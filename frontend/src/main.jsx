@@ -8,6 +8,8 @@ import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
+import { MovieInfo } from './views/MovieInfo';
+import { Movies } from './views/Shows';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,14 @@ const router = createBrowserRouter([
   {
     path: '/muidemo',
     element: <MuiDemo />,
+  },
+    {
+    path: '/movies/:id',
+    element: <MovieInfo />,
+  },
+      {
+    path: '/shows/:id',
+    element: <Movies />,
   },
 ]);
 

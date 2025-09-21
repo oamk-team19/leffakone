@@ -28,7 +28,7 @@ const Footer = () => {
             sx={{ verticalAlign: 'middle', color: 'red' }}
           />{' '}
           <Link color="inherit" href="https://github.com/oamk-team19">
-            By Group 17 Productions
+            By Group 19 Productions
           </Link>{' '}
           {`, Copyright `}
           <CopyrightIcon

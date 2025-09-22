@@ -7,12 +7,15 @@ import { MainPage } from './views/MainPage';
 import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
-import { MuiDemo } from './views/MuiDemo';
+import { MuiDemo } from './views/MuiDemo;
+import { MovieInfo } from './views/MovieInfo';
+import { Movies } from './views/Shows';
 import NotFound from './views/NotFound';
 import MainLayout from './Layouts/MainLayout';
 import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
+
 
 
 const router = createBrowserRouter([
@@ -54,6 +57,14 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
     ],
+  },
+    {
+    path: '/movies/:id',
+    element: <MovieInfo />,
+  },
+      {
+    path: '/shows/:id',
+    element: <Movies />,
   },
 ]);
 

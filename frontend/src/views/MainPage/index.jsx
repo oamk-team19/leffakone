@@ -11,6 +11,7 @@ import {
   Skeleton,
   Alert,
   IconButton,
+  ListItemButton,
   Select,
   MenuItem,
   Rating,
@@ -21,7 +22,12 @@ import { useDebounce } from 'use-debounce';
 import { useEffect, useState } from 'react';
 import GenreChip from '../../components/GenreChip';
 import GenreSelector from '../../components/GenreSelector';
+
+import { Link } from 'react-router-dom';
+
+
 import { getLangs } from '../../utils/langCodes';
+
 const IMG_HEIGHT = 200;
 const IMG_WIDTH = IMG_HEIGHT / 1.5;
 
@@ -196,8 +202,13 @@ export const MainPage = () => {
             >
               {/* Top part of content */}
               <Box>
+
+
+
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="h6">{movie.title}</Typography>
+                <ListItemButton component={Link} to={`/movies/${movie.id}`}>
+                <Typography variant="h6">{movie.title}</Typography>
+                </ListItemButton>
                   <Rating
                     sx={{ display: { xs: 'none', md: 'flex' } }}
                     precision={0.1}
@@ -211,6 +222,7 @@ export const MainPage = () => {
                     {`${movie.vote_average.toFixed(1)}/10`}
                   </Typography>
                 </Box>
+
                 <Typography
                   variant="body2"
                   color="text.secondary"

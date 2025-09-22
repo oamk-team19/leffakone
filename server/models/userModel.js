@@ -48,18 +48,41 @@ export const insertRegistration = async (email, username, hashedPassword) => {
   }
 };
 
-// Insert user registration data into db
+// Delete user data from db
 export const deleteUserDb = async (email) => {
   try {
+    //Uses cascade --> this is enough to delete his reviews and favorites
     const deleteByEmail = await pool.query(
       'DELETE FROM users WHERE email=$1 RETURNING *',
       [email]
     );
 
-    if(deleteByEmail.rows.length === 0){
-      return { error: 'Not find user by email'}
+    if (deleteByEmail.rows.length === 0) {
+      return { error: 'Not find user by email from users' }
     }
 
+    //MITEN SUOSIKKILISTAN URI POISTUU?
+    return deleteByEmail.rows[0]; //return deleted data
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+//Searcj favorite list
+export const searchFavoriteList = async (email) => {
+  try {
+    //Uses cascade --> this is enough to delete his reviews and favorites
+    const deleteByEmail = await pool.query(
+      'DELETE FROM users WHERE email=$1 RETURNING *',
+      [email]
+    );
+
+    if (deleteByEmail.rows.length === 0) {
+      return { error: 'Not find user by email from users' }
+    }
+
+    //MITEN SUOSIKKILISTAN URI POISTUU?
     return deleteByEmail.rows[0]; //return deleted data
 
   } catch (error) {

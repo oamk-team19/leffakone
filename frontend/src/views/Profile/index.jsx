@@ -11,12 +11,27 @@ export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
 
-  const buttonPressedDeleteMe = async () => {
-    /*11 Poista leffaarvostelu, joka sis. tekstin ja tähdet (1-5). Arvostelussa näkyy myös käyttäjänsähköpostiosoite sekä ajankohta, jolloin arvostelu on annettu.
-13 Poista suosikkilista
-14 Poista suosikkilistan jakaminen ja se uri*/
+  const searchFavorites = async () => {
     try {
-      const res = await axios.delete('http://localhost:3001/auth/deleteuser', {
+      const res = await axios.post(
+        'http://localhost:3001/user/searchfavorite',
+        {
+          data: { email: user.email },
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
+      );
+      //if (res.status ===)
+      console.log(res);
+    } catch (error) {
+      console.log('Error in getting a favorite list: ' + error);
+    }
+  };
+
+  const buttonPressedDeleteMe = async () => {
+    /*14 Poista suosikkilistan jakaminen ja se uri*/
+    try {
+      const res = await axios.delete('http://localhost:3001/user/deleteuser', {
         data: { email: user.email },
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,

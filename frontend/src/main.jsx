@@ -7,7 +7,7 @@ import { MainPage } from './views/MainPage';
 import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
-import { MuiDemo } from './views/MuiDemo;
+import { MuiDemo } from './views/MuiDemo';
 import { MovieInfo } from './views/MovieInfo';
 import { Movies } from './views/Shows';
 import NotFound from './views/NotFound';

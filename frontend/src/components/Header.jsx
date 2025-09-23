@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import TheatersIcon from '@mui/icons-material/Theaters';
-import { NavLink } from 'react-router-dom'; // Import NavLink from react-router-dom
+import { NavLink } from 'react-router-dom';
 
 const tabs = [
   {
@@ -64,7 +64,7 @@ const Header = () => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/" // TODO: Check if this should be changed to NavLink
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },

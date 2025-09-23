@@ -25,7 +25,6 @@ import GenreSelector from '../../components/GenreSelector';
 
 import { Link } from 'react-router-dom';
 
-
 import { getLangs } from '../../utils/langCodes';
 
 const IMG_HEIGHT = 200;
@@ -202,13 +201,10 @@ export const MainPage = () => {
             >
               {/* Top part of content */}
               <Box>
-
-
-
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <ListItemButton component={Link} to={`/movies/${movie.id}`}>
-                <Typography variant="h6">{movie.title}</Typography>
-                </ListItemButton>
+                  <ListItemButton component={Link} to={`/movies/${movie.id}`}>
+                    <Typography variant="h6">{movie.title}</Typography>
+                  </ListItemButton>
                   <Rating
                     sx={{ display: { xs: 'none', md: 'flex' } }}
                     precision={0.1}
@@ -219,7 +215,7 @@ export const MainPage = () => {
                   />
                   <Typography sx={{ display: { xs: 'flex', md: 'none' } }}>
                     <Rating value={1} max={1} readOnly></Rating>{' '}
-                    {`${movie.vote_average.toFixed(1)}/10`}
+                    {`${movie.vote_average?.toFixed(1) ?? '-'}/10`}
                   </Typography>
                 </Box>
 

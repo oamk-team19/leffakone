@@ -35,7 +35,7 @@ const router = createBrowserRouter([
     element: <MuiDemo />,
   },
   {
-    path: '/group',
+    path: '/group/:id',
     element: <GroupPage />,
   },
   {

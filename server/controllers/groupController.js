@@ -4,6 +4,7 @@ import {
   createGroupRequest,
   approveGroupRequest,
   rejectGroupRequest,
+  groupMembers,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -77,6 +78,22 @@ export const rejectRequest = async (req, res) => {
     res.status(201).json(newRequest);
   } catch (error) {
     console.error('Request rejection failed: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getGroupMembers = async (req, res) => {
+  try {
+    const { idgroup } = req.params;
+
+    const newRequest = await groupMembers(idgroup);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting group members: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

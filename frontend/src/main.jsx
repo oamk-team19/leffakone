@@ -16,8 +16,6 @@ import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
 
-
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -47,24 +45,24 @@ const router = createBrowserRouter([
         path: '*',
         element: <NotFound />,
       },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
       {
-        path: '/profile',
-        element: <Profile />,
+        path: '/movies/:id',
+        element: <MovieInfo />,
+      },
+      {
+        path: '/shows/:id',
+        element: <Movies />,
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: '/profile',
+            element: <Profile />,
+          },
+        ],
       },
     ],
-  },
-    {
-    path: '/movies/:id',
-    element: <MovieInfo />,
-  },
-      {
-    path: '/shows/:id',
-    element: <Movies />,
   },
 ]);
 

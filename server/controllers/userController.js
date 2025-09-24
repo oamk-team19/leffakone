@@ -17,7 +17,7 @@ export const deleteuser = async (req, res) => {
   }
 };
 
-
 export const searchfavorite = async (req, res) => {
+  const result = await searchFavoriteList(email);
   res.status(200).json({ message: 'TESTII' });
 }

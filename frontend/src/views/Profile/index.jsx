@@ -21,13 +21,17 @@ export const Profile = () => {
           withCredentials: true,
         }
       );
-      //if (res.status ===)
-      console.log(res);
+      if (res.status === 200) {
+        //Show favorite list
+      } else {
+        console.log(res.status);
+      }
     } catch (error) {
       console.log('Error in getting a favorite list: ' + error);
     }
   };
 
+  //searchFavorites();
   const buttonPressedDeleteMe = async () => {
     /*14 Poista suosikkilistan jakaminen ja se uri*/
     try {

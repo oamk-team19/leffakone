@@ -12,9 +12,10 @@ export const signin = async (req, res) => {
     }
 
     const result = await dataForSignIn(email); //send email to db to get a password linked to email
-    //console.log(result.data); //result.data = 123
-
-    const match = await bcrypt.compare(password, result.data);
+    //console.log(result);
+    //console.log(result.iduser);
+    
+    const match = await bcrypt.compare(password, result.password);
     if (match) {
       //if passwords match --> create a token
       return res
@@ -22,7 +23,7 @@ export const signin = async (req, res) => {
         .authorizationHeader(email)
         .refreshToken(email)
         .status(200)
-        .json({ email: email });
+        .json({ iduser: result.iduser, email: email });
     } else {
       //no matching passwords
       return res.status(401).json({ error: 'Invalid credentials' });

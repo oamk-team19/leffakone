@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Typography, TextField, Box } from '@mui/material';
+import { Button, Typography, TextField, Box, Alert } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ export const Login = () => {
   const [isAutoLogin, setIsAutoLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function loginasyncFunction() {
@@ -81,6 +82,7 @@ export const Login = () => {
     } catch (error) {
       //if fails
       console.log('Problems in login' + error);
+      setError('Wrong email or/and password.');
     } finally {
       //Done always, for example empty textfield/input
       setEmail('');
@@ -147,6 +149,11 @@ export const Login = () => {
             <Button variant="contained" type="submit">
               Sign in
             </Button>
+            {error && (
+              <Alert severity="error" onClose={() => setError('')}>
+                {error}
+              </Alert>
+            )}
             <Link to={'/register'}>Don't have an account? Sign up!</Link>
           </Box>
         </form>

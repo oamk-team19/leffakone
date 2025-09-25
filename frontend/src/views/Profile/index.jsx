@@ -1,16 +1,31 @@
 import * as React from 'react';
-import { Button, Box, Grid } from '@mui/material';
+import { Button, Box, Snackbar } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
 import { useNavigate } from 'react-router-dom';
 import ShareIcon from '@mui/icons-material/Share';
 import { useEffect } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    navigator.clipboard.writeText('tadaa!');
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   useEffect(() => {
     const searchFavorites = async () => {
@@ -23,7 +38,11 @@ export const Profile = () => {
         );
 
         //Show favorite list
-        setSearchResults(response.data);
+        if (!response.data.error) {
+          setSearchResults(response.data);
+        } else {
+          setSearchResults([{ idMovie: 'No favorite movies yet!' }]);
+        }
       } catch (error) {
         console.log('Error in getting a favorite list: ' + error);
       }
@@ -71,13 +90,30 @@ export const Profile = () => {
       >
         <h2>My profile</h2>
         <h3>My favorite movie list</h3>
+
         <ul>
           {searchResults.map((movieId, i) => (
             <li key={i}>{movieId.idMovie}</li>
           ))}
         </ul>
-        <ShareIcon />
-        <Button variant="outlined" onClick={buttonPressedDeleteMe}>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button startIcon={<ShareIcon />} onClick={handleClick}>
+            Share my favorite list
+          </Button>
+          <Snackbar
+            open={open}
+            autoHideDuration={3000}
+            onClose={handleClose}
+            message="Copied URI to clipboard"
+          />
+        </Box>
+        <Button
+          variant="outlined"
+          startIcon={<DeleteIcon />}
+          color="error"
+          onClick={buttonPressedDeleteMe}
+        >
           Delete my profile
         </Button>
         <Button variant="contained" onClick={buttonPressedLogOut}>
@@ -87,3 +123,9 @@ export const Profile = () => {
     </div>
   );
 };
+
+/*
+        
+        
+        
+        */

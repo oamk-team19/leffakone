@@ -32,38 +32,6 @@ export const Login = () => {
     signIn();
   };
 
-  /*
-  const signIn = async () => {
-    await axios
-      .post(
-        'http://localhost:3001/auth/signin',
-        {
-          email: user.email,
-          password: user.password,
-        },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        //is done when success
-        console.log(res.status + ' ' + res.statusText); //200 OK
-        saveUser(res);
-        navigate('/Profile'); //Change if you want somewhere else than home page
-      })
-
-      .catch((error) => {
-        //if fails
-        console.log(error);
-        setUser({ email: '', password: '', token: '' });
-      })
-      .finally(() => {
-        //Done always, for example empty textfield/input
-      });
-  };
-  */
-
   const signIn = async () => {
     try {
       const res = await axios.post(
@@ -81,7 +49,6 @@ export const Login = () => {
       navigate('/Profile'); //Change if you want somewhere else than home page
     } catch (error) {
       //if fails
-      console.log('Problems in login' + error);
       setError('Wrong email or/and password.');
     } finally {
       //Done always, for example empty textfield/input

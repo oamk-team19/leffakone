@@ -9,18 +9,11 @@ export const dataForSignIn = async (email) => {
       [email]
     );
 
-    //console.log('rows:', result);
-    //console.log('rows:', result.rows);    //    ---> [ { password: '123' } ]
-    //console.log('rows[0]:', result.rows[0]);  //---> { password: '123' }
-    //console.log('Password:', result.rows[0].password); //--->123
-
-
     if (result.rows.length === 0) {
       return { error: 'Not find user by email from users to login' }
     }
-    
-    return result.rows[0] //sends { data: '123' }
 
+    return result.rows[0] //sends { data: '123' }
   } catch (error) {
     console.error('Cound not find user by emai', error.message);
   }
@@ -74,22 +67,21 @@ export const deleteUserDb = async (email) => {
   }
 };
 
-//Search favorite list
-export const searchFavoriteList = async (email) => {
+//Search a favorite list
+export const searchFavoriteList = async (usersId) => {
   try {
     //Uses cascade --> this is enough to delete his reviews and favorites
-    const deleteByEmail = await pool.query(
-      'DELETE FROM users WHERE email=$1 RETURNING *',
-      [email]
+    const searched = await pool.query(
+      'SELECT "idMovie" from favorite where "idUser"=$1',
+      [usersId]
     );
 
-    if (deleteByEmail.rows.length === 0) {
-      return { error: 'Not find user by email from users' }
+    if (searched.rows.length === 0) {
+      return { error: 'Not find user by id from users' }
     }
 
-    //MITEN SUOSIKKILISTAN URI POISTUU?
-    return deleteByEmail.rows[0]; //return deleted data
 
+    return searched.rows;
   } catch (error) {
     throw error;
   }

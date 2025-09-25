@@ -4,6 +4,6 @@ import { deleteuser, searchfavorite } from '../controllers/userController.js';
 const userRouter = Router();
 
 userRouter.delete('/deleteuser', deleteuser);
-userRouter.post('/searchfavorite', searchfavorite);
+userRouter.get('/searchfavorite', searchfavorite);
 
 export default userRouter;

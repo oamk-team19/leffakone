@@ -4,34 +4,34 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
 import { useNavigate } from 'react-router-dom';
-import { AccessAlarm, ThreeDRotation } from '@mui/icons-material';
 import ShareIcon from '@mui/icons-material/Share';
+import { useEffect } from 'react';
 
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
+  const [searchResults, setSearchResults] = useState([]);
 
-  const searchFavorites = async () => {
-    try {
-      const res = await axios.post(
-        'http://localhost:3001/user/searchfavorite',
-        {
-          data: { email: user.email },
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        }
-      );
-      if (res.status === 200) {
+  useEffect(() => {
+    const searchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/user/searchfavorite',
+          {
+            params: { idUser: user.id },
+          }
+        );
+
         //Show favorite list
-      } else {
-        console.log(res.status);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.log('Error in getting a favorite list: ' + error);
       }
-    } catch (error) {
-      console.log('Error in getting a favorite list: ' + error);
-    }
-  };
+    };
 
-  //searchFavorites();
+    searchFavorites();
+  }, []);
+
   const buttonPressedDeleteMe = async () => {
     /*14 Poista suosikkilistan jakaminen ja se uri*/
     try {
@@ -71,7 +71,11 @@ export const Profile = () => {
       >
         <h2>My profile</h2>
         <h3>My favorite movie list</h3>
-        <p>Insert a list here...</p>
+        <ul>
+          {searchResults.map((movieId, i) => (
+            <li key={i}>{movieId.idMovie}</li>
+          ))}
+        </ul>
         <ShareIcon />
         <Button variant="outlined" onClick={buttonPressedDeleteMe}>
           Delete my profile

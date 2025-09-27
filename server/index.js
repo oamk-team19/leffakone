@@ -6,8 +6,11 @@ import rootRouter from './routers/rootRouter.js';
 import moviesRouter from './routers/movieRouter.js';
 import authRouter from './routers/authRouter.js';
 import userRouter from './routers/userRouter.js';
+import movieinfoRouter from './routers/movieinfoRouter.js';
+import trailerRouter from './routers/trailerRouter.js';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
+
 
 dotenv.config();
 
@@ -72,6 +75,8 @@ app.use('/', rootRouter);
 app.use('/movies', moviesRouter);
 app.use('/auth', authRouter); //for signin and signup
 app.use('/user', userRouter)
+app.use('/movie', movieinfoRouter);
+app.use('/video', trailerRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

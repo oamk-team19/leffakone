@@ -15,7 +15,8 @@ export const Profile = () => {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
-    navigator.clipboard.writeText('tadaa!');
+    //Copy URI to clipboard
+    navigator.clipboard.writeText('http://localhost:5173/profile');
     setOpen(true);
   };
 
@@ -23,7 +24,6 @@ export const Profile = () => {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false);
   };
 
@@ -97,17 +97,16 @@ export const Profile = () => {
           ))}
         </ul>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button startIcon={<ShareIcon />} onClick={handleClick}>
-            Share my favorite list
-          </Button>
-          <Snackbar
-            open={open}
-            autoHideDuration={3000}
-            onClose={handleClose}
-            message="Copied URI to clipboard"
-          />
-        </Box>
+        <Button startIcon={<ShareIcon />} onClick={handleClick}>
+          Share my favorite list
+        </Button>
+        <Snackbar
+          open={open}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          message="Copied URI to clipboard"
+        />
+
         <Button
           variant="outlined"
           startIcon={<DeleteIcon />}
@@ -116,6 +115,8 @@ export const Profile = () => {
         >
           Delete my profile
         </Button>
+
+        
         <Button variant="contained" onClick={buttonPressedLogOut}>
           Sign out
         </Button>
@@ -123,9 +124,3 @@ export const Profile = () => {
     </div>
   );
 };
-
-/*
-        
-        
-        
-        */

@@ -12,9 +12,8 @@ export const signin = async (req, res) => {
     }
 
     const result = await dataForSignIn(email); //send email to db to get a password linked to email
-    //console.log(result.data); //result.data = 123
-
-    const match = await bcrypt.compare(password, result.data);
+    
+    const match = await bcrypt.compare(password, result.password);
     if (match) {
       //if passwords match --> create a token
       return res
@@ -22,13 +21,13 @@ export const signin = async (req, res) => {
         .authorizationHeader(email)
         .refreshToken(email)
         .status(200)
-        .json({ email: email });
+        .json({ iduser: result.iduser, email: email });
     } else {
-      //no matching passwords
+      console.log('Not matching passwords');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (error) {
-    console.error('Not matching passwords', error);
+    console.error('Failed login: ', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -53,4 +52,4 @@ export const signup = async (req, res) => {
 export const signout = async (req, res) => {
   res.clearCookie('refreshToken', { path: '/' });
   res.status(200).json({ message: 'Logged out' });
-};
+}

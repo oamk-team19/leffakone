@@ -8,6 +8,10 @@ import { Register } from './views/Register';
 import { Login } from './views/Login';
 import { Showtime } from './views/Showtime';
 import { MuiDemo } from './views/MuiDemo';
+import { MovieInfo } from './views/MovieInfo';
+import { Movies } from './views/Shows';
+import NotFound from './views/NotFound';
+import MainLayout from './Layouts/MainLayout';
 import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
@@ -16,34 +20,52 @@ import { GroupPage } from './views/GroupPage';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainPage />,
-  },
-  {
-    path: '/register',
-    element: <Register />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-  {
-    path: '/showtime',
-    element: <Showtime />,
-  },
-  {
-    path: '/muidemo',
-    element: <MuiDemo />,
-  },
-  {
-    path: '/group/:id',
-    element: <GroupPage />,
-  },
-  {
-    element: <ProtectedRoute />,
+    element: <MainLayout />,
     children: [
       {
-        path: '/profile',
-        element: <Profile />,
+        index: true,
+        element: <MainPage />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'showtime',
+        element: <Showtime />,
+      },
+      {
+        path: 'muidemo',
+        element: <MuiDemo />,
+      },
+      {
+        path: '/group/:id',
+        element: <GroupPage />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
+      },
+      {
+        path: '/movies/:id',
+        element: <MovieInfo />,
+      },
+      {
+        path: '/shows/:id',
+        element: <Movies />,
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: '/profile',
+            element: <Profile />,
+          },
+        ],
       },
     ],
   },

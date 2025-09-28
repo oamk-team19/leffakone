@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Typography, TextField, Box } from '@mui/material';
+import { Button, Typography, TextField, Box, Alert } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +10,9 @@ export const Login = () => {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
   const [isAutoLogin, setIsAutoLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function loginasyncFunction() {
@@ -20,7 +23,7 @@ export const Login = () => {
         return;
       }
       navigate('/');
-    };
+    }
     loginasyncFunction();
   }, []);
 
@@ -30,34 +33,30 @@ export const Login = () => {
   };
 
   const signIn = async () => {
-    await axios
-      .post(
+    try {
+      const res = await axios.post(
         'http://localhost:3001/auth/signin',
-        {
-          email: user.email,
-          password: user.password,
-        },
+        { email: email, password: password },
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }
-      )
-      .then((res) => {
-        //is done when success
-        console.log(res.status + ' ' + res.statusText); //200 OK
-        saveUser(res);
-        navigate('/Profile'); //Change if you want somewhere else than home page
-      })
+      );
 
-      .catch((error) => {
-        //if fails
-        console.log(error);
-        setUser({ email: '', password: '', token: '' });
-      })
-      .finally(() => {
-        //Done always, for example empty textfield/input
-      });
+      //is done when success
+      console.log(res.status + ' ' + res.statusText); //200 OK
+      saveUser(res);
+      navigate('/Profile'); //Change if you want somewhere else than home page
+    } catch (error) {
+      //if fails
+      setError('Wrong email or/and password.');
+    } finally {
+      //Done always, for example empty textfield/input
+      setEmail('');
+      setPassword('');
+    }
   };
+
   const autoLogin = async () => {
     await axios
       .post(
@@ -71,14 +70,17 @@ export const Login = () => {
         saveUser(res);
       })
       .catch((error) => {
-        console.log(error);
-        throw (error);
+        throw error;
       });
   };
 
-  const saveUser = async (response) => {
+  const saveUser = async (response, id) => {
     const getToken = response.headers['authorization'];
-    const usersData = { email: response.data.email, token: getToken };
+    const usersData = {
+      email: response.data.email,
+      id: response.data.iduser,
+      token: getToken,
+    };
 
     setUser(usersData);
     sessionStorage.setItem('user', JSON.stringify(usersData));
@@ -101,17 +103,24 @@ export const Login = () => {
               id="outlined-email-input"
               label="Email"
               type="email"
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               id="outlined-password-input"
               label="Password"
               type="password"
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <Button variant="contained" type="submit">
               Sign in
             </Button>
+            {error && (
+              <Alert severity="error" onClose={() => setError('')}>
+                {error}
+              </Alert>
+            )}
             <Link to={'/register'}>Don't have an account? Sign up!</Link>
           </Box>
         </form>

@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Divider,
   Grid,
   List,
@@ -7,21 +8,47 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useUser } from '../../context/useUser';
 
 export const GroupPage = () => {
+  const user = useUser();
   const [times, setTimes] = useState([]);
   const [movies, setMovies] = useState([]);
   const [message, setMessage] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
-  const { id } = useParams();
+  const [groupName, setGroupName] = useState('');
+  const { idGroup } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getGroupName = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3001/group/name/${idGroup}`
+        );
+        console.log(res);
+        setGroupName(res.data);
+      } catch (error) {
+        if (error.response.status === 409) {
+          alert(error.response.data.error);
+        } else {
+          console.error(error);
+        }
+      }
+    };
+    getGroupName();
+  }, [idGroup]);
 
   useEffect(() => {
     const getGroupMembers = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/group/${id}`);
+        const res = await axios.get(
+          `http://localhost:3001/group/members/${idGroup}`
+        );
         console.log(res);
         setGroupMembers(res.data);
       } catch (error) {
@@ -33,7 +60,21 @@ export const GroupPage = () => {
       }
     };
     getGroupMembers();
-  }, [id]);
+  }, [idGroup]);
+
+  const deleteGroup = async () => {
+    try {
+      console.log(user.user.id);
+      const res = await axios.delete('http://localhost:3001/group/delete', {
+        data: { idGroup: idGroup, idUser: user.user.id },
+        headers: { 'Content-Type': 'application/json' },
+      });
+      console.log(res);
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting group: ' + error);
+    }
+  };
 
   useEffect(() => {
     const addedMovies = [];
@@ -48,7 +89,7 @@ export const GroupPage = () => {
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" sx={{ paddingY: 2 }} align="center">
-        Ryhmän nimi
+        {groupName}
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
@@ -126,6 +167,22 @@ export const GroupPage = () => {
           </Box>
         </Grid>
       </Grid>
+
+      <Box
+        display={'flex'}
+        flexDirection={'column'}
+        alignItems={'center'}
+        gap={2}
+      >
+        <Button
+          variant="outlined"
+          startIcon={<DeleteIcon />}
+          color="error"
+          onClick={deleteGroup}
+        >
+          Delete group
+        </Button>
+      </Box>
     </Box>
   );
 };

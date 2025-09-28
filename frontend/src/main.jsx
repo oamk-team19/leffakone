@@ -16,6 +16,7 @@ import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
 import { GroupPage } from './views/GroupPage';
+import { Groups } from './views/Groups';
 
 const router = createBrowserRouter([
   {
@@ -43,8 +44,12 @@ const router = createBrowserRouter([
         element: <MuiDemo />,
       },
       {
-        path: '/group/:id',
+        path: '/group/:idGroup',
         element: <GroupPage />,
+      },
+      {
+        path: '/groups',
+        element: <Groups />,
       },
       {
         path: '*',

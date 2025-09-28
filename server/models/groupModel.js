@@ -22,11 +22,11 @@ export const initializeGroup = async (groupName, iduser) => {
 };
 
 // Delete group
-export const dropGroup = async (groupName, iduser) => {
+export const dropGroup = async (idGroup, idUser) => {
   try {
     const result = await pool.query(
-      'DELETE FROM groups WHERE groupname = $1 AND idcreator = $2 RETURNING *',
-      [groupName, iduser]
+      'DELETE FROM groups WHERE idgroup = $1 AND idcreator = $2 RETURNING *',
+      [idGroup, idUser]
     );
     if (result.rows.length === 0) {
       return { error: 'Group not found or creator does not match' };
@@ -123,6 +123,23 @@ export const groupMembers = async (idgroup) => {
       [userIds]
     );
     return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const groupName = async (idgroup) => {
+  try {
+    const result = await pool.query(
+      'SELECT groupname FROM groups WHERE idgroup=$1',
+      [idgroup]
+    );
+    
+    if (result.rows.length === 0) {
+      throw new Error('Group not found');
+    }
+    
+    return result.rows[0].groupname
   } catch (error) {
     throw error;
   }

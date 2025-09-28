@@ -5,6 +5,7 @@ import {
   approveGroupRequest,
   rejectGroupRequest,
   groupMembers,
+  groupName,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -24,9 +25,9 @@ export const createGroup = async (req, res) => {
 };
 
 export const deleteGroup = async (req, res) => {
-  const { groupName, idUser } = req.body;
+  const { idGroup, idUser } = req.body;
 
-  const deletedGroup = await dropGroup(groupName, idUser);
+  const deletedGroup = await dropGroup(idGroup, idUser);
 
   if (deletedGroup.error) {
     return res.status(404).json({ error: deletedGroup.error });
@@ -94,6 +95,22 @@ export const getGroupMembers = async (req, res) => {
     res.status(200).json(newRequest);
   } catch (error) {
     console.error('Error getting group members: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getGroupName = async (req, res) => {
+  try {
+    const { idgroup } = req.params;
+
+    const newRequest = await groupName(idgroup);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting group name: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

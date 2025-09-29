@@ -39,7 +39,7 @@ export const movieTrailer = async (req, res) => {
       site: trailer.site,
       url: `https://www.youtube.com/watch?v=${trailer.key}`
     })
-    console.log('TMDB response:', trailer)
+    //console.log('TMDB response:', trailer)
     
   } catch (err) {
     console.error('Axios error:',err.response?.data || err.message);

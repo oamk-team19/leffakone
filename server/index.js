@@ -5,11 +5,14 @@ import { dbMigrate, pool } from './helpers/db.js';
 import rootRouter from './routers/rootRouter.js';
 import moviesRouter from './routers/movieRouter.js';
 import authRouter from './routers/authRouter.js';
+import userRouter from './routers/userRouter.js';
 import movieinfoRouter from './routers/movieinfoRouter.js';
 import trailerRouter from './routers/trailerRouter.js';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import reviewRouter from './routers/reviewRouter.js';
+import groupRouter from './routers/groupRouter.js';
+
 
 
 dotenv.config();
@@ -74,9 +77,13 @@ app.post('/autologin', (req, res) => {
 app.use('/', rootRouter);
 app.use('/movies', moviesRouter);
 app.use('/auth', authRouter); //for signin and signup
+app.use('/group', groupRouter); //for group actions
+app.use('/user', userRouter);
 app.use('/movie', movieinfoRouter);
 app.use('/video',trailerRouter);
 app.use('/review', reviewRouter);
+app.use('/video', trailerRouter);
+
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

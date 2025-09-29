@@ -15,8 +15,7 @@ import MainLayout from './Layouts/MainLayout';
 import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
-
-
+import { GroupPage } from './views/GroupPage';
 
 const router = createBrowserRouter([
   {
@@ -44,27 +43,31 @@ const router = createBrowserRouter([
         element: <MuiDemo />,
       },
       {
+        path: '/group/:id',
+        element: <GroupPage />,
+      },
+      {
         path: '*',
         element: <NotFound />,
       },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
       {
-        path: '/profile',
-        element: <Profile />,
+        path: '/movies/:id',
+        element: <MovieInfo />,
+      },
+      {
+        path: '/shows/:id',
+        element: <Movies />,
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: '/profile',
+            element: <Profile />,
+          },
+        ],
       },
     ],
-  },
-    {
-    path: '/movies/:id',
-    element: <MovieInfo />,
-  },
-      {
-    path: '/shows/:id',
-    element: <Movies />,
   },
 ]);
 

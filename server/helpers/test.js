@@ -1,9 +1,45 @@
-//To ensure, that database structure is correct, and data is as expected, database is initialized before running tests.
 import fs from 'fs'
 import path from 'path'
 import { pool } from './db.js'
+import jwt from 'jsonwebtoken'
+import { hash } from 'bcrypt'
 
-/*
+const __dirname = import.meta.dirname
+
+const initializeTestDb = () => {
+    const sql = fs.readFileSync(path.resolve(__dirname, '../test_moviemachine.sql'), 'utf8')
+    pool.query(sql, (err) => {
+        if (err) {
+            console.error('Error initializing test database:', err)
+        } else {
+            console.log('Test database initialized successfully')
+        }
+    })
+}
 
 
-*/
+//Add user before running login test.
+const insertTestUser = (user) => {
+    hash(user.password, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error('Error hashing password:', err)
+            return
+        }
+        pool.query('INSERT INTO users (username, password, email) VALUES ($1, $2, $3)',
+            [user.username, hashedPassword, user.email],
+            (err, result) => {
+                if (err) {
+                    console.error('Error inserting test user:', err)
+                } else {
+                    console.log('Test user inserted successfully')
+                }
+            })
+    })
+}
+
+//simply create a token with passed email.
+const getToken = (email) => {
+    return jwt.sign({ email }, process.env.JWT_SECRET)
+}
+
+export { initializeTestDb, insertTestUser, getToken }

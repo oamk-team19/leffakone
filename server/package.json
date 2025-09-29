@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha index.test.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",

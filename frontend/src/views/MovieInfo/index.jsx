@@ -1,17 +1,36 @@
 
 import axios from "axios"
+import React from "react"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { Box, Typography, Card, CardMedia, CardContent, IconButton, Tooltip, Button} from "@mui/material"
+import { Box, Typography, Card, CardMedia, CardContent, IconButton, Tooltip, Button, TextField, Rating, Stack} from "@mui/material"
 import FormatListBulletedAddIcon from '@mui/icons-material/FormatListBulletedAdd';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import GenreChip from '../../components/GenreChip';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { useUser } from "../../context/useUser"
 
 export const MovieInfo = () => {
     const [movie, setMovie] = useState(null)
     const [trailer, setTrailer] = useState()
     const { id } = useParams()
+    const [value, setValue] = React.useState(null)
+    const [showReviewForm, setShowReviewForm] = useState(false)
+    const [reviewText, setReviewText] = useState('')
+    const maxLength = 255
+    const { user } = useUser()
+    const isLoggedIn = !!user.token
+    const [reviews, setReviews] = useState([])
+
+
+    const handleTextChange = (event) => {
+      const newText = event.target.value;
+      if (newText.length <= maxLength) {
+      setReviewText(newText);
+    }
+  }
+
+    const isFormValid = reviewText.trim() !== '' && value !== null
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -29,7 +48,7 @@ export const MovieInfo = () => {
         }
     };
     fetchMovie();
-}, [id])
+  }, [id])
 
     useEffect(() => {
         const fetchTrailer = async () => {
@@ -40,14 +59,68 @@ export const MovieInfo = () => {
                     params: {id: id}
                 }
             );
+    
             setTrailer(response.data);
-            console.log(response.data)
+            console.log(response.data);
         } catch (error) {
+          if (error.response?.status ===404) {
+              console.warn('Trailer not found');
+              setTrailer(null);
+          }
             console.error('Error happened',error)
         }
     };
     fetchTrailer();
-}, [id])
+  }, [id])
+
+
+  const handleSubmit = async () => {
+    const reviewData = {
+      idMovie: id,
+      idUser: user.id,
+      email: user.email,
+      description: reviewText,
+      rating: value
+    };
+
+    try {
+      const response = await fetch('http://localhost:3001/review/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewData)
+      });
+
+      if (response.ok) {
+        const savedReview = await response.json();
+        console.log('Review saved:', savedReview);
+
+        const updatedReviews = await axios.get('http://localhost:3001/review', {
+        params: { idMovie: id }
+        });
+        setReviews(updatedReviews.data);
+        setShowReviewForm(false)
+        setValue(null)
+        setReviewText('')
+      } else {
+        console.error('Review failed:', await response.json());
+      }
+    } catch (err) {
+      console.error('Network error:', err);
+    }
+  };
+
+    useEffect(() => {
+      axios.get('http://localhost:3001/review/',
+        {
+          params: {idMovie: id}
+        }
+      ).then(response =>  {
+        setReviews(response.data)
+      })
+      .catch(error => {
+        alert(error.response.data ? error.response.data.message : error)
+      })
+    }, [id])
 
     return (
       <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2}}>
@@ -57,7 +130,9 @@ export const MovieInfo = () => {
           sx={{
             display: 'flex',
             mb: 1,
+            ml: 1,
             width: '100%',
+            boxShadow: 'none'
         }}
         >
           <Box>
@@ -67,7 +142,16 @@ export const MovieInfo = () => {
               component="img"
               image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie?.title}
-              sx={{ width: 400}}
+              sx={{ width: {
+                      xs: 600,
+                      sm: 800,
+                      md: 1000,
+                      lg: 1200
+              },
+                    minWidth: 200,
+                    maxWidth: '100%',
+                    height: 'auto',
+                    borderRadius: 10 }}
             />
             )}
           </Box>
@@ -89,18 +173,20 @@ export const MovieInfo = () => {
             </Typography>
 
           </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            <Box 
+             sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
 
-              <Tooltip title="Lisää listalle">
+              <Tooltip title="Add to group">
                 <IconButton aria-label="delete">
                   <FormatListBulletedAddIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Lisää suosikkeihin">
+              <Tooltip title="Add to favorites">
                 <IconButton aria-label="delete">
                   <FavoriteBorderIcon />
                 </IconButton>
               </Tooltip>
+              {trailer && (
               <Button variant="outlined"
                 endIcon={<PlayArrowIcon />}
                 component="a"
@@ -113,16 +199,105 @@ export const MovieInfo = () => {
                 }}
               >Trailer
               </Button>
+              )}
             </Box>
           <Box>
             <Typography variant="h5">{movie?.overview}</Typography>
           </Box>
-          <Box>
-          </Box>
+  
           </CardContent>
         </Card>
         <Box>
-          <Typography variant="h5">Arvostelut</Typography>
+          <Typography variant="h5"
+            sx={{marginLeft: '2rem'}}
+          >Reviews</Typography>
+          <Box display="flex" flexDirection="column" alignItems="center" gap={2}
+            sx={{marginTop: '1rem',
+              marginBottom: '2rem'
+            }}
+          >
+            <Button 
+              variant="contained"
+              disabled={!isLoggedIn} 
+              onClick={() => setShowReviewForm(true)}
+            >Review movie</Button>
+            {showReviewForm && (
+            <>
+            <TextField 
+            id="filled-multiline-static"
+            label="Review"
+            multiline
+            rows={4}
+            variant="filled"
+            value={reviewText}
+            onChange={handleTextChange}
+            sx={{ width: '500px'}}
+            />
+            <Typography variant="body2" color={reviewText.length >= maxLength ? 'error' : 'textSecondary'}>
+             {reviewText.length} / {maxLength}
+            </Typography>
+            <Rating
+              name="simple-controlled"
+              value={value}
+              onChange={(event, newValue) => {
+              setValue(newValue);
+              }}
+            />
+            <Box display="flex"  gap={2}>
+              <Button variant="outlined"
+                onClick={() => {
+                  setShowReviewForm(false)
+                  setValue(null)
+                  setReviewText('')
+                }}
+              >Cancel</Button>
+              <Button 
+                variant="contained"
+                disabled={!isFormValid}
+                onClick={handleSubmit}
+              >Send Review</Button>
+            </Box>
+            </>
+            )}
+          </Box>
+          <Box 
+            sx={{
+              ml:1,
+              mr:1
+            }}>
+            <Stack spacing={3}
+            alignItems={"center"}
+            >
+              {reviews.length === 0 ? (
+                <Typography variant="h6"
+                  color="text.secondary"
+                  >No Reviews</Typography>
+              ) : (
+              reviews.map((review, index) =>(
+              <Box key={index} 
+                sx={{
+                  width: '100%',
+                  maxWidth: 1000,
+                }}>
+              <Card  variant="outlined"
+                sx={{ borderRadius: 2,
+                  borderWidth:4
+                }}
+              >
+                <CardContent>
+                  <Typography>{review.email}</Typography>
+                  <Typography color="text.secondary">
+                    {new Date(review.datetime).toLocaleDateString('fi-FI')}
+                  </Typography> 
+                  <Typography variant="body1">{review.description}</Typography>
+                  <Rating value={review.rating} readOnly/>
+                </CardContent>
+              </Card>
+              </Box>
+            )
+          ))}
+            </Stack>
+          </Box>
         </Box>
       </Box> 
     )

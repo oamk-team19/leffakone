@@ -1,14 +1,16 @@
 import { expect } from "chai"
 import { initializeTestDb, insertTestUser, getToken } from "./helpers/test.js"
 
-describe("Testing basic database functionality", () => {
+
+describe("Testing database functionality", () => {
     let token = null
-    const userTest = { username: "testuser", password: "password123", email: "user1@example.com" }
+    const userTest = { username: "testuser1", password: "password1", email: "user1@example.com" }
 
     before(() => {
         initializeTestDb()
         token = getToken(userTest.email)
     })
+
 
     it("should scroll reviews", async () => {
         //code
@@ -18,42 +20,71 @@ describe("Testing basic database functionality", () => {
 
 describe("Testing user management", () => {
     let token = null
-    const userTest = { username: "testuser2", password: "password123", email: "user2@example.com" }
+    const userTest2 = { username: "testuser2", password: "password2", email: "user2@example.com" } //An user to added the db
 
     before(() => {
-        insertTestUser(userTest)
-        token = getToken(userTest.email)
+        insertTestUser(userTest2)
+        token = getToken(userTest2.email)
     })
 
-    it("should login", async () => {
-        const response = await fetch( 'http://localhost:3001/auth/signin',
-        { email: userTest.email, password: userTest.password },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        });
-        //console.log(response)
-        /*
-         const response = await fetch("http://localhost:3001/login")
-        //const data = await response.json()
-        console.log(response)
-        /*
-        const response = await fetch("http://localhost:3001/login", {
+    it("should not login, missing password", async () => {
+        const newUser = { email: "user2@example.com", password: "" }
+
+        const response = await fetch('http://localhost:3001/auth/signin', {
             method: "post",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userTest })
+            body: JSON.stringify(newUser)
         })
+
         const data = await response.json()
-        console.log(data)
+        //console.log(data) // { message: 'Check email and password' }
+        expect(response.status).to.equal(400)
+        expect(data).to.include.all.keys(["message"]);
+    })
+
+    it("should not login, wrong password", async () => {
+        const newUser = { email: "user2@example.com", password: "password22" }
+
+        const response = await fetch('http://localhost:3001/auth/signin', {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        expect(response.status).to.equal(401)
+    })
+
+    it("should login with correct email and password", async () => {
+        const newUser = { email: "user2@example.com", password: "password2" }
+
+        const response = await fetch('http://localhost:3001/auth/signin', {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(data) // { iduser: 1, email: 'user2@example.com' } if successfull
 
         expect(response.status).to.equal(200)
-        /*
-        expect(data).to.include.all.keys(["id", "email", "token"]);
-        */
+        expect(data).to.include.all.keys(["iduser", "email"]); // , "token"
     })
 
     it("should log out", async () => {
-        //code
+        const newUser = { email: "user2@example.com", password: "password2" }
+
+        const response = await fetch('http://localhost:3001/auth/signout', {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(data) // { message: 'Logged out' } if successfull
+
+        expect(response.status).to.equal(200)
+        expect(data).to.include.all.keys(["message"]);
     })
 
     it("should register", async () => {

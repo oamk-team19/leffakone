@@ -13,6 +13,11 @@ export const signin = async (req, res) => {
 
     const result = await dataForSignIn(email); //send email to db to get a password linked to email
     
+    if(!result){
+      console.log('No user in the database')
+      return res.status(401).json({ message: 'No user in the database'})
+    }
+
     const match = await bcrypt.compare(password, result.password);
     if (match) {
       //if passwords match --> create a token

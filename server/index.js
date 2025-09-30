@@ -20,7 +20,11 @@ dotenv.config();
 const env = process.env.NODE_ENV;
 const port = process.env.PORT || 3001;
 const jwt_secret = process.env.JWT_SECRET;
-await dbMigrate();
+
+if (env === "develoment") {
+  await dbMigrate();
+}
+
 const app = express();
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 app.use(express.json());

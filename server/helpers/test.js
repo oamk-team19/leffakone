@@ -6,7 +6,15 @@ import { hash } from 'bcrypt'
 
 const __dirname = import.meta.dirname
 
-const initializeTestDb = () => {
+const initializeTestDb = async () => {
+    try {
+        const sql = fs.readFileSync(path.resolve(__dirname, '../test_moviemachine.sql'), 'utf8')
+        await pool.query(sql)
+        console.log('Test database initialized successfully')
+    } catch (error) {
+        console.error('Error initializing test database:', error)
+    }
+    /*
     const sql = fs.readFileSync(path.resolve(__dirname, '../test_moviemachine.sql'), 'utf8')
     pool.query(sql, (err) => {
         if (err) {
@@ -14,12 +22,22 @@ const initializeTestDb = () => {
         } else {
             console.log('Test database initialized successfully')
         }
-    })
+    })*/
 }
 
-
 //Add user before running login test.
-const insertTestUser = (user) => {
+const insertTestUser = async (user) => {
+    try {
+        const hashedPassword = await hash(user.password, 10)
+
+        await pool.query('INSERT INTO users (username, password, email) VALUES ($1, $2, $3)',
+            [user.username, hashedPassword, user.email]);
+
+        console.log('Test user inserted successfully')
+    } catch (error) {
+console.error('Error inserting test user:', error)
+    }
+    /*
     hash(user.password, 10, (err, hashedPassword) => {
         if (err) {
             console.error('Error hashing password:', err)
@@ -35,6 +53,7 @@ const insertTestUser = (user) => {
                 }
             })
     })
+            */
 }
 
 //simply create a token with passed email.

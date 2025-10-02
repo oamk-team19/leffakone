@@ -3,6 +3,7 @@
 BEGIN;
 
 
+
 ALTER TABLE IF EXISTS public.favorite DROP CONSTRAINT IF EXISTS "favorite_idUser_fkey";
 
 ALTER TABLE IF EXISTS public.favorite DROP CONSTRAINT IF EXISTS "user";

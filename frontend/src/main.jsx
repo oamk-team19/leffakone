@@ -76,31 +76,30 @@ const router = createBrowserRouter([
   },
 ]);
 
-
-
 function App() {
   // Try to load mode from localStorage, otherwise default to 'dark'
   const [mode, setMode] = useState(() => {
     const savedMode = localStorage.getItem('themeMode');
-    return savedMode || 'dark';
+    return savedMode || 'moon';
   });
 
   const colorMode = useMemo(
     () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => {
-          const newMode = prevMode === 'dark' ? 'light' : 'dark';
-          localStorage.setItem('themeMode', newMode); // Save preference
-          return newMode;
-        });
+      // This function will now take the new mode as an argument
+      toggleColorMode: (event, newMode) => {
+        // newMode will be 'light', 'dark', or 'moon' from ToggleButtonGroup
+        if (newMode !== null) {
+          // ToggleButtonGroup sends null if unselected, but we always want a selection
+          setMode(newMode);
+        }
       },
       mode,
     }),
-    [mode],
+    [mode]
   );
-  
+
   const theme = useMemo(() => getRosyTheme(mode), [mode]);
-  
+
   return (
     <StrictMode>
       <ColorModeContext.Provider value={colorMode}>

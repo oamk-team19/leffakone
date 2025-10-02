@@ -1,8 +1,8 @@
 // --------------------------------------------------------------------------
 // Rosé Pine Moon Theme (Dark)
 // --------------------------------------------------------------------------
-import { createTheme } from "@mui/material";
-import { rosePineMoonPalette } from "./rosepinePalettes";
+import { createTheme } from '@mui/material';
+import { rosePineMoonPalette } from './rosepinePalettes';
 
 export const rosePineMoonTheme = createTheme({
   palette: {

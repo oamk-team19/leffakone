@@ -6,6 +6,8 @@ import {
   rejectGroupRequest,
   groupMembers,
   groupName,
+  groups,
+  MyGroups,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -111,6 +113,36 @@ export const getGroupName = async (req, res) => {
     res.status(200).json(newRequest);
   } catch (error) {
     console.error('Error getting group name: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getGroups = async (req, res) => {
+  try {
+    const newRequest = await groups();
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting groups: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getMyGroups = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+
+    const newRequest = await MyGroups(idUser);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting my groups: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

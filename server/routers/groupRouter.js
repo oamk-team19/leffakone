@@ -6,7 +6,9 @@ import {
   getGroupMembers,
   getGroupName,
   groupRequest,
+  getGroups,
   rejectRequest,
+  getMyGroups,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -18,5 +20,7 @@ groupRouter.put('/approve', approveRequest);
 groupRouter.put('/reject', rejectRequest);
 groupRouter.get('/members/:idgroup', getGroupMembers);
 groupRouter.get('/name/:idgroup', getGroupName);
+groupRouter.get('/groups', getGroups);
+groupRouter.get('/mygroups/:idUser', getMyGroups);
 
 export default groupRouter;

@@ -16,9 +16,6 @@ import { useUser } from '../../context/useUser';
 
 export const GroupPage = () => {
   const user = useUser();
-  const [times, setTimes] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [message, setMessage] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
@@ -30,7 +27,6 @@ export const GroupPage = () => {
         const res = await axios.get(
           `http://localhost:3001/group/name/${idGroup}`
         );
-        console.log(res);
         setGroupName(res.data);
       } catch (error) {
         if (error.response.status === 409) {
@@ -49,7 +45,6 @@ export const GroupPage = () => {
         const res = await axios.get(
           `http://localhost:3001/group/members/${idGroup}`
         );
-        console.log(res);
         setGroupMembers(res.data);
       } catch (error) {
         if (error.response.status === 409) {
@@ -76,16 +71,6 @@ export const GroupPage = () => {
     }
   };
 
-  useEffect(() => {
-    const addedMovies = [];
-
-    if (addedMovies.length === 0) {
-      setMessage('No movies shared yet');
-    } else {
-      setMovies(addedMovies);
-    }
-  }, []);
-
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" sx={{ paddingY: 2 }} align="center">
@@ -97,55 +82,17 @@ export const GroupPage = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Shared movies
             </Typography>
-            <Box>
-              {message && (
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {message}
-                </Typography>
-              )}
-
-              <List>
-                {times.map((show) => (
-                  <React.Fragment key={show.ID}>
-                    <ListItem alignItems="flex-start">
-                      <ListItemText
-                        primary={show.Title}
-                        secondary={
-                          <>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              {new Date(show.dttmShowStart).toLocaleTimeString(
-                                'fi-FI',
-                                {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                }
-                              )}
-                            </Typography>
-                            <br />
-                            {show.Theatre}
-                          </>
-                        }
-                      />
-                    </ListItem>
-                    <Divider component="li" />
-                  </React.Fragment>
-                ))}
-              </List>
-            </Box>
+            <Typography variant="body" sx={{ my: 2 }}>
+              No movies shared yet
+            </Typography>
           </Box>
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6">Shared showtimes</Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Shared showtimes
+            </Typography>
+            <Typography variant="body" sx={{ my: 2 }}>
+              No showtimes shared yet
+            </Typography>
           </Box>
         </Grid>
         <Divider

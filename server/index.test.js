@@ -4,11 +4,9 @@ import { initializeTestDb, insertTestUser, getToken } from "./helpers/test.js"
 
 describe("Testing database functionality", () => {
     let token = null
-    const userTest = { username: "testuser1", password: "password1", email: "user1@example.com" }
 
-    before(() => {
-        initializeTestDb()
-        token = getToken(userTest.email)
+    before(async () => {
+        await initializeTestDb()
     })
 
 
@@ -20,11 +18,16 @@ describe("Testing database functionality", () => {
 
 describe("Testing user management", () => {
     let token = null
+    const userTest = { username: "testuser1", password: "password1", email: "user1@example.com" }
     const userTest2 = { username: "testuser2", password: "password2", email: "user2@example.com" } //An user to added the db
 
-    before(() => {
-        insertTestUser(userTest2)
+    before(async () => {
+        await insertTestUser(userTest2)
         token = getToken(userTest2.email)
+    })
+
+     it("should register", async () => {
+        //code
     })
 
     it("should not login, missing password", async () => {
@@ -87,11 +90,21 @@ describe("Testing user management", () => {
         expect(data).to.include.all.keys(["message"]);
     })
 
-    it("should register", async () => {
-        //code
-    })
 
     it("should delete registration", async () => {
-        //code
+        const newUser = { email: "user2@example.com" }
+
+        const response = await fetch('http://localhost:3001/user/deleteuser', {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(data) // { message: 'User deletion completed' } if successfull
+        //console.log(response)
+
+        expect(response.status).to.equal(201)
+        expect(data).to.include.all.keys(["message"]);
     })
 })

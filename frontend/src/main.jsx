@@ -16,6 +16,11 @@ import UserProvider from './context/UserProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Profile } from './views/Profile';
 import { GroupPage } from './views/GroupPage';
+import { ThemeProvider } from '@mui/material/styles';
+import { useMemo, useState } from 'react';
+import { CssBaseline } from '@mui/material';
+import { getRosyTheme } from './theme.js';
+import { ColorModeContext } from './context/themeContext.js';
 
 const router = createBrowserRouter([
   {
@@ -71,10 +76,43 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <UserProvider>
-      <RouterProvider router={router} />
-    </UserProvider>
-  </StrictMode>
-);
+function App() {
+  // Try to load mode from localStorage, otherwise default to 'dark'
+  const [mode, setMode] = useState(() => {
+    const savedMode = localStorage.getItem('themeMode');
+    return savedMode || 'moon';
+  });
+
+  const colorMode = useMemo(
+    () => ({
+      // This function will now take the new mode as an argument
+      toggleColorMode: (event, newMode) => {
+        // newMode will be 'light', 'dark', or 'moon' from ToggleButtonGroup
+        if (newMode !== null) {
+          // ToggleButtonGroup sends null if unselected, but we always want a selection
+          setMode(newMode);
+        }
+      },
+      mode,
+    }),
+    [mode]
+  );
+
+  const theme = useMemo(() => getRosyTheme(mode), [mode]);
+
+  return (
+    <StrictMode>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <UserProvider>
+            <RouterProvider router={router} />
+          </UserProvider>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </StrictMode>
+  );
+}
+
+// Render the app
+createRoot(document.getElementById('root')).render(<App />);

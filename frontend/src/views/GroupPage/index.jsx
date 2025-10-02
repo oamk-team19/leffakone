@@ -10,11 +10,11 @@ import {
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import FavoriteList from '../../components/FavoriteList';
 
 export const GroupPage = () => {
   const [times, setTimes] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [message, setMessage] = useState('');
   const [groupMembers, setGroupMembers] = useState([]);
   const { id } = useParams();
 
@@ -36,13 +36,28 @@ export const GroupPage = () => {
   }, [id]);
 
   useEffect(() => {
-    const addedMovies = [];
+    const searchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/group/sharedmovies',
+          {
+            params: { idUser: user.id },
+          }
+        );
 
-    if (addedMovies.length === 0) {
-      setMessage('No movies shared yet');
-    } else {
-      setMovies(addedMovies);
-    }
+        //Show favorite list
+        if (!response.data.error) {
+          setMovies(response.data);
+        } else {
+          setMovies([]);
+        }
+      } catch (error) {
+        console.log('Error in getting a favorite list: ' + error);
+        setMovies([]);
+      }
+    };
+
+    searchFavorites();
   }, []);
 
   return (
@@ -57,10 +72,10 @@ export const GroupPage = () => {
               Shared movies
             </Typography>
             <Box>
-              {message && (
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {message}
-                </Typography>
+              {movies && movies.length ? (
+                FavoriteList({ favoriteMovies: movies })
+              ) : (
+                <Typography>No movies added yet</Typography>
               )}
 
               <List>

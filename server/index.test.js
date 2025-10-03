@@ -18,7 +18,6 @@ describe("Testing database functionality", () => {
 
 describe("Testing user management", () => {
     let token = null
-    const userTest = { username: "testuser1", password: "password1", email: "user1@example.com" }
     const userTest2 = { username: "testuser2", password: "password2", email: "user2@example.com" } //An user to added the db
 
     before(async () => {
@@ -26,7 +25,7 @@ describe("Testing user management", () => {
         token = getToken(userTest2.email)
     })
 
-     it("should register", async () => {
+    it("should register", async () => {
         //code
     })
 
@@ -40,9 +39,11 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'Check email and password' }
+
         expect(response.status).to.equal(400)
-        expect(data).to.include.all.keys(["message"]);
+        expect(data).to.have.property('message');
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ message: 'Check email and password' });
     })
 
     it("should not login, wrong password", async () => {
@@ -55,7 +56,12 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
+
         expect(response.status).to.equal(401)
+        expect(data).to.be.an('object');
+        expect(data).to.have.property('error');
+        expect(data).to.deep.equal({ error: 'Invalid credentials' });
+
     })
 
     it("should login with correct email and password", async () => {
@@ -68,10 +74,11 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { iduser: 1, email: 'user2@example.com' } if successfull
 
         expect(response.status).to.equal(200)
-        expect(data).to.include.all.keys(["iduser", "email"]); // , "token"
+        expect(data).to.include.all.keys(["iduser", "email"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
     })
 
     it("should log out", async () => {
@@ -84,10 +91,11 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'Logged out' } if successfull
 
         expect(response.status).to.equal(200)
-        expect(data).to.include.all.keys(["message"]);
+        expect(data).to.have.property('message');
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ message: 'Logged out' });
     })
 
 
@@ -101,10 +109,30 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'User deletion completed' } if successfull
         //console.log(response)
 
         expect(response.status).to.equal(201)
-        expect(data).to.include.all.keys(["message"]);
+        expect(data).to.be.an('object').that.has.all.keys('message');
+        expect(data).to.deep.equal({ message: 'User deletion completed' });
+
+
+    })
+
+    it("should not delete registration with wrong email", async () => {
+        const newUser = { email: "user3@example.com" }
+
+        const response = await fetch('http://localhost:3001/user/deleteuser', {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(response)
+
+        expect(response.status).to.equal(409)
+        expect(data).to.have.property('error');
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ error: 'Not find user by email from users' });
     })
 })

@@ -179,11 +179,11 @@ export const groups = async () => {
   }
 };
 
-export const MyGroups = async (idUser) => {
+export const myGroups = async (idUser) => {
   try {
     const groupIdsResult = await pool.query(
-      'SELECT group_idgroup FROM user_group WHERE user_iduser=$1',
-      [idUser]
+      'SELECT group_idgroup FROM user_group WHERE user_iduser=$1 AND grouprequest=$2',
+      [idUser, 'approved']
     );
 
     if (groupIdsResult.rows.length === 0) {
@@ -198,6 +198,39 @@ export const MyGroups = async (idUser) => {
     );
 
     return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const leaveGroupQuery = async (idGroup, idUser) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM user_group WHERE user_iduser=$1 AND group_idgroup=$2 RETURNING *',
+      [idUser, idGroup]
+    );
+    if (result.rows.length === 0) {
+      return { error: 'User_group not found' };
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const groupCreator = async (idGroup) => {
+  try {
+    const result = await pool.query(
+      'SELECT idcreator FROM groups WHERE idgroup=$1',
+      [idGroup]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Group not found');
+    }
+
+    console.log(result.rows[0].idcreator);
+    return result.rows[0].idcreator;
   } catch (error) {
     throw error;
   }

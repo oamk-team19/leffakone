@@ -16,10 +16,31 @@ import { useUser } from '../../context/useUser';
 
 export const GroupPage = () => {
   const user = useUser();
+  const [isCreator, setIsCreator] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getGroupCreator = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3001/group/creator/${idGroup}`
+        );
+        if (res.data === user.user.id) {
+          setIsCreator(true);
+        }
+      } catch (error) {
+        if (error.response.status === 409) {
+          alert(error.response.data.error);
+        } else {
+          console.error(error);
+        }
+      }
+    };
+    getGroupCreator();
+  }, [user.user.id]);
 
   useEffect(() => {
     const getGroupName = async () => {
@@ -58,16 +79,39 @@ export const GroupPage = () => {
   }, [idGroup]);
 
   const deleteGroup = async () => {
-    try {
-      console.log(user.user.id);
-      const res = await axios.delete('http://localhost:3001/group/delete', {
-        data: { idGroup: idGroup, idUser: user.user.id },
-        headers: { 'Content-Type': 'application/json' },
-      });
-      console.log(res);
-      navigate('/');
-    } catch (error) {
-      console.error('Error deleting group: ' + error);
+    const shouldDelete = confirm('Are you sure you want to delete group?');
+    if (shouldDelete) {
+      try {
+        console.log(user.user.id);
+        const res = await axios.delete('http://localhost:3001/group/delete', {
+          data: { idGroup: idGroup, idUser: user.user.id },
+          headers: { 'Content-Type': 'application/json' },
+        });
+        console.log(res);
+        navigate('/');
+      } catch (error) {
+        console.error('Error deleting group: ' + error);
+      }
+    }
+  };
+
+  const leaveGroup = async () => {
+    const shouldLeave = confirm('Are you sure you want to leave group?');
+    if (shouldLeave) {
+      try {
+        console.log(user.user.id);
+        const res = await axios.delete(
+          'http://localhost:3001/group/leavegroup',
+          {
+            data: { idGroup: idGroup, idUser: user.user.id },
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+        console.log(res);
+        navigate('/');
+      } catch (error) {
+        console.error('Error leaving group: ' + error);
+      }
     }
   };
 
@@ -121,14 +165,25 @@ export const GroupPage = () => {
         alignItems={'center'}
         gap={2}
       >
-        <Button
-          variant="outlined"
-          startIcon={<DeleteIcon />}
-          color="error"
-          onClick={deleteGroup}
-        >
-          Delete group
-        </Button>
+        {isCreator ? (
+          <Button
+            variant="outlined"
+            startIcon={<DeleteIcon />}
+            color="error"
+            onClick={deleteGroup}
+          >
+            Delete group
+          </Button>
+        ) : (
+          <Button
+            variant="outlined"
+            startIcon={<DeleteIcon />}
+            color="error"
+            onClick={leaveGroup}
+          >
+            Leave group
+          </Button>
+        )}
       </Box>
     </Box>
   );

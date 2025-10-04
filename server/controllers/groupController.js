@@ -7,7 +7,9 @@ import {
   groupMembers,
   groupName,
   groups,
-  MyGroups,
+  myGroups,
+  groupCreator,
+  leaveGroupQuery,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -35,6 +37,17 @@ export const deleteGroup = async (req, res) => {
     return res.status(404).json({ error: deletedGroup.error });
   }
   res.status(200).json({ message: 'Group deleted' });
+};
+
+export const leaveGroup = async (req, res) => {
+  const { idGroup, idUser } = req.body;
+
+  const newRequest = await leaveGroupQuery(idGroup, idUser);
+
+  if (newRequest.error) {
+    return res.status(404).json({ error: newRequest.error });
+  }
+  res.status(200).json({ message: 'Left the group!' });
 };
 
 export const groupRequest = async (req, res) => {
@@ -135,7 +148,7 @@ export const getMyGroups = async (req, res) => {
   try {
     const { idUser } = req.params;
 
-    const newRequest = await MyGroups(idUser);
+    const newRequest = await myGroups(idUser);
 
     if (newRequest.error) {
       return res.status(409).json({ error: newRequest.error });
@@ -143,6 +156,22 @@ export const getMyGroups = async (req, res) => {
     res.status(200).json(newRequest);
   } catch (error) {
     console.error('Error getting my groups: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getGroupCreator = async (req, res) => {
+  try {
+    const { idgroup } = req.params;
+
+    const newRequest = await groupCreator(idgroup);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting group creator: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

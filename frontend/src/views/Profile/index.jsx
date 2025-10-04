@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Box, Snackbar } from '@mui/material';
+import { Button, Box, Snackbar, Typography } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import ShareIcon from '@mui/icons-material/Share';
 import { useEffect } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FavoriteList from '../../components/FavoriteList';
 
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
@@ -41,10 +42,11 @@ export const Profile = () => {
         if (!response.data.error) {
           setSearchResults(response.data);
         } else {
-          setSearchResults([{ idMovie: 'No favorite movies yet!' }]);
+          setSearchResults([]);
         }
       } catch (error) {
         console.log('Error in getting a favorite list: ' + error);
+        setSearchResults([]); // Default movies if error
       }
     };
 
@@ -91,11 +93,11 @@ export const Profile = () => {
         <h2>My profile</h2>
         <h3>My favorite movie list</h3>
 
-        <ul>
-          {searchResults.map((movieId, i) => (
-            <li key={i}>{movieId.idMovie}</li>
-          ))}
-        </ul>
+        {searchResults && searchResults.length > 0 ? (
+          <FavoriteList favoriteMovies={searchResults} />
+        ) : (
+          <Typography>No favorite movies yet!</Typography>
+        )}
 
         <Button startIcon={<ShareIcon />} onClick={handleClick}>
           Share my favorite list
@@ -116,7 +118,6 @@ export const Profile = () => {
           Delete my profile
         </Button>
 
-        
         <Button variant="contained" onClick={buttonPressedLogOut}>
           Sign out
         </Button>

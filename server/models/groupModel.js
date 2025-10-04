@@ -1,7 +1,7 @@
 import { pool } from '../helpers/db.js';
 
 // Create group
-export const initializeGroup = async (groupName, iduser) => {
+export const initializeGroup = async (groupName, idUser) => {
   try {
     const groupNameCheck = await pool.query(
       'SELECT groupname FROM groups WHERE groupname=$1',
@@ -12,8 +12,25 @@ export const initializeGroup = async (groupName, iduser) => {
     } else {
       const result = await pool.query(
         'INSERT INTO groups (groupname, idcreator) VALUES ($1,$2) RETURNING *;',
-        [groupName, iduser]
+        [groupName, idUser]
       );
+
+      const idGroupResult = await pool.query(
+        'SELECT idgroup FROM groups WHERE groupname=$1',
+        [groupName]
+      );
+      const idGroup = idGroupResult.rows[0].idgroup;
+
+      await pool.query(
+        'INSERT INTO user_group (user_iduser, group_idgroup) VALUES ($1,$2)',
+        [idUser, idGroup]
+      );
+
+      await pool.query(
+        'UPDATE user_group SET groupRequest = $1 WHERE user_iduser = $2 AND group_idgroup = $3',
+        ['approved', idUser, idGroup]
+      );
+
       return result.rows[0];
     }
   } catch (error) {
@@ -22,11 +39,11 @@ export const initializeGroup = async (groupName, iduser) => {
 };
 
 // Delete group
-export const dropGroup = async (groupName, iduser) => {
+export const dropGroup = async (idGroup, idUser) => {
   try {
     const result = await pool.query(
-      'DELETE FROM groups WHERE groupname = $1 AND idcreator = $2 RETURNING *',
-      [groupName, iduser]
+      'DELETE FROM groups WHERE idgroup = $1 AND idcreator = $2 RETURNING *',
+      [idGroup, idUser]
     );
     if (result.rows.length === 0) {
       return { error: 'Group not found or creator does not match' };
@@ -105,11 +122,11 @@ export const rejectGroupRequest = async (idUser, groupName) => {
   }
 };
 
-export const groupMembers = async (idgroup) => {
+export const groupMembers = async (idGroup) => {
   try {
     const membersQuery = await pool.query(
       'SELECT * FROM "user_group" WHERE "group_idgroup"=$1 AND "grouprequest"=$2',
-      [idgroup, 'approved']
+      [idGroup, 'approved']
     );
 
     if (membersQuery.rows.length === 0) {
@@ -123,6 +140,97 @@ export const groupMembers = async (idgroup) => {
       [userIds]
     );
     return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const groupName = async (idGroup) => {
+  try {
+    const result = await pool.query(
+      'SELECT groupname FROM groups WHERE idgroup=$1',
+      [idGroup]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Group not found');
+    }
+
+    return result.rows[0].groupname;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const groups = async () => {
+  try {
+    const result = await pool.query(
+      'SELECT groupname, idgroup FROM groups',
+      []
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Groups not found');
+    }
+
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const myGroups = async (idUser) => {
+  try {
+    const groupIdsResult = await pool.query(
+      'SELECT group_idgroup FROM user_group WHERE user_iduser=$1 AND grouprequest=$2',
+      [idUser, 'approved']
+    );
+
+    if (groupIdsResult.rows.length === 0) {
+      throw new Error('Groups not found');
+    }
+
+    const groupIds = groupIdsResult.rows.map((row) => row.group_idgroup);
+
+    const result = await pool.query(
+      'SELECT groupname, idgroup FROM groups WHERE idgroup=ANY($1)',
+      [groupIds]
+    );
+
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const leaveGroupQuery = async (idGroup, idUser) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM user_group WHERE user_iduser=$1 AND group_idgroup=$2 RETURNING *',
+      [idUser, idGroup]
+    );
+    if (result.rows.length === 0) {
+      return { error: 'User_group not found' };
+    }
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const groupCreator = async (idGroup) => {
+  try {
+    const result = await pool.query(
+      'SELECT idcreator FROM groups WHERE idgroup=$1',
+      [idGroup]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error('Group not found');
+    }
+
+    console.log(result.rows[0].idcreator);
+    return result.rows[0].idcreator;
   } catch (error) {
     throw error;
   }

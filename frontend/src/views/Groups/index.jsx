@@ -90,8 +90,6 @@ export const Groups = () => {
   };
 
   const handleJoinGroup = async (groupname) => {
-    groupname.preventDefault();
-
     try {
       const res = await axios.post('http://localhost:3001/group/request', {
         groupName: groupname,
@@ -170,7 +168,7 @@ export const Groups = () => {
                   <Button
                     variant="outlined"
                     startIcon={<PersonAddIcon />}
-                    onClick={handleJoinGroup}
+                    onClick={() => handleJoinGroup(group.groupname)}
                   >
                     Send request
                   </Button>
@@ -209,12 +207,12 @@ export const Groups = () => {
                 ))
               ) : (
                 <Typography variant="body1" align="left">
-                  You have no joined groups yet.
+                  You have not joined any groups yet.
                 </Typography>
               )}
             </List>
           ) : (
-            <Typography variant="body1" align="left">
+            <Typography variant="h6" align="left">
               Log in to start joining groups
             </Typography>
           )}

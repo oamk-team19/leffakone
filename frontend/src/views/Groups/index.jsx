@@ -11,9 +11,10 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export const Groups = () => {
   const user = useUser();
@@ -22,6 +23,7 @@ export const Groups = () => {
   const [myGroups, setMyGroups] = useState([]);
   const [createGroup, setCreateGroup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   function toggle() {
     setCreateGroup((createGroup) => !createGroup);
@@ -165,13 +167,25 @@ export const Groups = () => {
               <ListItem key={id}>
                 <ListItemText primary={group.groupname} />
                 {isLoggedIn ? (
-                  <Button
-                    variant="outlined"
-                    startIcon={<PersonAddIcon />}
-                    onClick={() => handleJoinGroup(group.groupname)}
-                  >
-                    Send request
-                  </Button>
+                  myGroups.some((g) => g.groupname === group.groupname) ? (
+                    <>
+                      <Button
+                        variant="outlined"
+                        endIcon={<ArrowForwardIosIcon />}
+                        onClick={() => navigate(`/group/${group.idgroup}`)}
+                      >
+                        Already a member
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      startIcon={<PersonAddIcon />}
+                      onClick={() => handleJoinGroup(group.groupname)}
+                    >
+                      Send request
+                    </Button>
+                  )
                 ) : (
                   <Button
                     variant="outlined"

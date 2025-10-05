@@ -1,14 +1,37 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Typography, TextField, Box } from '@mui/material';
+import {
+  Button,
+  Typography,
+  TextField,
+  Box,
+  InputAdornment,
+  IconButton,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Alert,
+} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordAlert, setPasswordAlert] = useState(false);
+  const [passwordWarningText, setPasswordWarningText] = useState('');
+  const [emailInUse, setEmailInUse] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  React.useEffect(() => {
+    setEmailInUse(false);
+  }, [email]);
 
   const navigate = useNavigate();
 
@@ -16,19 +39,32 @@ export const Register = () => {
     e.preventDefault();
 
     if (password !== repeatPassword) {
-      alert('Passwords must match');
+      setPasswordWarningText('Passwords must match');
+      setPasswordAlert(true);
       return;
-    } else if (password.length < 8) {
-      alert('Password must contain 8 or more characters');
+    }
+    if (password.length < 8) {
+      setPasswordWarningText('Password must contain 8 or more characters');
+      setPasswordAlert(true);
       return;
-    } else if (password.search(/[A-Z]/) == -1) {
-      alert('Password must contain at least one upper case letter');
+    }
+    if (password.search(/[A-Z]/) == -1) {
+      setPasswordWarningText(
+        'Password must contain at least one upper case letter'
+      );
+      setPasswordAlert(true);
       return;
-    } else if (password.search(/[a-z]/) == -1) {
-      alert('Password must contain at least one lower case letter');
+    }
+    if (password.search(/[a-z]/) == -1) {
+      setPasswordWarningText(
+        'Password must contain at least one lower case letter'
+      );
+      setPasswordAlert(true);
       return;
-    } else if (password.search(/[0-9]/) == -1) {
-      alert('Password must contain at least one number');
+    }
+    if (password.search(/[0-9]/) == -1) {
+      setPasswordWarningText('Password must contain at least one number');
+      setPasswordAlert(true);
       return;
     }
 
@@ -42,7 +78,7 @@ export const Register = () => {
       navigate('/login');
     } catch (error) {
       if (error.response.status === 409) {
-        alert(error.response.data.error);
+        setEmailInUse(true);
       } else {
         console.error(error);
       }
@@ -60,6 +96,7 @@ export const Register = () => {
         <Typography variant="h4">Registration</Typography>
         <Typography variant="body1">Please fill out the form:</Typography>
         <TextField
+          sx={{ m: 0, width: '25ch' }}
           id="outlined-email-input"
           label="Email"
           variant="outlined"
@@ -67,28 +104,57 @@ export const Register = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
+          sx={{ m: 0, width: '25ch' }}
           id="outlined-username-input"
           label="Username"
           variant="outlined"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          variant="outlined"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          id="outlined-repeat-password-input"
-          label="Repeat Password"
-          variant="outlined"
-          type="password"
-          value={repeatPassword}
-          onChange={(e) => setRepeatPassword(e.target.value)}
-        />
+        <FormControl sx={{ m: 0, width: '25ch' }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type={showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={handleClickShowPassword} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+        <FormControl sx={{ m: 0, width: '25ch' }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-repeat-password">
+            Repeat Password
+          </InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-repeat-password"
+            value={repeatPassword}
+            onChange={(e) => setRepeatPassword(e.target.value)}
+            type={showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={handleClickShowPassword} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+        <Alert severity="info">
+          Password must contain 8 or more characters, at least one upper case
+          letter, one lower case letter and one number.
+        </Alert>
+        {passwordAlert && <Alert severity="error">{passwordWarningText}</Alert>}
+        {emailInUse && <Alert severity="error">Email is already in use</Alert>}
         <Button variant="contained" type="submit">
           Submit
         </Button>

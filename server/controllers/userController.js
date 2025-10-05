@@ -26,5 +26,13 @@ export const searchfavorite = async (req, res) => {
     console.error('Favorite list failed in authcontroller', error.message);
     res.status(500).json({ error: error.message });
   }
+}
 
+export const addFavorite = async ( req, res ) => {
+  try {
+    console.log(req);
+    const {movieId} = req
+  } catch {
+    
+  }
 }

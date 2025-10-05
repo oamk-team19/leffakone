@@ -1,4 +1,4 @@
-const auth = (req, res, next) => {
+export const auth = (req, res, next) => {
     let decodedUser = null
 
     if (!req.headers.authorization || !req.cookies['refreshToken']) {

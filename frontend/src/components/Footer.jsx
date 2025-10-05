@@ -24,7 +24,7 @@ const Footer = () => {
         <Typography variant="body2" color="text.secondary" align="center">
           {'Made with  '}
           <FavoriteIcon
-            fontSize="small"
+            fontSize="large"
             sx={{ verticalAlign: 'middle', color: 'red' }}
           />{' '}
           <Link color="inherit" href="https://github.com/oamk-team19">

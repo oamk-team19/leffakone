@@ -10,6 +10,7 @@ import {
   myGroups,
   groupCreator,
   leaveGroupQuery,
+  searchPending,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -172,6 +173,21 @@ export const getGroupCreator = async (req, res) => {
     res.status(200).json(newRequest);
   } catch (error) {
     console.error('Error getting group creator: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getSearchPending = async (req, res) => {
+  try {
+    const { idUser } = req.body;
+    const pendingRequests = await searchPending(idUser);
+
+    if (pendingRequests.error) {
+      return res.status(409).json({ error: pendingRequests.error });
+    }
+    res.status(200).json(pendingRequests);
+  } catch (error) {
+    console.error('Error getting pending requests: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

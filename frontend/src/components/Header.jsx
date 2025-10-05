@@ -29,10 +29,6 @@ const tabs = [
     url: '/showtime',
   },
   {
-    title: 'Reviews',
-    url: '/reviews',
-  },
-  {
     title: 'Groups',
     url: '/groups',
   },

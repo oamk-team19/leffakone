@@ -51,7 +51,7 @@ export function NotificationsBell() {
       }
     };
 
-    const data = getSearchPendingRequests();
+    getSearchPendingRequests();
 
     const interval = setInterval(getSearchPendingRequests, 5000);
     return () => clearInterval(interval);
@@ -67,15 +67,23 @@ export function NotificationsBell() {
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem>
-          tekstiä{' '}
+          {'text...'}
           <ButtonIcon>
-            <CheckIcon />
+            <CheckIcon color="success"/>
           </ButtonIcon>
           <ButtonIcon>
-            <NotInterestedIcon />
+            <NotInterestedIcon color="error" />
           </ButtonIcon>
         </MenuItem>
       </Menu>
     </>
   );
 }
+
+/*
+
+ {pendingsArray.map((n, index) => (
+          <MenuItem key={index} name={n} />
+        ))}
+
+*/

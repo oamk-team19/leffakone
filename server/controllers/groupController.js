@@ -11,6 +11,7 @@ import {
   groupCreator,
   leaveGroupQuery,
   searchPending,
+  searchFavoriteList,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -191,3 +192,16 @@ export const getSearchPending = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+export const getSearchfavorite = async (req, res) => {
+  try {
+    const { idGroup } = req.query;
+    const result = await searchFavoriteList(idGroup);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Favorite list failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+
+}

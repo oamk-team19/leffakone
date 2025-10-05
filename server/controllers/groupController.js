@@ -5,6 +5,7 @@ import {
   approveGroupRequest,
   rejectGroupRequest,
   groupMembers,
+  searchPending,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -94,6 +95,20 @@ export const getGroupMembers = async (req, res) => {
     res.status(200).json(newRequest);
   } catch (error) {
     console.error('Error getting group members: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getSearchPending = async (req, res) => {
+  try {
+    const pendingRequests = await searchPending();
+
+    if (pendingRequests.error) {
+      return res.status(409).json({ error: pendingRequests.error });
+    }
+    res.status(200).json(pendingRequests);
+  } catch (error) {
+    console.error('Error getting pending requests: ', error.message);
     res.status(500).json({ error: error.message });
   }
 };

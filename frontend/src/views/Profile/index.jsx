@@ -15,6 +15,26 @@ export const Profile = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [open, setOpen] = useState(false);
 
+  //Trial for notification bell
+  useEffect(() => {
+    const getSearchPendingRequests = async () => {
+      try {
+        //Get all pending requests
+        const response = await axios.get(
+          'http://localhost:3001/group/searchPending'
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    getSearchPendingRequests();
+
+    const interval = setInterval(getSearchPendingRequests, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleClick = () => {
     //Copy URI to clipboard
     navigator.clipboard.writeText('http://localhost:5173/profile');
@@ -27,6 +47,7 @@ export const Profile = () => {
     }
     setOpen(false);
   };
+
 
   useEffect(() => {
     const searchFavorites = async () => {

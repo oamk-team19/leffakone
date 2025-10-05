@@ -127,3 +127,22 @@ export const groupMembers = async (idgroup) => {
     throw error;
   }
 };
+
+export const searchPending = async () => {
+  try {
+    const pendings = await pool.query(
+      'SELECT * FROM "user_group" WHERE "grouprequest"=$1',
+      ['pending']
+    );
+
+    //console.log(pendings.rows)
+
+    if (pendings.rows.length === 0) {
+      throw new Error('No pending requests found');
+    }
+
+    return pendings.rows;
+  } catch (error) {
+    throw error;
+  }
+};

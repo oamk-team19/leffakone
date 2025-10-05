@@ -6,6 +6,7 @@ import {
   getGroupMembers,
   groupRequest,
   rejectRequest,
+  getSearchPending,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -15,6 +16,8 @@ groupRouter.delete('/delete', deleteGroup);
 groupRouter.post('/request', groupRequest);
 groupRouter.put('/approve', approveRequest);
 groupRouter.put('/reject', rejectRequest);
+groupRouter.get('/searchPending', getSearchPending);
 groupRouter.get('/:idgroup', getGroupMembers);
+
 
 export default groupRouter;

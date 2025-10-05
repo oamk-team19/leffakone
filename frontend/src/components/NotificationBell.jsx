@@ -13,6 +13,8 @@ export function NotificationsBell() {
   const { user } = useUser();
   const [pendingStatus, setpendingStatus] = useState(0);
   const [pendingsArray, setPendingsArray] = useState([]);
+  const [usersGroupForRequest, setUsersGroupForRequest] = useState('');
+  const [usersIdForRequest, setUsersIdForRequest] = useState(0);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -23,7 +25,30 @@ export function NotificationsBell() {
     setAnchorEl(null);
   };
 
-  //Trial for notification bell
+  const handleClickYes = async (username, groupnameR) => {
+    try {
+      const response = await axios.put('http://localhost:3001/group/approve', {
+        groupName: groupnameR,
+        idUser: username,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log('Error in approving' + error);
+    }
+  };
+
+  const handleClickNo = async (username, groupnameR) => {
+    try {
+      const response = await axios.put('http://localhost:3001/group/reject', {
+        groupName: groupnameR,
+        idUser: username,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log('Error in rejecting' + error);
+    }
+  };
+
   useEffect(() => {
     const getSearchPendingRequests = async () => {
       try {
@@ -33,15 +58,10 @@ export function NotificationsBell() {
           { idUser: user.id }
         );
 
-        //console.log(response.data);
-        //console.log(response.data[0].username);
-        //console.log(response.data[1].groupname);
         setPendingsArray(response.data);
 
-        //console.log(pendingsArray);
-
-        //Huomioi aika
         if (pendingStatus < response.data.length) {
+          //Huomioi aika
           //console.log('New pending request');
           setpendingStatus(response.data.length);
           //näytä uusi pyyntö
@@ -64,26 +84,25 @@ export function NotificationsBell() {
           <NotificationsIcon />
         </Badge>
       </ButtonIcon>
-
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem>
-          {'text...'}
-          <ButtonIcon>
-            <CheckIcon color="success"/>
-          </ButtonIcon>
-          <ButtonIcon>
-            <NotInterestedIcon color="error" />
-          </ButtonIcon>
-        </MenuItem>
-      </Menu>
+      {pendingsArray.length > 0 && (
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+          {pendingsArray.map((req) => (
+            <MenuItem>
+              {req.username + ' wants to join to group ' + req.groupname}
+              <ButtonIcon
+                onClick={() => handleClickYes(req.username, req.groupname)}
+              >
+                <CheckIcon color="success" />
+              </ButtonIcon>
+              <ButtonIcon
+                onClick={() => handleClickNo(req.username, req.groupname)}
+              >
+                <NotInterestedIcon color="error" />
+              </ButtonIcon>
+            </MenuItem>
+          ))}
+        </Menu>
+      )}
     </>
   );
 }
-
-/*
-
- {pendingsArray.map((n, index) => (
-          <MenuItem key={index} name={n} />
-        ))}
-
-*/

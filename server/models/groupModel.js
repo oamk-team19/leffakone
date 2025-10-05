@@ -130,8 +130,9 @@ export const groupMembers = async (idgroup) => {
 
 export const searchPending = async () => {
   try {
+    //Get pendings and return them with username and groups name
     const pendings = await pool.query(
-      'SELECT * FROM "user_group" WHERE "grouprequest"=$1',
+      'SELECT user_group.*, users.username, groups.groupname FROM user_group JOIN users ON users.iduser = user_group.user_iduser JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE user_group.grouprequest = $1',
       ['pending']
     );
 

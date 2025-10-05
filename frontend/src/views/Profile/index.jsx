@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { Button, Box, Snackbar, Typography } from '@mui/material';
+import {
+  Button,
+  Box,
+  Snackbar,
+  Typography,
+  IconButton,
+  Badge,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/useUser';
@@ -8,12 +17,30 @@ import ShareIcon from '@mui/icons-material/Share';
 import { useEffect } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FavoriteList from '../../components/FavoriteList';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 export const Profile = () => {
   const { user, setUser, LogOut } = useUser();
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState([]);
   const [open, setOpen] = useState(false);
+  const [pendingStatus, setpendingStatus] = useState(0);
+
+  const responseMovieArray = [];
+  // ----------------------------------------
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const opens = Boolean(anchorEl);
+
+  const handleClicks = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloses = () => {
+    setAnchorEl(null);
+  };
+
+  //--------------------------------------------
 
   //Trial for notification bell
   useEffect(() => {
@@ -23,13 +50,27 @@ export const Profile = () => {
         const response = await axios.get(
           'http://localhost:3001/group/searchPending'
         );
-        console.log(response.data);
+
+        //console.log(response.data[0].username);
+        //console.log(response.data[1].groupname);
+        
+        //Huomioi aika
+        if (pendingStatus < data.length) {
+          console.log('New pending request');
+          setpendingStatus(data.length);
+          //näytä uusi pyyntö
+        }
+        //console.log(response.data);
+
+        return response.data;
+
+        //console.log(response.data.length);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
 
-    getSearchPendingRequests();
+    const data = getSearchPendingRequests();
 
     const interval = setInterval(getSearchPendingRequests, 5000);
     return () => clearInterval(interval);
@@ -48,7 +89,6 @@ export const Profile = () => {
     setOpen(false);
   };
 
-
   useEffect(() => {
     const searchFavorites = async () => {
       try {
@@ -61,7 +101,11 @@ export const Profile = () => {
 
         //Show favorite list
         if (!response.data.error) {
-          setSearchResults(response.data);
+          //Edit data to array
+          for (let index = 0; index < response.data.length; index++) {
+            responseMovieArray.push(response.data[index].idMovie);
+          }
+          setSearchResults(responseMovieArray);
         } else {
           setSearchResults([]);
         }
@@ -123,6 +167,18 @@ export const Profile = () => {
         <Button startIcon={<ShareIcon />} onClick={handleClick}>
           Share my favorite list
         </Button>
+
+        <IconButton onClick={handleClicks}>
+          <Badge badgeContent={2} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+
+        <Menu anchorEl={anchorEl} open={opens} onClose={handleCloses}>
+          <MenuItem>Ryhmään liittymispyyntö 1</MenuItem>
+          <MenuItem>Ryhmään liittymispyyntö 2</MenuItem>
+        </Menu>
+
         <Snackbar
           open={open}
           autoHideDuration={3000}

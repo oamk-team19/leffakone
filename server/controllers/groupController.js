@@ -179,7 +179,8 @@ export const getGroupCreator = async (req, res) => {
 
 export const getSearchPending = async (req, res) => {
   try {
-    const pendingRequests = await searchPending();
+    const { idUser } = req.body;
+    const pendingRequests = await searchPending(idUser);
 
     if (pendingRequests.error) {
       return res.status(409).json({ error: pendingRequests.error });

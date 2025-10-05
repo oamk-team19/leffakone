@@ -236,12 +236,12 @@ export const groupCreator = async (idGroup) => {
   }
 };
 
-export const searchPending = async () => {
+export const searchPending = async (idUser) => {
   try {
     //Get pendings and return them with username and groups name
     const pendings = await pool.query(
-      'SELECT user_group.*, users.username, groups.groupname FROM user_group JOIN users ON users.iduser = user_group.user_iduser JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE user_group.grouprequest = $1',
-      ['pending']
+      'SELECT user_group.*, users.username, groups.groupname, groups.idcreator FROM user_group JOIN users ON users.iduser = user_group.user_iduser JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE user_group.grouprequest = $1 AND groups.idcreator=$2',
+      ['pending', idUser]
     );
 
     //console.log(pendings.rows)

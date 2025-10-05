@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useUser } from '../context/useUser'; //get id
 
 export function NotificationsBell() {
+  const { user, setUser, LogOut } = useUser();
   const [pendingStatus, setpendingStatus] = useState(0);
 
   //Trial for notification bell
@@ -13,11 +14,12 @@ export function NotificationsBell() {
     const getSearchPendingRequests = async () => {
       try {
         //Get all pending requests
-        const response = await axios.get(
-          'http://localhost:3001/group/searchPending'
+        const response = await axios.post(
+          'http://localhost:3001/group/searchPending',
+          { idUser: user.id }
         );
 
-        console.log(response)
+        console.log(response);
         //console.log(response.data[0].username);
         //console.log(response.data[1].groupname);
 

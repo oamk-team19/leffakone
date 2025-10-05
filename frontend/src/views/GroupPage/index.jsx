@@ -20,7 +20,22 @@ export const GroupPage = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
-  const navigate = useNavigate();
+
+
+
+
+  /*
+  const responseMovieArray = [];
+
+  get-pyyntö /group/searchfavorite',params: { idGroup: 1 },
+
+  tuloksen muokkaus 
+  for (let index = 0; index < response.data.length; index++) {
+            responseMovieArray.push(response.data[index].movie_idMovie);
+          }
+          setSearchResults(responseMovieArray);
+         
+  */
 
   useEffect(() => {
     const getGroupCreator = async () => {

@@ -12,6 +12,7 @@ import {
   getGroupCreator,
   leaveGroup,
   getSearchPending,
+  getSearchfavorite,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -28,5 +29,6 @@ groupRouter.get('/creator/:idgroup', getGroupCreator);
 groupRouter.get('/groups', getGroups);
 groupRouter.get('/mygroups/:idUser', getMyGroups);
 groupRouter.post('/searchPending', getSearchPending);
+groupRouter.get('/searchfavorite', getSearchfavorite);
 
 export default groupRouter;

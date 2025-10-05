@@ -247,10 +247,29 @@ export const searchPending = async (idUser) => {
     //console.log(pendings.rows)
 
     if (pendings.rows.length === 0) {
-      throw new Error('No pending requests found');
+      return {message: 'No pending requests'};
+    
     }
 
     return pendings.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//Search favorites
+export const searchFavoriteList = async (idGroup) => {
+  try {
+    const searched = await pool.query(
+      'select * from group_movie WHERE group_idgroup=$1',
+      [idGroup]
+    );
+
+    if (searched.rows.length === 0) {
+      return { error: 'Not find user by id from users' }
+    }
+
+    return searched.rows;
   } catch (error) {
     throw error;
   }

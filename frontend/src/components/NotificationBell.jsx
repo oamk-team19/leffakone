@@ -4,7 +4,7 @@ import ButtonIcon from '@mui/material/IconButton';
 import { Menu, MenuItem, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useUser } from '../context/useUser'; //get id
+import { useUser } from '../context/useUser';
 import * as React from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
@@ -13,8 +13,6 @@ export function NotificationsBell() {
   const { user } = useUser();
   const [pendingStatus, setpendingStatus] = useState(0);
   const [pendingsArray, setPendingsArray] = useState([]);
-  const [usersGroupForRequest, setUsersGroupForRequest] = useState('');
-  const [usersIdForRequest, setUsersIdForRequest] = useState(0);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -87,7 +85,7 @@ export function NotificationsBell() {
       {pendingsArray.length > 0 && (
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           {pendingsArray.map((req) => (
-            <MenuItem>
+            <MenuItem >
               {req.username + ' wants to join to group ' + req.groupname}
               <ButtonIcon
                 onClick={() => handleClickYes(req.username, req.groupname)}

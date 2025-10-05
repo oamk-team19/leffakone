@@ -235,3 +235,23 @@ export const groupCreator = async (idGroup) => {
     throw error;
   }
 };
+
+export const searchPending = async () => {
+  try {
+    //Get pendings and return them with username and groups name
+    const pendings = await pool.query(
+      'SELECT user_group.*, users.username, groups.groupname FROM user_group JOIN users ON users.iduser = user_group.user_iduser JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE user_group.grouprequest = $1',
+      ['pending']
+    );
+
+    //console.log(pendings.rows)
+
+    if (pendings.rows.length === 0) {
+      throw new Error('No pending requests found');
+    }
+
+    return pendings.rows;
+  } catch (error) {
+    throw error;
+  }
+};

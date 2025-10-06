@@ -247,8 +247,8 @@ export const searchPending = async (idUser) => {
     //console.log(pendings.rows)
 
     if (pendings.rows.length === 0) {
-      return {message: 'No pending requests'};
-    
+      return { message: 'No pending requests' };
+
     }
 
     return pendings.rows;

@@ -24,6 +24,7 @@ ALTER TABLE IF EXISTS public.user_group DROP CONSTRAINT IF EXISTS user_group_use
 
 DROP TABLE IF EXISTS public.favorite;
 
+
 CREATE TABLE IF NOT EXISTS public.favorite
 (
     "idFavorite" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
@@ -76,6 +77,9 @@ CREATE TABLE IF NOT EXISTS public.review
     datetime date NOT NULL,
     CONSTRAINT review_pkey PRIMARY KEY ("idReview")
 );
+
+INSERT INTO review ("idMovie", "idUser", email, description, rating, datetime) values (1,2,'user@example.com', 'Great Movie', 5, '2025-10-02');
+INSERT INTO review ("idMovie", "idUser", email, description, rating, datetime) values (1,3,'user2@example.com', 'Bad Movie', 1, '2025-10-02');
 
 DROP TABLE IF EXISTS public.showtime;
 

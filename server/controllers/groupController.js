@@ -180,7 +180,7 @@ export const getGroupCreator = async (req, res) => {
 
 export const getSearchPending = async (req, res) => {
   try {
-    const { idUser } = req.body;
+    const { idUser } = req.query;
     const pendingRequests = await searchPending(idUser);
 
     if (pendingRequests.error) {

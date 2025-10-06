@@ -1,10 +1,23 @@
 import * as React from 'react';
-import { Button, Typography, TextField, Box, Alert } from '@mui/material';
+import {
+  Button,
+  Typography,
+  TextField,
+  Box,
+  Alert,
+  InputAdornment,
+  IconButton,
+  InputLabel,
+  OutlinedInput,
+  FormControl,
+} from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/useUser'; //add useUser
 import { useEffect } from 'react';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export const Login = () => {
   const { user, setUser } = useUser();
@@ -13,6 +26,9 @@ export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   useEffect(() => {
     async function loginasyncFunction() {
@@ -106,13 +122,27 @@ export const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
-              id="outlined-password-input"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+
+            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-password">
+                Password
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+
             <Button variant="contained" type="submit">
               Sign in
             </Button>

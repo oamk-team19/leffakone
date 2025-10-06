@@ -159,7 +159,7 @@ export const MainPage = () => {
       </Box>
       <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {filteredResults &&
-          filteredResults > 0 &&
+          filteredResults.length > 0 &&
           filteredResults.map((movie) => (
             <Card
               key={movie.id}
@@ -250,6 +250,7 @@ export const MainPage = () => {
                 >
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {movie &&
+                      movie.genre_ids &&
                       movie.genre_ids.map((genreid) => (
                         <GenreChip key={genreid} genreid={genreid} />
                       ))}

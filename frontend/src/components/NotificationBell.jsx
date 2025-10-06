@@ -55,7 +55,7 @@ export function NotificationsBell() {
           'http://localhost:3001/group/searchPending',
           { params: { idUser: user.id } }
         );
-
+        console.log(response);
         setPendingsArray(response.data);
 
         if (pendingStatus < response.data.length) {

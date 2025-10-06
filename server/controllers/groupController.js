@@ -196,8 +196,8 @@ export const getSearchPending = async (req, res) => {
 
 export const getSearchfavorite = async (req, res) => {
   try {
-    const { idGroup } = req.query;
-    const result = await searchFavoriteList(idGroup);
+    const { idgroup } = req.params;
+    const result = await searchFavoriteList(idgroup);
     res.status(200).json(result);
   } catch (error) {
     console.error('Favorite list failed in authcontroller', error.message);

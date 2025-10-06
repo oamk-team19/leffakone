@@ -28,7 +28,7 @@ groupRouter.get('/name/:idgroup', getGroupName);
 groupRouter.get('/creator/:idgroup', getGroupCreator);
 groupRouter.get('/groups', getGroups);
 groupRouter.get('/mygroups/:idUser', getMyGroups);
-groupRouter.post('/searchPending', getSearchPending);
+groupRouter.get('/searchPending', getSearchPending);
 groupRouter.get('/searchfavorite', getSearchfavorite);
 
 export default groupRouter;

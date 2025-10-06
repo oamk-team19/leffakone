@@ -51,9 +51,9 @@ export function NotificationsBell() {
     const getSearchPendingRequests = async () => {
       try {
         //Get all pending requests
-        const response = await axios.post(
+        const response = await axios.get(
           'http://localhost:3001/group/searchPending',
-          { idUser: user.id }
+          { params: { idUser: user.id } }
         );
 
         setPendingsArray(response.data);
@@ -85,7 +85,7 @@ export function NotificationsBell() {
       {pendingsArray.length > 0 && (
         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
           {pendingsArray.map((req) => (
-            <MenuItem >
+            <MenuItem>
               {req.username + ' wants to join to group ' + req.groupname}
               <ButtonIcon
                 onClick={() => handleClickYes(req.username, req.groupname)}

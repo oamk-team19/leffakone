@@ -13,7 +13,13 @@ describe("Testing database functionality", () => {
 
 
     it("should scroll reviews", async () => {
-        //code
+        const idMovie = 1
+        const response = await fetch(`http://localhost:3001/review?idMovie=${idMovie}`)
+        const data = await response.json()
+        //console.log("Received review data:", data)
+        expect(response.status).to.equal(200)
+        expect(data).to.be.an("array").that.is.not.empty
+        expect(data[0]).to.include.all.keys(["idReview","idMovie", "idUser", "email", "description", "rating", "datetime"])
     })
 })
 

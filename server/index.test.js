@@ -3,12 +3,9 @@ import { initializeTestDb, insertTestUser, getToken } from "./helpers/test.js"
 
 
 describe("Testing database functionality", () => {
-    let token = null
-
     before(async () => {
         await initializeTestDb()
     })
-
 
     it("should scroll reviews", async () => {
         const idMovie = 1
@@ -17,7 +14,7 @@ describe("Testing database functionality", () => {
         //console.log("Received review data:", data)
         expect(response.status).to.equal(200)
         expect(data).to.be.an("array").that.is.not.empty
-        expect(data[0]).to.include.all.keys(["idReview","idMovie", "idUser", "email", "description", "rating", "datetime"])
+        expect(data[0]).to.include.all.keys(["idReview", "idMovie", "idUser", "email", "description", "rating", "datetime"])
     })
 })
 
@@ -32,7 +29,7 @@ describe("Testing user management", () => {
         token = getToken(userTest2.email)
     })
 
-     it("should register", async () => {
+    it("should register", async () => {
         //code
     })
 
@@ -46,9 +43,15 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'Check email and password' }
+        //console.log(data) 
         expect(response.status).to.equal(400)
         expect(data).to.include.all.keys(["message"]);
+        expect(data).to.be.an('object');
+        expect(data).to.include({ message: 'Check email and password' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('message');
+
+
     })
 
     it("should not login, wrong password", async () => {
@@ -61,7 +64,13 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
+
         expect(response.status).to.equal(401)
+        expect(data).to.be.an('object').that.has.all.keys('error');
+        expect(data).to.deep.equal({ error: 'Invalid credentials' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('error');
+
     })
 
     it("should login with correct email and password", async () => {
@@ -74,10 +83,13 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { iduser: 1, email: 'user2@example.com' } if successfull
+        //console.log(data) 
 
         expect(response.status).to.equal(200)
-        expect(data).to.include.all.keys(["iduser", "email"]); // , "token"
+        expect(data).to.include.all.keys(["iduser", "email"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
+        expect(data).to.have.property('email');
     })
 
     it("should log out", async () => {
@@ -90,10 +102,14 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'Logged out' } if successfull
+        //console.log(data) 
 
         expect(response.status).to.equal(200)
         expect(data).to.include.all.keys(["message"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ message: 'Logged out' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('message');
     })
 
 
@@ -107,10 +123,13 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'User deletion completed' } if successfull
+        //console.log(data) 
         //console.log(response)
 
         expect(response.status).to.equal(201)
         expect(data).to.include.all.keys(["message"]);
+        expect(data).to.deep.equal({ message: 'User deletion completed' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('message');
     })
 })

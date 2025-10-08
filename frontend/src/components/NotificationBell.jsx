@@ -49,13 +49,16 @@ export function NotificationsBell() {
 
   useEffect(() => {
     const getSearchPendingRequests = async () => {
+      if (!user.id) {
+        return;
+      }
       try {
         //Get all pending requests
         const response = await axios.get(
           'http://localhost:3001/group/searchPending',
           { params: { idUser: user.id } }
         );
-        console.log(response);
+        console.log(response.data);
         setPendingsArray(response.data);
 
         if (pendingStatus < response.data.length) {
@@ -73,7 +76,7 @@ export function NotificationsBell() {
 
     const interval = setInterval(getSearchPendingRequests, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user.id]);
 
   return (
     <>

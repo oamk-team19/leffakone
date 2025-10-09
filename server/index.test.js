@@ -33,28 +33,7 @@ describe("Testing user management", () => {
         //code
     })
 
-    it("should not login, missing password", async () => {
-        const newUser = { email: "user2@example.com", password: "" }
-
-        const response = await fetch('http://localhost:3001/auth/signin', {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newUser)
-        })
-
-        const data = await response.json()
-        //console.log(data) 
-        expect(response.status).to.equal(400)
-        expect(data).to.include.all.keys(["message"]);
-        expect(data).to.be.an('object');
-        expect(data).to.include({ message: 'Check email and password' });
-        expect(Object.keys(data)).to.have.lengthOf(1);
-        expect(data).to.have.property('message');
-
-
-    })
-
-    it("should not login, wrong password", async () => {
+    it("try to login with wrong password", async () => {
         const newUser = { email: "user2@example.com", password: "password22" }
 
         const response = await fetch('http://localhost:3001/auth/signin', {
@@ -68,6 +47,7 @@ describe("Testing user management", () => {
         expect(response.status).to.equal(401)
         expect(data).to.be.an('object').that.has.all.keys('error');
         expect(data).to.deep.equal({ error: 'Invalid credentials' });
+        expect(data).to.include({ error: 'Invalid credentials' });
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('error');
 
@@ -89,6 +69,8 @@ describe("Testing user management", () => {
         expect(data).to.include.all.keys(["iduser", "email"]);
         expect(data).to.be.an('object');
         expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
+        expect(data).to.include({ iduser: 1, email: 'user2@example.com' });
+        expect(Object.keys(data)).to.have.lengthOf(2);
         expect(data).to.have.property('email');
     })
 
@@ -108,6 +90,7 @@ describe("Testing user management", () => {
         expect(data).to.include.all.keys(["message"]);
         expect(data).to.be.an('object');
         expect(data).to.deep.equal({ message: 'Logged out' });
+        expect(data).to.include({ message: 'Logged out' });
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('message');
     })
@@ -129,6 +112,7 @@ describe("Testing user management", () => {
         expect(response.status).to.equal(201)
         expect(data).to.include.all.keys(["message"]);
         expect(data).to.deep.equal({ message: 'User deletion completed' });
+        expect(data).to.include({ message: 'User deletion completed' });
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('message');
     })

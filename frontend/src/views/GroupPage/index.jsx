@@ -13,6 +13,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
+import FavoriteList from '../../components/FavoriteList';
 
 export const GroupPage = () => {
   const user = useUser();
@@ -20,7 +21,34 @@ export const GroupPage = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
-  const navigate = useNavigate();
+  const responseMovieArray = [];
+  const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    const searchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/group/searchfavorite/${idGroup}`
+        );
+        console.log(response);
+        //Show favorite list
+        if (!response.data.error) {
+          //Edit data to array
+          for (let index = 0; index < response.data.length; index++) {
+            responseMovieArray.push(response.data[index].movie_idMovie);
+          }
+          setSearchResults(responseMovieArray);
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.log('Error in getting a favorite list: ' + error);
+        setSearchResults([]); // Default movies if error
+      }
+    };
+
+    searchFavorites();
+  }, []);
 
   useEffect(() => {
     const getGroupCreator = async () => {
@@ -126,9 +154,11 @@ export const GroupPage = () => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Shared movies
             </Typography>
-            <Typography variant="body" sx={{ my: 2 }}>
-              No movies shared yet
-            </Typography>
+            {searchResults && searchResults.length > 0 ? (
+              <FavoriteList favoriteMovies={searchResults} />
+            ) : (
+              <Typography>No favorite movies yet!</Typography>
+            )}
           </Box>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>

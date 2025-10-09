@@ -10,6 +10,8 @@ import {
   myGroups,
   groupCreator,
   leaveGroupQuery,
+  searchPending,
+  searchFavoriteList,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -175,3 +177,31 @@ export const getGroupCreator = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getSearchPending = async (req, res) => {
+  try {
+    const { idUser } = req.query;
+    const pendingRequests = await searchPending(idUser);
+
+    if (pendingRequests.error) {
+      return res.status(409).json({ error: pendingRequests.error });
+    }
+    res.status(200).json(pendingRequests);
+  } catch (error) {
+    console.error('Error getting pending requests: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const getSearchfavorite = async (req, res) => {
+  try {
+    const { idgroup } = req.params;
+    const result = await searchFavoriteList(idgroup);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Favorite list failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+
+}

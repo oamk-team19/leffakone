@@ -14,6 +14,7 @@ export const Profile = () => {
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState([]);
   const [open, setOpen] = useState(false);
+  const responseMovieArray = [];
 
   const handleClick = () => {
     //Copy URI to clipboard
@@ -40,7 +41,11 @@ export const Profile = () => {
 
         //Show favorite list
         if (!response.data.error) {
-          setSearchResults(response.data);
+          //Edit data to array
+          for (let index = 0; index < response.data.length; index++) {
+            responseMovieArray.push(response.data[index].idMovie);
+          }
+          setSearchResults(responseMovieArray);
         } else {
           setSearchResults([]);
         }

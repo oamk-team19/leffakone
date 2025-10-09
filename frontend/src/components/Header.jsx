@@ -17,6 +17,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import TheatersIcon from '@mui/icons-material/Theaters';
 import { NavLink } from 'react-router-dom';
 import { ThemeToggleButton } from './ThemeSelector';
+import { NotificationsBell } from './NotificationBell';
 
 const tabs = [
   {
@@ -26,10 +27,6 @@ const tabs = [
   {
     title: 'Showtime',
     url: '/showtime',
-  },
-  {
-    title: 'Reviews',
-    url: '/reviews',
   },
   {
     title: 'Groups',
@@ -165,7 +162,7 @@ const Header = () => {
             }}
           >
             <ThemeToggleButton></ThemeToggleButton>
-
+            <NotificationsBell />
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />

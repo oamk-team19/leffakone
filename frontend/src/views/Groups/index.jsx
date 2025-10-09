@@ -8,12 +8,15 @@ import {
   ListItemText,
   TextField,
   Typography,
+  Stack,
+  Pagination,
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export const Groups = () => {
   const user = useUser();
@@ -22,6 +25,19 @@ export const Groups = () => {
   const [myGroups, setMyGroups] = useState([]);
   const [createGroup, setCreateGroup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  //For pagination
+  const groupsPerPage = 10;
+  const [page, setPages] = useState(1);
+
+  const startPage = (page - 1) * groupsPerPage;
+  const endPage = startPage + groupsPerPage;
+  const currentPages = groups.slice(startPage, endPage);
+
+  const handlePages = (event, value) => {
+    setPages(value);
+  };
 
   function toggle() {
     setCreateGroup((createGroup) => !createGroup);
@@ -137,11 +153,11 @@ export const Groups = () => {
                     alignItems={'center'}
                     gap={2}
                   >
-                    <Button variant="contained" type="submit">
-                      Submit
-                    </Button>
                     <Button variant="contained" onClick={toggle}>
                       Cancel
+                    </Button>
+                    <Button variant="contained" type="submit">
+                      Submit
                     </Button>
                   </Box>
                 </>
@@ -161,17 +177,29 @@ export const Groups = () => {
             All groups
           </Typography>
           <List>
-            {groups.map((group, id) => (
+            {currentPages.map((group, id) => (
               <ListItem key={id}>
                 <ListItemText primary={group.groupname} />
                 {isLoggedIn ? (
-                  <Button
-                    variant="outlined"
-                    startIcon={<PersonAddIcon />}
-                    onClick={() => handleJoinGroup(group.groupname)}
-                  >
-                    Send request
-                  </Button>
+                  myGroups.some((g) => g.groupname === group.groupname) ? (
+                    <>
+                      <Button
+                        variant="outlined"
+                        endIcon={<ArrowForwardIosIcon />}
+                        onClick={() => navigate(`/group/${group.idgroup}`)}
+                      >
+                        Already a member
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      startIcon={<PersonAddIcon />}
+                      onClick={() => handleJoinGroup(group.groupname)}
+                    >
+                      Send request
+                    </Button>
+                  )
                 ) : (
                   <Button
                     variant="outlined"
@@ -184,6 +212,15 @@ export const Groups = () => {
               </ListItem>
             ))}
           </List>
+          <Box display="flex" justifyContent="center">
+            <Stack spacing={2}>
+              <Pagination
+                count={Math.ceil(groups.length / groupsPerPage)}
+                page={page}
+                onChange={handlePages}
+              ></Pagination>
+            </Stack>
+          </Box>
         </Grid>
         <Divider
           size={{ xs: 0, md: 1 }}

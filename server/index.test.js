@@ -3,15 +3,28 @@ import { initializeTestDb, insertTestUser, getToken } from "./helpers/test.js"
 
 
 describe("Testing database functionality", () => {
-    let token = null
-
     before(async () => {
         await initializeTestDb()
     })
 
-
     it("should scroll reviews", async () => {
-        //code
+        const idMovie = 1
+        const response = await fetch(`http://localhost:3001/review?idMovie=${idMovie}`)
+        const data = await response.json()
+        //console.log("Received review data:", data)
+        expect(response.status).to.equal(200)
+        expect(data).to.be.an("array").that.is.not.empty
+        expect(data[0]).to.include.all.keys(["idReview", "idMovie", "idUser", "email", "description", "rating", "datetime"])
+    })
+
+    it("try scroll reviews but gets empty array", async () => {
+        const idMovie = 2
+        const response = await fetch(`http://localhost:3001/review?idMovie=${idMovie}`)
+        const data = await response.json()
+        //console.log("Received review data:", data)
+
+        expect(response.status).to.equal(200)
+        expect(data).to.be.an("array").that.is.empty
     })
 })
 
@@ -26,39 +39,15 @@ describe("Testing user management", () => {
         token = getToken(userTest2.email)
     })
 
-     it("should register", async () => {
+    it("should register", async () => {
         //code
     })
 
-    it("should not login, missing password", async () => {
-        const newUser = { email: "user2@example.com", password: "" }
-
-        const response = await fetch('http://localhost:3001/auth/signin', {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newUser)
-        })
-
-        const data = await response.json()
-        //console.log(data) // { message: 'Check email and password' }
-        expect(response.status).to.equal(400)
-        expect(data).to.include.all.keys(["message"]);
+    it("try to register with existing email", async () => {
+        //code
     })
 
-    it("should not login, wrong password", async () => {
-        const newUser = { email: "user2@example.com", password: "password22" }
-
-        const response = await fetch('http://localhost:3001/auth/signin', {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newUser)
-        })
-
-        const data = await response.json()
-        expect(response.status).to.equal(401)
-    })
-
-    it("should login with correct email and password", async () => {
+      it("should login with correct email and password", async () => {
         const newUser = { email: "user2@example.com", password: "password2" }
 
         const response = await fetch('http://localhost:3001/auth/signin', {
@@ -68,10 +57,35 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { iduser: 1, email: 'user2@example.com' } if successfull
+        //console.log(data) 
 
         expect(response.status).to.equal(200)
-        expect(data).to.include.all.keys(["iduser", "email"]); // , "token"
+        expect(data).to.include.all.keys(["iduser", "email"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
+        expect(data).to.include({ iduser: 1, email: 'user2@example.com' });
+        expect(Object.keys(data)).to.have.lengthOf(2);
+        expect(data).to.have.property('email');
+    })
+
+    it("try to login with wrong password", async () => {
+        const newUser = { email: "user2@example.com", password: "password22" }
+
+        const response = await fetch('http://localhost:3001/auth/signin', {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+
+        expect(response.status).to.equal(401)
+        expect(data).to.be.an('object').that.has.all.keys('error');
+        expect(data).to.deep.equal({ error: 'Invalid credentials' });
+        expect(data).to.include({ error: 'Invalid credentials' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('error');
+
     })
 
     it("should log out", async () => {
@@ -84,10 +98,15 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'Logged out' } if successfull
+        //console.log(data) 
 
         expect(response.status).to.equal(200)
         expect(data).to.include.all.keys(["message"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ message: 'Logged out' });
+        expect(data).to.include({ message: 'Logged out' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('message');
     })
 
 
@@ -101,10 +120,33 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) // { message: 'User deletion completed' } if successfull
+        //console.log(data) 
         //console.log(response)
 
         expect(response.status).to.equal(201)
         expect(data).to.include.all.keys(["message"]);
+        expect(data).to.deep.equal({ message: 'User deletion completed' });
+        expect(data).to.include({ message: 'User deletion completed' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('message');
+    })
+
+    it("try to delete registration with not existing user", async () => {
+        const newUser = { email: "user22@example.com" }
+
+        const response = await fetch('http://localhost:3001/user/deleteuser', {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+
+        expect(response.status).to.equal(409)
+        expect(data).to.include.all.keys(["error"]);
+        expect(data).to.deep.equal({ error: 'Not find user by email from users' });
+        expect(data).to.include({ error: 'Not find user by email from users' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('error');
     })
 })

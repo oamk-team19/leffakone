@@ -77,7 +77,6 @@ export const Movies = () => {
         }}
         >
           <Box>
-            {/* <Typography variant="h5">Kuva</Typography> */}
             <CardMedia
               component="img"
               image={decodeHTMLEntities(movie?.Images.EventLargeImagePortrait)}
@@ -95,6 +94,7 @@ export const Movies = () => {
           </Box>
           <Box>
             <Typography variant="h5">{movie?.Genres.replace(/, ?/g, ' ')} {`${Math.floor(movie?.LengthInMinutes / 60)}h ${movie?.LengthInMinutes % 60}m`}</Typography>
+              {movie?.Videos?.EventVideo && (
               <Button 
               variant="outlined" 
               endIcon={<PlayArrowIcon />}
@@ -108,6 +108,7 @@ export const Movies = () => {
               }}
               >Trailer
               </Button>
+              )}
           </Box>
           <Box>
             <Typography variant="h5">{decodeHTMLEntities(movie?.Synopsis)}</Typography>

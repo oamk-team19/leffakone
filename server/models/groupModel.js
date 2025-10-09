@@ -235,3 +235,42 @@ export const groupCreator = async (idGroup) => {
     throw error;
   }
 };
+
+export const searchPending = async (idUser) => {
+  try {
+    //Get pendings and return them with username and groups name
+    const pendings = await pool.query(
+      'SELECT user_group.*, users.username, groups.groupname, groups.idcreator FROM user_group JOIN users ON users.iduser = user_group.user_iduser JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE user_group.grouprequest = $1 AND groups.idcreator=$2',
+      ['pending', idUser]
+    );
+
+    //console.log(pendings.rows)
+
+    if (pendings.rows.length === 0) {
+      return { message: 'No pending requests' };
+
+    }
+
+    return pendings.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//Search favorites
+export const searchFavoriteList = async (idGroup) => {
+  try {
+    const searched = await pool.query(
+      'select * from group_movie WHERE group_idgroup=$1',
+      [idGroup]
+    );
+
+    if (searched.rows.length === 0) {
+      return { error: 'Not find user by id from users' }
+    }
+
+    return searched.rows;
+  } catch (error) {
+    throw error;
+  }
+};

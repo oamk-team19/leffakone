@@ -28,11 +28,11 @@ export const Groups = () => {
   const navigate = useNavigate();
 
   //For pagination
-  const showtimesPerPage = 10;
+  const groupsPerPage = 10;
   const [page, setPages] = useState(1);
 
-  const startPage = (page - 1) * showtimesPerPage;
-  const endPage = startPage + showtimesPerPage;
+  const startPage = (page - 1) * groupsPerPage;
+  const endPage = startPage + groupsPerPage;
   const currentPages = groups.slice(startPage, endPage);
 
   const handlePages = (event, value) => {
@@ -215,7 +215,7 @@ export const Groups = () => {
           <Box display="flex" justifyContent="center">
             <Stack spacing={2}>
               <Pagination
-                count={Math.ceil(groups.length / 10)}
+                count={Math.ceil(groups.length / groupsPerPage)}
                 page={page}
                 onChange={handlePages}
               ></Pagination>

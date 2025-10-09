@@ -8,6 +8,8 @@ import {
   ListItemText,
   TextField,
   Typography,
+  Stack,
+  Pagination,
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -24,6 +26,18 @@ export const Groups = () => {
   const [createGroup, setCreateGroup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  //For pagination
+  const showtimesPerPage = 10;
+  const [page, setPages] = useState(1);
+
+  const startPage = (page - 1) * showtimesPerPage;
+  const endPage = startPage + showtimesPerPage;
+  const currentPages = groups.slice(startPage, endPage);
+
+  const handlePages = (event, value) => {
+    setPages(value);
+  };
 
   function toggle() {
     setCreateGroup((createGroup) => !createGroup);
@@ -139,11 +153,11 @@ export const Groups = () => {
                     alignItems={'center'}
                     gap={2}
                   >
-                    <Button variant="contained" type="submit">
-                      Submit
-                    </Button>
                     <Button variant="contained" onClick={toggle}>
                       Cancel
+                    </Button>
+                    <Button variant="contained" type="submit">
+                      Submit
                     </Button>
                   </Box>
                 </>
@@ -163,7 +177,7 @@ export const Groups = () => {
             All groups
           </Typography>
           <List>
-            {groups.map((group, id) => (
+            {currentPages.map((group, id) => (
               <ListItem key={id}>
                 <ListItemText primary={group.groupname} />
                 {isLoggedIn ? (
@@ -198,6 +212,15 @@ export const Groups = () => {
               </ListItem>
             ))}
           </List>
+          <Box display="flex" justifyContent="center">
+            <Stack spacing={2}>
+              <Pagination
+                count={Math.ceil(groups.length / 10)}
+                page={page}
+                onChange={handlePages}
+              ></Pagination>
+            </Stack>
+          </Box>
         </Grid>
         <Divider
           size={{ xs: 0, md: 1 }}

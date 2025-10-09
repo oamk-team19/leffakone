@@ -14,6 +14,8 @@ import {
   Divider,
   ListItemButton,
   Link,
+  Pagination,
+  Stack,
 } from '@mui/material';
 import './index.css';
 
@@ -26,6 +28,18 @@ export const Showtime = () => {
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedMovie, setSelectedMovie] = useState('all');
+
+  //For pagination
+  const showtimesPerPage = 10;
+  const [page, setPages] = useState(1);
+
+  const startPage = (page - 1) * showtimesPerPage;
+  const endPage = startPage + showtimesPerPage;
+  const currentPages = times.slice(startPage, endPage);
+
+  const handlePages = (event, value) => {
+    setPages(value);
+  };
 
   const xmlToJson = useCallback((node) => {
     const json = {};
@@ -249,7 +263,13 @@ export const Showtime = () => {
             </Button>
           </Box>
         </Box>
-        <Box>
+
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection={'column'}
+        >
           {message && (
             <Typography variant="body1" color="error" sx={{ mb: 2 }}>
               {message}
@@ -257,7 +277,7 @@ export const Showtime = () => {
           )}
 
           <List>
-            {times.map((show) => (
+            {currentPages.map((show) => (
               <React.Fragment key={show.ID}>
                 <ListItem alignItems="flex-start">
                   <ListItemText
@@ -294,6 +314,15 @@ export const Showtime = () => {
               </React.Fragment>
             ))}
           </List>
+          <Box>
+            <Stack spacing={2}>
+              <Pagination
+                count={Math.ceil(times.length / showtimesPerPage)}
+                page={page}
+                onChange={handlePages}
+              ></Pagination>
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </>

@@ -173,7 +173,7 @@ export const searchFavoriteListByEmail = async (email) => {
       [idUser]
     );
 
-    return favorites.rows;
+    return favorites.rows.map((row) => row.idMovie);
   } catch (error) {
     throw error;
   }

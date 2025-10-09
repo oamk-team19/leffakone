@@ -95,6 +95,27 @@ export const MainPage = () => {
     );
   }, [wantedGenres, unwantedGenres, searchResults, minRating, langFilters]);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/user/favorite',
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${user.token}`,
+            },
+          }
+        );
+        setFavorites(response.data || []);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+      }
+    };
+    fetchFavorites();
+  }, []);
+
   const addOrRemoveFavorite = (movieId) => async () => {
     if (favorites.some((fav) => fav === movieId)) {
       // Movie is in favorites, remove it (DELETE)
@@ -106,7 +127,7 @@ export const MainPage = () => {
             withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${user.token}`, // Fixed: Capital A and Bearer prefix
+              Authorization: `${user.token}`,
             },
           }
         );
@@ -140,6 +161,7 @@ export const MainPage = () => {
       }
     }
   };
+  console.log('favorites:', favorites);
   return (
     <Box>
       <Typography variant="h4">Welcome to Leffakone</Typography>

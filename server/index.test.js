@@ -141,8 +141,6 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        //console.log(data) 
-        //console.log(response)
 
         expect(response.status).to.equal(409)
         expect(data).to.include.all.keys(["error"]);

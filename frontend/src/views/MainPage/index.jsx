@@ -289,7 +289,6 @@ export const MainPage = () => {
                   </Typography>
                 </Box>
 
-
                 {/* Bottom part for genres and actions */}
                 <Box
                   sx={{
@@ -307,24 +306,25 @@ export const MainPage = () => {
                       ))}
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    {favorites.some((fav) => fav === movie.id) ? (
-                      <FavoriteIcon
-                        color="error"
-                        fontSize="large"
-                        onClick={addOrRemoveFavorite(movie.id)}
-                      />
-                    ) : (
-                      <FavoriteBorderIcon
-                        color={
-                          favorites.some((fav) => fav === movie.id)
-                            ? 'error'
-                            : 'inherit'
-                        }
-                        fontSize="large"
-                        onClick={addOrRemoveFavorite(movie.id)}
-                      />
-                    )}
-                  </IconButton>
+                    <IconButton>
+                      {favorites.some((fav) => fav === movie.id) ? (
+                        <FavoriteIcon
+                          color="error"
+                          fontSize="large"
+                          onClick={addOrRemoveFavorite(movie.id)}
+                        />
+                      ) : (
+                        <FavoriteBorderIcon
+                          color={
+                            favorites.some((fav) => fav === movie.id)
+                              ? 'error'
+                              : 'inherit'
+                          }
+                          fontSize="large"
+                          onClick={addOrRemoveFavorite(movie.id)}
+                        />
+                      )}
+                    </IconButton>
                   </Box>
                 </Box>
               </CardContent>

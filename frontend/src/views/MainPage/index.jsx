@@ -18,10 +18,12 @@ import {
   Autocomplete,
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useState } from 'react';
 import GenreChip from '../../components/GenreChip';
 import GenreSelector from '../../components/GenreSelector';
+import { useUser } from '../../context/useUser';
 
 import { Link } from 'react-router-dom';
 
@@ -33,6 +35,7 @@ const IMG_WIDTH = IMG_HEIGHT / 1.5;
 const ratings = [...Array(20).keys()].map((x) => x / 2).reverse();
 
 export const MainPage = () => {
+  const { user } = useUser();
   const [wantedGenres, setWantedGenres] = useState([]);
   const [unwantedGenres, setUnwantedGenres] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,6 +44,7 @@ export const MainPage = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [minRating, setMinRating] = useState(0);
   const [langFilters, setLangFilters] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     if (debouncedSearchQuery && debouncedSearchQuery.length > 1) {
@@ -90,6 +94,74 @@ export const MainPage = () => {
         )
     );
   }, [wantedGenres, unwantedGenres, searchResults, minRating, langFilters]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/user/favorite',
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${user.token}`,
+            },
+          }
+        );
+        setFavorites(response.data || []);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+      }
+    };
+    fetchFavorites();
+  }, []);
+
+  const addOrRemoveFavorite = (movieId) => async () => {
+    if (favorites.some((fav) => fav === movieId)) {
+      // Movie is in favorites, remove it (DELETE)
+      try {
+        const response = await axios.delete(
+          'http://localhost:3001/user/favorite',
+          {
+            data: { movieId: movieId },
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${user.token}`,
+            },
+          }
+        );
+        console.log('Removed favorite:', response.data);
+        // Update local state
+        setFavorites(favorites.filter((fav) => fav !== movieId));
+      } catch (error) {
+        console.error('Error removing favorite:', error);
+      }
+    } else {
+      // Movie is not in favorites, add it (POST)
+      try {
+        const response = await axios.post(
+          'http://localhost:3001/user/favorite',
+          {
+            movieId: movieId,
+          },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        console.log('Added favorite:', response.data);
+        // Update local state
+        setFavorites([...favorites, movieId]);
+      } catch (error) {
+        console.error('Error adding favorite:', error);
+      }
+    }
+  };
+  console.log('favorites:', favorites);
   return (
     <Box>
       <Typography variant="h4">Welcome to Leffakone</Typography>
@@ -257,7 +329,23 @@ export const MainPage = () => {
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <IconButton>
-                      <FavoriteBorderIcon />
+                      {favorites.some((fav) => fav === movie.id) ? (
+                        <FavoriteIcon
+                          color="error"
+                          fontSize="large"
+                          onClick={addOrRemoveFavorite(movie.id)}
+                        />
+                      ) : (
+                        <FavoriteBorderIcon
+                          color={
+                            favorites.some((fav) => fav === movie.id)
+                              ? 'error'
+                              : 'inherit'
+                          }
+                          fontSize="large"
+                          onClick={addOrRemoveFavorite(movie.id)}
+                        />
+                      )}
                     </IconButton>
                   </Box>
                 </Box>

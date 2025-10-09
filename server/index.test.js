@@ -16,6 +16,16 @@ describe("Testing database functionality", () => {
         expect(data).to.be.an("array").that.is.not.empty
         expect(data[0]).to.include.all.keys(["idReview", "idMovie", "idUser", "email", "description", "rating", "datetime"])
     })
+
+    it("try scroll reviews but gets empty array", async () => {
+        const idMovie = 2
+        const response = await fetch(`http://localhost:3001/review?idMovie=${idMovie}`)
+        const data = await response.json()
+        //console.log("Received review data:", data)
+
+        expect(response.status).to.equal(200)
+        expect(data).to.be.an("array").that.is.empty
+    })
 })
 
 
@@ -31,6 +41,31 @@ describe("Testing user management", () => {
 
     it("should register", async () => {
         //code
+    })
+
+    it("try to register with existing email", async () => {
+        //code
+    })
+
+      it("should login with correct email and password", async () => {
+        const newUser = { email: "user2@example.com", password: "password2" }
+
+        const response = await fetch('http://localhost:3001/auth/signin', {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(data) 
+
+        expect(response.status).to.equal(200)
+        expect(data).to.include.all.keys(["iduser", "email"]);
+        expect(data).to.be.an('object');
+        expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
+        expect(data).to.include({ iduser: 1, email: 'user2@example.com' });
+        expect(Object.keys(data)).to.have.lengthOf(2);
+        expect(data).to.have.property('email');
     })
 
     it("try to login with wrong password", async () => {
@@ -51,27 +86,6 @@ describe("Testing user management", () => {
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('error');
 
-    })
-
-    it("should login with correct email and password", async () => {
-        const newUser = { email: "user2@example.com", password: "password2" }
-
-        const response = await fetch('http://localhost:3001/auth/signin', {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newUser)
-        })
-
-        const data = await response.json()
-        //console.log(data) 
-
-        expect(response.status).to.equal(200)
-        expect(data).to.include.all.keys(["iduser", "email"]);
-        expect(data).to.be.an('object');
-        expect(data).to.deep.equal({ iduser: 1, email: 'user2@example.com' });
-        expect(data).to.include({ iduser: 1, email: 'user2@example.com' });
-        expect(Object.keys(data)).to.have.lengthOf(2);
-        expect(data).to.have.property('email');
     })
 
     it("should log out", async () => {
@@ -115,5 +129,24 @@ describe("Testing user management", () => {
         expect(data).to.include({ message: 'User deletion completed' });
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('message');
+    })
+
+    it("try to delete registration with not existing user", async () => {
+        const newUser = { email: "user22@example.com" }
+
+        const response = await fetch('http://localhost:3001/user/deleteuser', {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+
+        expect(response.status).to.equal(409)
+        expect(data).to.include.all.keys(["error"]);
+        expect(data).to.deep.equal({ error: 'Not find user by email from users' });
+        expect(data).to.include({ error: 'Not find user by email from users' });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('error');
     })
 })

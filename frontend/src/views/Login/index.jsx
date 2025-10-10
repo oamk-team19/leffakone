@@ -51,7 +51,7 @@ export const Login = () => {
   const signIn = async () => {
     try {
       const res = await axios.post(
-        'http://localhost:3001/auth/signin',
+        `${import.meta.env.VITE_API_URL}/auth/signin`,
         { email: email, password: password },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ export const Login = () => {
   const autoLogin = async () => {
     await axios
       .post(
-        'http://localhost:3001/autologin',
+        `${import.meta.env.VITE_API_URL}/autologin`,
         {},
         {
           withCredentials: true,

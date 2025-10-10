@@ -28,7 +28,7 @@ export const GroupPage = () => {
     const searchFavorites = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/group/searchfavorite/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/searchfavorite/${idGroup}`
         );
         console.log(response);
         //Show favorite list
@@ -54,7 +54,7 @@ export const GroupPage = () => {
     const getGroupCreator = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/creator/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/creator/${idGroup}`
         );
         if (res.data === user.user.id) {
           setIsCreator(true);
@@ -74,7 +74,7 @@ export const GroupPage = () => {
     const getGroupName = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/name/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/name/${idGroup}`
         );
         setGroupName(res.data);
       } catch (error) {
@@ -92,7 +92,7 @@ export const GroupPage = () => {
     const getGroupMembers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/members/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/members/${idGroup}`
         );
         setGroupMembers(res.data);
       } catch (error) {
@@ -111,7 +111,7 @@ export const GroupPage = () => {
     if (shouldDelete) {
       try {
         console.log(user.user.id);
-        const res = await axios.delete('http://localhost:3001/group/delete', {
+        const res = await axios.delete(`${import.meta.env.VITE_API_URL}/group/delete`, {
           data: { idGroup: idGroup, idUser: user.user.id },
           headers: { 'Content-Type': 'application/json' },
         });
@@ -129,7 +129,7 @@ export const GroupPage = () => {
       try {
         console.log(user.user.id);
         const res = await axios.delete(
-          'http://localhost:3001/group/leavegroup',
+          `${import.meta.env.VITE_API_URL}/group/leavegroup`,
           {
             data: { idGroup: idGroup, idUser: user.user.id },
             headers: { 'Content-Type': 'application/json' },

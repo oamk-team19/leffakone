@@ -45,7 +45,7 @@ export const Groups = () => {
 
   const getGroups = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/group/groups`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/group/groups`);
       setGroups(res.data);
     } catch (error) {
       if (error.response.status === 409) {
@@ -59,7 +59,7 @@ export const Groups = () => {
   const getMyGroups = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3001/group/mygroups/${user.user.id}`
+        `${import.meta.env.VITE_API_URL}/group/mygroups/${user.user.id}`
       );
       setMyGroups(res.data);
     } catch (error) {
@@ -89,7 +89,7 @@ export const Groups = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('http://localhost:3001/group/create', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/group/create`, {
         groupName: groupName,
         idUser: user.user.id,
       });
@@ -107,7 +107,7 @@ export const Groups = () => {
 
   const handleJoinGroup = async (groupname) => {
     try {
-      const res = await axios.post('http://localhost:3001/group/request', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/group/request`, {
         groupName: groupname,
         idUser: user.user.id,
       });

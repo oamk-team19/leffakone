@@ -1,235 +1,275 @@
-import { useCallback, useEffect, useState } from 'react'
-import React from 'react'
-import { Button, MenuItem, Select, FormControl, InputLabel,
-  Box, Typography, List, ListItem, ListItemText, Divider,
-  ListItemButton, Link
- } from '@mui/material'
- import './index.css'
+import { useCallback, useEffect, useState } from 'react';
+import React from 'react';
+import {
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  ListItemButton,
+  Link,
+  Pagination,
+  Stack,
+} from '@mui/material';
+import './index.css';
 
 export const Showtime = () => {
-  const [areas, setAreas] = useState([])
-  const [times, setTimes] = useState([])
-  const [movies, setMovies] = useState([])
-  const [days, setDays] = useState([])
-  const [message, setMessage] = useState('')
-  const [selectedArea, setSelectedArea] = useState('')
-  const [selectedDay, setSelectedDay] = useState('')
-  const [selectedMovie, setSelectedMovie] = useState('all')
+  const [areas, setAreas] = useState([]);
+  const [times, setTimes] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [days, setDays] = useState([]);
+  const [message, setMessage] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedMovie, setSelectedMovie] = useState('all');
+
+  //For pagination
+  const showtimesPerPage = 10;
+  const [page, setPages] = useState(1);
+
+  const startPage = (page - 1) * showtimesPerPage;
+  const endPage = startPage + showtimesPerPage;
+  const currentPages = times.slice(startPage, endPage);
+
+  const handlePages = (event, value) => {
+    setPages(value);
+  };
 
   const xmlToJson = useCallback((node) => {
-    const json = {}
+    const json = {};
 
-    let children = [...node.children]
+    let children = [...node.children];
     //console.log(node.nodeName)
     //console.log(node.innerHTML)
 
-    if (!children.length) return node.innerHTML
+    if (!children.length) return node.innerHTML;
 
     for (let child of children) {
-      const hasSiblings = children.filter(c => c.nodeName === child.nodeName).length > 1
+      const hasSiblings =
+        children.filter((c) => c.nodeName === child.nodeName).length > 1;
 
       if (hasSiblings) {
         if (json[child.nodeName] === undefined) {
-          json[child.nodeName] = [xmlToJson(child)]
+          json[child.nodeName] = [xmlToJson(child)];
         } else {
-          json[child.nodeName].push(xmlToJson(child))
+          json[child.nodeName].push(xmlToJson(child));
         }
       } else {
-        json[child.nodeName] = xmlToJson(child)
+        json[child.nodeName] = xmlToJson(child);
       }
     }
-    return json
-  }, [])
+    return json;
+  }, []);
 
-  const parseXML = useCallback((xml) => {
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(xml, 'application/xml')
-    return xmlToJson(xmlDoc)
-  }, [xmlToJson])
+  const parseXML = useCallback(
+    (xml) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xml, 'application/xml');
+      return xmlToJson(xmlDoc);
+    },
+    [xmlToJson]
+  );
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/TheatreAreas/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.TheatreAreas.TheatreArea)
-        setAreas(json.TheatreAreas.TheatreArea)
+        const json = parseXML(xml);
+        console.log(json.TheatreAreas.TheatreArea);
+        setAreas(json.TheatreAreas.TheatreArea);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
-
-
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/ScheduleDates/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.Dates.dateTime)
-        setDays(json.Dates.dateTime)
+        const json = parseXML(xml);
+        console.log(json.Dates.dateTime);
+        setDays(json.Dates.dateTime);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/Events/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.Events.Event)
-        setMovies(json.Events.Event)
+        const json = parseXML(xml);
+        console.log(json.Events.Event);
+        setMovies(json.Events.Event);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   const showTimes = () => {
-    fetch(`https://www.finnkino.fi/xml/Schedule/?area=${selectedArea}&dt=${selectedDay}&eventID=${selectedMovie}`)
-      .then(response => response.text())
-      .then(xml => {
+    fetch(
+      `https://www.finnkino.fi/xml/Schedule/?area=${selectedArea}&dt=${selectedDay}&eventID=${selectedMovie}`
+    )
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        const shows = json.Schedule.Shows.Show
+        const json = parseXML(xml);
+        const shows = json.Schedule.Shows.Show;
         //console.log(json.Schedule.Shows.Show)
 
-        const now = new Date()
-        let filteredShows = []
-
+        const now = new Date();
+        let filteredShows = [];
 
         if (Array.isArray(shows)) {
-          filteredShows = shows.filter(show => new Date(show.dttmShowStart) > now)
+          filteredShows = shows.filter(
+            (show) => new Date(show.dttmShowStart) > now
+          );
         } else if (shows && new Date(shows.dttmShowStart) > now) {
-          filteredShows = [shows]
+          filteredShows = [shows];
         }
 
         if (filteredShows.length === 0) {
-          setMessage('Ei löytynyt yhtään tulevaa näytöstä valituilla kriteereillä')
+          setMessage(
+            'Ei löytynyt yhtään tulevaa näytöstä valituilla kriteereillä'
+          );
         } else {
-          setMessage('')
+          setMessage('');
         }
 
-        setTimes(filteredShows)
-
-
-
+        setTimes(filteredShows);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleSelect1 = (event) => {
-    setSelectedArea(event.target.value)
-  }
+    setSelectedArea(event.target.value);
+  };
   const handleSelectDay = (event) => {
-    setSelectedDay(event.target.value)
-  }
+    setSelectedDay(event.target.value);
+  };
 
-  
-const handleSelectMovie = (event) => {
-  setSelectedMovie(event.target.value)
-}
+  const handleSelectMovie = (event) => {
+    setSelectedMovie(event.target.value);
+  };
 
   function decodeHTMLEntities(text) {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = text;
-  return txt.value;
+    const txt = document.createElement('textarea');
+    txt.innerHTML = text;
+    return txt.value;
   }
 
   return (
     <>
-      <Box sx={{
-
-        minHeight: '100vh',
-        /* backgroundColor: '#333', */
-        border: 'none',
-        outline: 'none',
-        boxShadow: 'none'
-      }}>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          /* backgroundColor: '#333', */
+          border: 'none',
+          outline: 'none',
+          boxShadow: 'none',
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           flexDirection="column"
           minHeight="30vh"
+          gap={8}
         >
           <Typography variant="h4">Search showtimes</Typography>
-        </Box >
-        <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="area-select-label">Select Area/Theater</InputLabel>
-          <Select
-            labelId="area-select-label"
-            id="area-select"
-            value={selectedArea}
-            label="Select Area/Theater"
-            onChange={handleSelect1}
-          >
-            {areas.map((area, index) => (
-              <MenuItem key={area.ID} value={area.ID} 
-              >
-                {index === 0 ? 'All areas/theaters' : area.Name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="day-select-label">Select day</InputLabel>
-          <Select
-            labelId="day-select-label"
-            id="day-select"
-            value={selectedDay}
-            label="Select day"
-            onChange={handleSelectDay}
-          >
-            {days.map((date, index) => {
-              const dayObj = new Date(date)
-              const day = String(dayObj.getDate()).padStart(2, '0')
-              const month = String(dayObj.getMonth() + 1).padStart(2, '0')
-              const year = dayObj.getFullYear()
-              const formattedDate = `${day}.${month}.${year}`
 
-              return (
-                <MenuItem key={index} value={formattedDate}>
-                  {dayObj.toLocaleDateString('fi-FI')}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: 200 }} size='small'>
-          <InputLabel id="movie-select-label">Select movie</InputLabel>
-          <Select
-            labelId="movie-select-label"
-            id="movie-select"
-            value={selectedMovie}
-            label="Valitse elokuva"
-            onChange={handleSelectMovie}
-          >
-            <MenuItem value="all">All movies</MenuItem>
-            {movies.map((movie) => (
-              <MenuItem key={movie.ID} value={movie.ID}>
-                {movie.Title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {/* <p>{selectedArea}+{selectedDay}+{selectedMovie}</p> */}
-        <Button variant="contained" size='large' onClick={showTimes}>
-          Show showtimes
-        </Button>
-        <Box>
+          <Box display="flex" gap={1}>
+            <FormControl sx={{ width: 200 }} size="small">
+              <InputLabel id="area-select-label">
+                Select Area/Theater
+              </InputLabel>
+              <Select
+                labelId="area-select-label"
+                id="area-select"
+                value={selectedArea}
+                label="Select Area/Theater"
+                onChange={handleSelect1}
+              >
+                {areas.map((area, index) => (
+                  <MenuItem key={area.ID} value={area.ID}>
+                    {index === 0 ? 'All areas/theaters' : area.Name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: 200 }} size="small">
+              <InputLabel id="day-select-label">Select day</InputLabel>
+              <Select
+                labelId="day-select-label"
+                id="day-select"
+                value={selectedDay}
+                label="Select day"
+                onChange={handleSelectDay}
+              >
+                {days.map((date, index) => {
+                  const dayObj = new Date(date);
+                  const day = String(dayObj.getDate()).padStart(2, '0');
+                  const month = String(dayObj.getMonth() + 1).padStart(2, '0');
+                  const year = dayObj.getFullYear();
+                  const formattedDate = `${day}.${month}.${year}`;
+
+                  return (
+                    <MenuItem key={index} value={formattedDate}>
+                      {dayObj.toLocaleDateString('fi-FI')}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: 200 }} size="small">
+              <InputLabel id="movie-select-label">Select movie</InputLabel>
+              <Select
+                labelId="movie-select-label"
+                id="movie-select"
+                value={selectedMovie}
+                label="Valitse elokuva"
+                onChange={handleSelectMovie}
+              >
+                <MenuItem value="all">All movies</MenuItem>
+                {movies.map((movie) => (
+                  <MenuItem key={movie.ID} value={movie.ID}>
+                    {movie.Title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {/* <p>{selectedArea}+{selectedDay}+{selectedMovie}</p> */}
+            <Button variant="contained" size="large" onClick={showTimes}>
+              Show showtimes
+            </Button>
+          </Box>
+        </Box>
+
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection={'column'}
+        >
           {message && (
             <Typography variant="body1" color="error" sx={{ mb: 2 }}>
               {message}
@@ -237,21 +277,32 @@ const handleSelectMovie = (event) => {
           )}
 
           <List>
-            {times.map((show) => (
+            {currentPages.map((show) => (
               <React.Fragment key={show.ID}>
                 <ListItem alignItems="flex-start">
                   <ListItemText
                     primary={
-                      <ListItemButton component={Link} to={`/shows/${show.EventID}`}>
+                      <ListItemButton
+                        component={Link}
+                        to={`/shows/${show.EventID}`}
+                      >
                         {decodeHTMLEntities(show.Title)}
-                      </ListItemButton>}
+                      </ListItemButton>
+                    }
                     secondary={
                       <>
-                        <Typography component="span" variant="body2" color="text.primary">
-                          {new Date(show.dttmShowStart).toLocaleTimeString('fi-FI', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {new Date(show.dttmShowStart).toLocaleTimeString(
+                            'fi-FI',
+                            {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )}
                         </Typography>
                         <br />
                         {show.Theatre}
@@ -263,8 +314,17 @@ const handleSelectMovie = (event) => {
               </React.Fragment>
             ))}
           </List>
+          <Box>
+            <Stack spacing={2}>
+              <Pagination
+                count={Math.ceil(times.length / showtimesPerPage)}
+                page={page}
+                onChange={handlePages}
+              ></Pagination>
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </>
-  )
+  );
 };

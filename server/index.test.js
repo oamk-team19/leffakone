@@ -39,13 +39,55 @@ describe("Testing user management", () => {
         token = getToken(userTest2.email)
     })
 
-    it("should register", async () => {
-        //code
-    })
+  it('should register', async () => {
+    const newUser = {
+      email: 'register@example.com',
+      username: 'registertest',
+      password: 'password',
+    };
 
-    it("try to register with existing email", async () => {
-        //code
-    })
+    const response = await fetch('http://localhost:3001/auth/signup', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser),
+    });
+
+    const data = await response.json();
+    expect(response.status).to.equal(201);
+    expect(data).to.have.property('email');
+  });
+
+  it('should not register, email already in use', async () => {
+    const newUser = {
+      email: 'register2@example.com',
+      username: 'registertest2',
+      password: 'password',
+    };
+
+    const newUser2 = {
+      email: 'register2@example.com',
+      username: 'foo',
+      password: 'password',
+    };
+
+    // create test user in db
+    await fetch('http://localhost:3001/auth/signup', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser),
+    });
+
+    const response = await fetch('http://localhost:3001/auth/signup', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser2),
+    });
+
+    const data = await response.json();
+    expect(response.status).to.equal(409);
+    expect(data).to.have.property('error');
+    expect(data.error).to.include('Email is already in use');
+  });
 
       it("should login with correct email and password", async () => {
         const newUser = { email: "user2@example.com", password: "password2" }

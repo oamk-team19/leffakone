@@ -12,6 +12,8 @@ import {
   leaveGroupQuery,
   searchPending,
   searchFavoriteList,
+  myPendingRequests,
+  dropRequest,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -200,6 +202,35 @@ export const getSearchfavorite = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error('Favorite list failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getMyPendingRequests = async (req, res) => {
+  try {
+    const { idUser } = req.params;
+
+    const newRequest = await myPendingRequests(idUser);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error getting my pending requests: ' + error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteRequest = async (req, res) => {
+  try {
+    const { idUser, idGroup } = req.params;
+    console.log('deleting request');
+
+    const newRequest = await dropRequest(idUser, idGroup);
+    res.status(200).json(newRequest);
+  } catch (error) {
+    console.error('Error deleting request: ' + error.message);
     res.status(500).json({ error: error.message });
   }
 };

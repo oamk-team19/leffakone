@@ -13,6 +13,8 @@ import {
   leaveGroup,
   getSearchPending,
   getSearchfavorite,
+  getMyPendingRequests,
+  deleteRequest,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -30,5 +32,7 @@ groupRouter.get('/groups', getGroups);
 groupRouter.get('/mygroups/:idUser', getMyGroups);
 groupRouter.get('/searchPending', getSearchPending);
 groupRouter.get('/searchfavorite/:idgroup', getSearchfavorite);
+groupRouter.get('/requests/pending/:idUser', getMyPendingRequests);
+groupRouter.delete('/requests/delete/:idUser/:idGroup', deleteRequest);
 
 export default groupRouter;

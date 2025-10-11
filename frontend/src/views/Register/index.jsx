@@ -25,18 +25,46 @@ export const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordAlert, setPasswordAlert] = useState(false);
   const [passwordWarningText, setPasswordWarningText] = useState('');
-  const [emailInUse, setEmailInUse] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [signupError, setSignupError] = useState(false);
+  const [signupErrorMessage, setSignupErrorMessage] = useState('');
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  // Reset email and password error message
   React.useEffect(() => {
-    setEmailInUse(false);
-  }, [email]);
+    setSignupError(false);
+    setPasswordAlert(false);
+  }, [email, password, repeatPassword]);
 
   const navigate = useNavigate();
 
+  const checkPasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    setPasswordStrength(strength);
+  };
+
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateEmail(email)) {
+      setSignupError(true);
+      setSignupErrorMessage('Please enter a valid email address');
+      return;
+    }
 
     if (password !== repeatPassword) {
       setPasswordWarningText('Passwords must match');
@@ -69,16 +97,21 @@ export const Register = () => {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/signup`, {
-        email,
-        username,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/signup`,
+        {
+          email,
+          username,
+          password,
+        }
+      );
       console.log(res);
       navigate('/login');
     } catch (error) {
       if (error.response.status === 409) {
-        setEmailInUse(true);
+        setSignupError(true);
+        setSignupErrorMessage(error.response.data.error || 'Email error');
+        console.log(error);
       } else {
         console.error(error);
       }
@@ -118,7 +151,10 @@ export const Register = () => {
           <OutlinedInput
             id="outlined-adornment-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              checkPasswordStrength(e.target.value);
+            }}
             type={showPassword ? 'text' : 'password'}
             endAdornment={
               <InputAdornment position="end">
@@ -129,6 +165,13 @@ export const Register = () => {
             }
             label="Password"
           />
+          {passwordStrength != 0 && (
+            <Box sx={{ paddingTop: 2 }}>
+              <Typography variant="h7">Password strength:</Typography>{' '}
+              {'★'.repeat(passwordStrength)}
+              {'☆'.repeat(5 - passwordStrength)}
+            </Box>
+          )}
         </FormControl>
         <FormControl sx={{ m: 0, width: '25ch' }} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-repeat-password">
@@ -154,7 +197,7 @@ export const Register = () => {
           letter, one lower case letter and one number.
         </Alert>
         {passwordAlert && <Alert severity="error">{passwordWarningText}</Alert>}
-        {emailInUse && <Alert severity="error">Email is already in use</Alert>}
+        {signupError && <Alert severity="error">{signupErrorMessage}</Alert>}
         <Button variant="contained" type="submit">
           Submit
         </Button>

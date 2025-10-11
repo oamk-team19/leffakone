@@ -12,10 +12,10 @@ export const signin = async (req, res) => {
     }
 
     const result = await dataForSignIn(email); //send email to db to get a password linked to email
-    
-    if(!result){
-      console.log('No user in the database')
-      return res.status(401).json({ message: 'No user in the database'})
+
+    if (!result) {
+      console.log('No user in the database');
+      return res.status(401).json({ message: 'No user in the database' });
     }
 
     const match = await bcrypt.compare(password, result.password);
@@ -40,6 +40,32 @@ export const signin = async (req, res) => {
 export const signup = async (req, res) => {
   try {
     const { email, username, password } = req.body;
+
+    // Password validation
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ error: 'Password must be at least 8 characters long' });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return res
+        .status(400)
+        .json({ error: 'Password must contain at least one uppercase letter' });
+    }
+    if (!/[a-z]/.test(password)) {
+      return res
+        .status(400)
+        .json({ error: 'Password must contain at least one lowercase letter' });
+    }
+    if (!/[0-9]/.test(password)) {
+      return res
+        .status(400)
+        .json({ error: 'Password must contain at least one number' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await insertRegistration(email, username, hashedPassword);
@@ -57,4 +83,4 @@ export const signup = async (req, res) => {
 export const signout = async (req, res) => {
   res.clearCookie('refreshToken', { path: '/' });
   res.status(200).json({ message: 'Logged out' });
-}
+};

@@ -11,8 +11,10 @@ import NotInterestedIcon from '@mui/icons-material/NotInterested';
 
 export function NotificationsBell() {
   const { user, setUser } = useUser();
-  const [pendingStatus, setpendingStatus] = useState(0);
+  const [notificationStatus, setNotificationStatus] = useState(0);
   const [pendingsArray, setPendingsArray] = useState([]);
+  const [approvedArray, setApprovedArray] = useState([]);
+  const [rejectedArray, setRejectedArray] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -60,10 +62,11 @@ export function NotificationsBell() {
         console.log(response.data);
         setPendingsArray(response.data);
 
-        if (pendingStatus < response.data.length) {
+        if (notificationStatus < response.data.length) {
           //Huomioi aika
           //console.log('New pending request');
-          setpendingStatus(response.data.length);
+          
+          setNotificationStatus(response.data.length);
           //näytä uusi pyyntö
         }
       } catch (error) {
@@ -80,6 +83,9 @@ export function NotificationsBell() {
           }
         );
         console.log(response.data);
+        setApprovedArray(response.data);
+        notificationStatus = notificationStatus + response.data.length
+        setNotificationStatus(response.data.length)
       } catch (error) {
         console.log('Error in getting approved requests: ' + error);
       }
@@ -93,7 +99,9 @@ export function NotificationsBell() {
             params: { idUser: user.id },
           }
         );
+        setRejectedArray(response.data);
         console.log(response.data);
+        setNotificationStatus(response.data.length)
       } catch (error) {
         console.log('Error in getting rejected requests: ' + error);
       }
@@ -103,22 +111,28 @@ export function NotificationsBell() {
     getApproved();
     getRejected();
 
-    const interval = setInterval(getSearchPendingRequests, 5000);
-    const interval2 = setInterval(getApproved, 5000);
-    const interval3 = setInterval(getRejected, 5000);
-    return () => clearInterval(interval);
+    const interval = setInterval(getSearchPendingRequests, 15000); //every 15 seconds
+    const interval2 = setInterval(getApproved, 15000);
+    const interval3 = setInterval(getRejected, 15000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(interval2);
+      clearInterval(interval3);
+    };
   }, []);
 
   return (
     <>
       <ButtonIcon onClick={handleClick}>
-        <Badge color="error" badgeContent={pendingStatus}>
+        <Badge color="error" badgeContent={notificationStatus}>
           <NotificationsIcon />
         </Badge>
       </ButtonIcon>
-      {pendingsArray.length > 0 && (
-        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-          {pendingsArray.map((req) => (
+
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        {pendingsArray.length > 0 &&
+          pendingsArray.map((req) => (
             <MenuItem>
               {req.username + ' wants to join to group ' + req.groupname}
               <ButtonIcon
@@ -133,8 +147,19 @@ export function NotificationsBell() {
               </ButtonIcon>
             </MenuItem>
           ))}
-        </Menu>
-      )}
+
+        {approvedArray.length > 0 &&
+          approvedArray.map((req) => (
+            <MenuItem>{'You have been accepted to ' + req.groupname}</MenuItem>
+          ))}
+
+        {rejectedArray.length > 0 &&
+          rejectedArray.map((req) => (
+            <MenuItem>
+              {'You have not been accepted to ' + req.groupname}
+            </MenuItem>
+          ))}
+      </Menu>
     </>
   );
 }

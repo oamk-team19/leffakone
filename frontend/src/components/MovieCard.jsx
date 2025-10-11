@@ -17,7 +17,7 @@ const MovieCard = ({ movie }) => {
   useEffect(() => {
     const fetchMovie = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/movie/info', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/movie/info`, {
           params: { id: movie },
         });
         setMovieDetails(response.data);

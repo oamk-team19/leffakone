@@ -25,7 +25,7 @@ export function NotificationsBell() {
 
   const handleClickYes = async (username, groupnameR) => {
     try {
-      const response = await axios.put('http://localhost:3001/group/approve', {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/group/approve`, {
         groupName: groupnameR,
         idUser: username,
       });
@@ -37,7 +37,7 @@ export function NotificationsBell() {
 
   const handleClickNo = async (username, groupnameR) => {
     try {
-      const response = await axios.put('http://localhost:3001/group/reject', {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/group/reject`, {
         groupName: groupnameR,
         idUser: username,
       });
@@ -52,7 +52,7 @@ export function NotificationsBell() {
       try {
         //Get all pending requests
         const response = await axios.get(
-          'http://localhost:3001/group/searchPending',
+          `${import.meta.env.VITE_API_URL}/group/searchPending`,
           { params: { idUser: user.id } }
         );
         console.log(response);

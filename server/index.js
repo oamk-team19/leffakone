@@ -19,7 +19,7 @@ const env = process.env.NODE_ENV;
 const port = process.env.PORT || 3001;
 const jwt_secret = process.env.JWT_SECRET;
 
-if (env === 'develoment') {
+if (env === 'development') {
   await dbMigrate();
 }
 
@@ -90,7 +90,6 @@ app.use('/user', userRouter);
 app.use('/movie', movieinfoRouter);
 app.use('/video', trailerRouter);
 app.use('/review', reviewRouter);
-app.use('/video', trailerRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

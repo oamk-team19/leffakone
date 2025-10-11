@@ -25,10 +25,13 @@ export function NotificationsBell() {
 
   const handleClickYes = async (username, groupnameR) => {
     try {
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/group/approve`, {
-        groupName: groupnameR,
-        idUser: username,
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/group/approve`,
+        {
+          groupName: groupnameR,
+          idUser: username,
+        }
+      );
       console.log(response);
     } catch (error) {
       console.log('Error in approving' + error);
@@ -37,16 +40,19 @@ export function NotificationsBell() {
 
   const handleClickNo = async (username, groupnameR) => {
     try {
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/group/reject`, {
-        groupName: groupnameR,
-        idUser: username,
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/group/reject`,
+        {
+          groupName: groupnameR,
+          idUser: username,
+        }
+      );
       console.log(response);
     } catch (error) {
       console.log('Error in rejecting' + error);
     }
   };
-
+  console.log('Pending requests length: ' + pendingsArray.length);
   useEffect(() => {
     const getSearchPendingRequests = async () => {
       try {
@@ -56,6 +62,7 @@ export function NotificationsBell() {
           { params: { idUser: user.id } }
         );
         console.log(response);
+        console.log('Pending requests: ' + response.data);
         setPendingsArray(response.data);
 
         if (pendingStatus < response.data.length) {

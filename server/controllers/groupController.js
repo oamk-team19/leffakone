@@ -193,7 +193,6 @@ export const getSearchPending = async (req, res) => {
   }
 };
 
-
 export const getSearchfavorite = async (req, res) => {
   try {
     const { idgroup } = req.params;
@@ -203,5 +202,4 @@ export const getSearchfavorite = async (req, res) => {
     console.error('Favorite list failed in authcontroller', error.message);
     res.status(500).json({ error: error.message });
   }
-
-}
+};

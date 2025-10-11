@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Button, Box, Snackbar, Typography } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
@@ -41,11 +40,7 @@ export const Profile = () => {
 
         //Show favorite list
         if (!response.data.error) {
-          //Edit data to array
-          for (let index = 0; index < response.data.length; index++) {
-            responseMovieArray.push(response.data[index].idMovie);
-          }
-          setSearchResults(responseMovieArray);
+          setSearchResults(response.data);
         } else {
           setSearchResults([]);
         }

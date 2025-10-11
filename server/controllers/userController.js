@@ -10,6 +10,10 @@ import { searchFavoriteList } from '../models/userModel.js';
 export const deleteuser = async (req, res) => {
   try {
     const { email } = req.body;
+
+    if(email.length === 0){
+      return res.status(409).json({ error: "No email given." });
+    }
     const result = await deleteUserDb(email);
 
     if (result.error) {
@@ -25,6 +29,7 @@ export const deleteuser = async (req, res) => {
 export const searchfavorite = async (req, res) => {
   try {
     const { idUser } = req.query;
+
     const result = await searchFavoriteList(idUser);
     res.status(200).json(result);
   } catch (error) {

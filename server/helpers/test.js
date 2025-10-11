@@ -35,25 +35,8 @@ const insertTestUser = async (user) => {
 
         console.log('Test user inserted successfully')
     } catch (error) {
-console.error('Error inserting test user:', error)
+        console.error('Error inserting test user:', error)
     }
-    /*
-    hash(user.password, 10, (err, hashedPassword) => {
-        if (err) {
-            console.error('Error hashing password:', err)
-            return
-        }
-        pool.query('INSERT INTO users (username, password, email) VALUES ($1, $2, $3)',
-            [user.username, hashedPassword, user.email],
-            (err, result) => {
-                if (err) {
-                    console.error('Error inserting test user:', err)
-                } else {
-                    console.log('Test user inserted successfully')
-                }
-            })
-    })
-            */
 }
 
 //simply create a token with passed email.

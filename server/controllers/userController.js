@@ -11,7 +11,7 @@ export const deleteuser = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if(email.length === 0){
+    if (email.length === 0) {
       return res.status(409).json({ error: "No email given." });
     }
     const result = await deleteUserDb(email);
@@ -19,7 +19,7 @@ export const deleteuser = async (req, res) => {
     if (result.error) {
       return res.status(409).json({ error: result.error });
     }
-    res.status(201).json({ message: 'User deletion completed' });
+    res.status(200).json({ message: 'User deletion completed' });
   } catch (error) {
     console.error('User deletion failed in authcontroller', error.message);
     res.status(500).json({ error: error.message });
@@ -44,7 +44,7 @@ export const addFavorite = async (req, res) => {
     if (result.error) {
       return res.status(409).json({ error: result.error });
     }
-  } catch {}
+  } catch { }
   res.status(200).send({ msg: 'favorite added' });
 };
 

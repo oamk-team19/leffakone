@@ -53,6 +53,7 @@ describe("Testing user management", () => {
     });
 
     const data = await response.json();
+    
     expect(response.status).to.equal(201);
     expect(data).to.have.property('email');
   });
@@ -163,9 +164,9 @@ describe("Testing user management", () => {
 
         const data = await response.json()
         //console.log(data) 
-        //console.log(response)
+        //console.log(response) 
 
-        expect(response.status).to.equal(201)
+        expect(response.status).to.equal(200)
         expect(data).to.include.all.keys(["message"]);
         expect(data).to.deep.equal({ message: 'User deletion completed' });
         expect(data).to.include({ message: 'User deletion completed' });
@@ -201,7 +202,7 @@ describe("Testing user management", () => {
         })
 
         const data = await response.json()
-        console.log(data)
+        //console.log(data)
         //console.log(response)
 
 

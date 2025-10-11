@@ -36,7 +36,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /root/leffakone
+          cd /home/deployer/leffakone
           git reset --hard HEAD
           git pull origin main
           

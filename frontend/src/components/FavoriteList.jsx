@@ -6,7 +6,8 @@ const FavoriteList = ({ favoriteMovies }) => {
     <Stack
       direction={'row'}
       spacing={2}
-      sx={{ mb: 2, mt: 2, overflowX: 'auto' }}
+      width={1}
+      sx={{ mb: 2, mt: 2, overflowX: 'scroll' }}
     >
       {favoriteMovies.map((movie) => (
         <MovieCard key={movie} movie={movie} />

@@ -53,6 +53,7 @@ describe("Testing user management", () => {
     });
 
     const data = await response.json();
+    
     expect(response.status).to.equal(201);
     expect(data).to.have.property('email');
   });
@@ -163,9 +164,9 @@ describe("Testing user management", () => {
 
         const data = await response.json()
         //console.log(data) 
-        //console.log(response)
+        //console.log(response) 
 
-        expect(response.status).to.equal(201)
+        expect(response.status).to.equal(200)
         expect(data).to.include.all.keys(["message"]);
         expect(data).to.deep.equal({ message: 'User deletion completed' });
         expect(data).to.include({ message: 'User deletion completed' });
@@ -190,5 +191,27 @@ describe("Testing user management", () => {
         expect(data).to.include({ error: 'Not find user by email from users' });
         expect(Object.keys(data)).to.have.lengthOf(1);
         expect(data).to.have.property('error');
+    })
+
+     it("try to delete registration with empty email", async () => {
+        const newUser = { email: "" }
+        const response = await fetch('http://localhost:3001/user/deleteuser', {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newUser)
+        })
+
+        const data = await response.json()
+        //console.log(data)
+        //console.log(response)
+
+
+        expect(response.status).to.equal(409)
+        expect(data).to.include.all.keys(["error"]);
+        expect(data).to.deep.equal({ "error": "No email given." });
+        expect(data).to.include({ "error": "No email given." });
+        expect(Object.keys(data)).to.have.lengthOf(1);
+        expect(data).to.have.property('error');
+     
     })
 })

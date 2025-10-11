@@ -18,7 +18,7 @@ export const Profile = () => {
 
   const handleClick = () => {
     //Copy URI to clipboard
-    navigator.clipboard.writeText('http://localhost:5173/profile');
+    navigator.clipboard.writeText(`${import.meta.env.VITE_CLIENT_URL}/profile`);
     setOpen(true);
   };
 
@@ -33,7 +33,7 @@ export const Profile = () => {
     const searchFavorites = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:3001/user/searchfavorite',
+          `${import.meta.env.VITE_API_URL}/user/searchfavorite`,
           {
             params: { idUser: user.id },
           }
@@ -61,11 +61,14 @@ export const Profile = () => {
   const buttonPressedDeleteMe = async () => {
     /*14 Poista suosikkilistan jakaminen ja se uri*/
     try {
-      const res = await axios.delete('http://localhost:3001/user/deleteuser', {
-        data: { email: user.email },
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
-      });
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/user/deleteuser`,
+        {
+          data: { email: user.email },
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
+      );
       buttonPressedLogOut();
     } catch (error) {
       console.log('Error in deleting the user: ' + error);
@@ -75,7 +78,7 @@ export const Profile = () => {
   const buttonPressedLogOut = async () => {
     try {
       await axios.post(
-        'http://localhost:3001/auth/signout',
+        `${import.meta.env.VITE_API_URL}/auth/signout`,
         {},
         { withCredentials: true }
       );

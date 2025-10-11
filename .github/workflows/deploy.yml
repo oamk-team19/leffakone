@@ -1,0 +1,55 @@
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main  # Change to your deployment branch if needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+
+    - name: Install backend dependencies
+      working-directory: ./server
+      run: npm install
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy to DigitalOcean via SSH and PM2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /root/leffakone
+          git reset --hard HEAD
+          git pull origin main
+          
+          # Backend setup
+          cd server
+          npm install
+          pm2 reload server --update-env
+
+          # Frontend setup
+          cd ../frontend
+          npm install
+          npm run build
+          cp -r dist /var/www/react_build
+
+          # Reload nginx
+          sudo systemctl reload nginx

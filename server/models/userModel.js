@@ -183,14 +183,13 @@ export const searchFavoriteListByEmail = async (email) => {
 export const getSearchApproved = async (usersid) => {
   try {
     const userResult = await pool.query(
-      'SELECT * FROM "user_group" WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
+      'SELECT user_group.*, groups.groupname FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
       [usersid, 'approved']
     );
 
     if (userResult.rows.length === 0) {
-      return { message: 'No messages to show in approved' };
+      return { message: 'No new approved requests' };
     }
-    console.log(userResult)
     return userResult.rows;
   } catch (error) {
     throw error;
@@ -202,14 +201,14 @@ export const getSearchApproved = async (usersid) => {
 export const getSearchRejected = async (usersid) => {
   try {
     const userResult = await pool.query(
-      'SELECT * FROM "user_group" WHERE "user_iduser"=$1 AND "grouprequest"=$2',
+      'SELECT user_group.*, groups.groupname FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
       [usersid, 'rejected']
     );
 
     if (userResult.rows.length === 0) {
-      return { message: 'No messages to show in rejected' };
+      return { message: 'No new rejected requests' };
     }
-    return userResult;
+    return userResult.rows;
   } catch (error) {
     throw error;
   }

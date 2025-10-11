@@ -6,6 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Paper,
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -111,10 +112,13 @@ export const GroupPage = () => {
     if (shouldDelete) {
       try {
         console.log(user.user.id);
-        const res = await axios.delete(`${import.meta.env.VITE_API_URL}/group/delete`, {
-          data: { idGroup: idGroup, idUser: user.user.id },
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const res = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/group/delete`,
+          {
+            data: { idGroup: idGroup, idUser: user.user.id },
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
         console.log(res);
         navigate('/');
       } catch (error) {
@@ -179,10 +183,22 @@ export const GroupPage = () => {
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6">Members</Typography>
             <List>
-              {groupMembers.map((member, i) => (
-                <ListItem key={i}>
+              {groupMembers.map((member, id) => (
+                <Paper
+                  key={id}
+                  elevation={2}
+                  sx={{
+                    mb: 1,
+                    p: 1.5,
+                    borderRadius: 2,
+                    backgroundColor:
+                      id % 2 === 1 ? 'rgba(0,0,0,0.05)' : 'transparent',
+                    fontSize: '0.9rem',
+                  }}
+                  onClick={() => navigate(`/group/${group.idgroup}`)}
+                >
                   <ListItemText primary={member.username} />
-                </ListItem>
+                </Paper>
               ))}
             </List>
           </Box>

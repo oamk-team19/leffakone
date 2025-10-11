@@ -10,7 +10,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
 
 export function NotificationsBell() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [pendingStatus, setpendingStatus] = useState(0);
   const [pendingsArray, setPendingsArray] = useState([]);
 
@@ -48,6 +48,8 @@ export function NotificationsBell() {
   };
 
   useEffect(() => {
+    if (!user.id) return;
+
     const getSearchPendingRequests = async () => {
       try {
         //Get all pending requests
@@ -55,7 +57,7 @@ export function NotificationsBell() {
           'http://localhost:3001/group/searchPending',
           { params: { idUser: user.id } }
         );
-        console.log(response);
+        console.log(response.data);
         setPendingsArray(response.data);
 
         if (pendingStatus < response.data.length) {
@@ -69,9 +71,41 @@ export function NotificationsBell() {
       }
     };
 
+    const getApproved = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/user/searchApproved',
+          {
+            params: { idUser: user.id },
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.log('Error in getting approved requests: ' + error);
+      }
+    };
+
+    const getRejected = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/user/searchRejected',
+          {
+            params: { idUser: user.id },
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.log('Error in getting rejected requests: ' + error);
+      }
+    };
+
     getSearchPendingRequests();
+    getApproved();
+    getRejected();
 
     const interval = setInterval(getSearchPendingRequests, 5000);
+    const interval2 = setInterval(getApproved, 5000);
+    const interval3 = setInterval(getRejected, 5000);
     return () => clearInterval(interval);
   }, []);
 

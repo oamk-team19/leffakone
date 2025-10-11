@@ -178,3 +178,39 @@ export const searchFavoriteListByEmail = async (email) => {
     throw error;
   }
 };
+
+// Search  user's approved group requests
+export const getSearchApproved = async (usersid) => {
+  try {
+    const userResult = await pool.query(
+      'SELECT * FROM "user_group" WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
+      [usersid, 'approved']
+    );
+
+    if (userResult.rows.length === 0) {
+      return { message: 'No messages to show in approved' };
+    }
+    console.log(userResult)
+    return userResult.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+// Search user's rejected group requests
+export const getSearchRejected = async (usersid) => {
+  try {
+    const userResult = await pool.query(
+      'SELECT * FROM "user_group" WHERE "user_iduser"=$1 AND "grouprequest"=$2',
+      [usersid, 'rejected']
+    );
+
+    if (userResult.rows.length === 0) {
+      return { message: 'No messages to show in rejected' };
+    }
+    return userResult;
+  } catch (error) {
+    throw error;
+  }
+};

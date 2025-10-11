@@ -5,6 +5,8 @@ import {
   addFavorite,
   removeFavorite,
   searchFavoriteByEmail,
+  searchApproved,
+  searchRejected
 } from '../controllers/userController.js';
 import { auth } from '../helpers/auth.js';
 
@@ -13,6 +15,8 @@ const userRouter = Router();
 userRouter.delete('/deleteuser', deleteuser);
 userRouter.get('/searchfavorite', searchfavorite);
 userRouter.get('/favorite', auth, searchFavoriteByEmail);
+userRouter.get('/searchApproved', searchApproved);
+userRouter.get('/searchRejected', auth, searchRejected);
 userRouter.post('/favorite', auth, addFavorite);
 userRouter.delete('/favorite', auth, removeFavorite);
 

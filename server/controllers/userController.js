@@ -4,6 +4,8 @@ import {
   addFavoriteDb,
   removeFavoriteDb,
   searchFavoriteListByEmail,
+  getSearchApproved,
+  getSearchRejected
 } from '../models/userModel.js';
 import { searchFavoriteList } from '../models/userModel.js';
 
@@ -68,6 +70,28 @@ export const searchFavoriteByEmail = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error('Favorite list failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const searchApproved = async (req, res) => {
+  try {
+    const { idUser } = req.query;
+    const result = await getSearchApproved(idUser);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('SearchApproved failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const searchRejected = async (req, res) => {
+  try {
+    const { idUser } = req.query;
+    const result = await getSearchRejected(idUser);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('SearchRejected failed in authcontroller', error.message);
     res.status(500).json({ error: error.message });
   }
 };

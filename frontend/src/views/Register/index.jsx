@@ -159,7 +159,7 @@ export const Register = () => {
             endAdornment={
               <InputAdornment position="end">
                 <IconButton onClick={handleClickShowPassword} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             }
@@ -185,7 +185,7 @@ export const Register = () => {
             endAdornment={
               <InputAdornment position="end">
                 <IconButton onClick={handleClickShowPassword} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             }

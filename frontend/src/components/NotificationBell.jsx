@@ -52,7 +52,7 @@ export function NotificationsBell() {
       console.log('Error in rejecting' + error);
     }
   };
-  console.log('Pending requests length: ' + pendingsArray.length);
+
   useEffect(() => {
     const getSearchPendingRequests = async () => {
       try {

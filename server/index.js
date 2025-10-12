@@ -19,7 +19,7 @@ const env = process.env.NODE_ENV;
 const port = process.env.PORT || 3001;
 const jwt_secret = process.env.JWT_SECRET;
 
-if (env === 'develoment') {
+if (env === 'development') {
   await dbMigrate();
 }
 

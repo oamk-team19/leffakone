@@ -2,7 +2,7 @@
 import axios from "axios"
 import React from "react"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Box, Typography, Card, CardMedia, CardContent, IconButton, Tooltip, Button, TextField, Rating, Stack} from "@mui/material"
 import FormatListBulletedAddIcon from '@mui/icons-material/FormatListBulletedAdd';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -21,7 +21,7 @@ export const MovieInfo = () => {
     const { user } = useUser()
     const isLoggedIn = !!user.token
     const [reviews, setReviews] = useState([])
-
+    const navigate = useNavigate()
 
     const handleTextChange = (event) => {
       const newText = event.target.value;
@@ -216,11 +216,19 @@ export const MovieInfo = () => {
               marginBottom: '2rem'
             }}
           >
+          <Tooltip title={isLoggedIn ? "Write a review" : "Login to review"}>
             <Button 
-              variant="contained"
-              disabled={!isLoggedIn} 
-              onClick={() => setShowReviewForm(true)}
-            >Review movie</Button>
+              variant="contained" 
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login')
+                } else {
+                  setShowReviewForm(true)}
+                }
+              } 
+            >Review movie
+            </Button>
+          </Tooltip>
             {showReviewForm && (
             <>
             <TextField 

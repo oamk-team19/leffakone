@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE public.showtime
+ADD COLUMN day DATE NOT NULL;
+
+COMMIT;

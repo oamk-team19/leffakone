@@ -179,35 +179,14 @@ export const searchFavoriteListByEmail = async (email) => {
   }
 };
 
-// Search  user's approved group requests
-export const getSearchApproved = async (usersid) => {
-  try {
-    const userResult = await pool.query(
-      'SELECT user_group.*, groups.groupname FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
-      [usersid, 'approved']
-    );
-
-    if (userResult.rows.length === 0) {
-      return { message: 'No new approved requests' };
-    }
-    return userResult.rows;
-  } catch (error) {
-    throw error;
-  }
-};
-
-
 // Search user's rejected group requests
-export const getSearchRejected = async (usersid) => {
+export const getSearchAllRequests = async (usersid) => {
   try {
     const userResult = await pool.query(
-      'SELECT user_group.*, groups.groupname FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup WHERE "user_iduser"=$1 AND "grouprequest"=$2;',
-      [usersid, 'rejected']
+      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1;',
+      [usersid]
     );
 
-    if (userResult.rows.length === 0) {
-      return { message: 'No new rejected requests' };
-    }
     return userResult.rows;
   } catch (error) {
     throw error;

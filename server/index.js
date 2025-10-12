@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import reviewRouter from './routers/reviewRouter.js';
 import groupRouter from './routers/groupRouter.js';
+import showtimeRouter from './routers/showtimeRouter.js';
 
 dotenv.config();
 
@@ -89,6 +90,7 @@ app.use('/group', groupRouter); //for group actions
 app.use('/user', userRouter);
 app.use('/movie', movieinfoRouter);
 app.use('/video', trailerRouter);
+app.use('/showtime', showtimeRouter);
 app.use('/review', reviewRouter);
 
 app.use((err, req, res, next) => {

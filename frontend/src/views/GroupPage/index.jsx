@@ -14,6 +14,8 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
+import ShowtimeCard from '../../components/ShowtimeCard';
+import ShowtimeList from '../../components/ShowtimeList';
 import FavoriteList from '../../components/FavoriteList';
 
 export const GroupPage = () => {
@@ -22,6 +24,13 @@ export const GroupPage = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
+  const [showData, setShowData] = useState([]);
+  const [message, setMessage] = useState('');
+
+
+
+
+  
   const responseMovieArray = [];
   const [searchResults, setSearchResults] = useState([]);
 
@@ -147,6 +156,65 @@ export const GroupPage = () => {
     }
   };
 
+  const parseXML = (xmlString) => {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlString, 'text/xml');
+  const shows = Array.from(xml.getElementsByTagName('Show')).map(show => ({
+    ID: show.getElementsByTagName('ID')[0].textContent,
+    Title: show.getElementsByTagName('Title')[0].textContent,
+    dttmShowStart: show.getElementsByTagName('dttmShowStart')[0].textContent,
+    Theatre: show.getElementsByTagName('Theatre')[0].textContent,
+    EventID: show.getElementsByTagName('EventID')[0].textContent,
+  }));
+  return shows;
+};
+
+useEffect(() => {
+  const fetchGroupShowtimes = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/showtime`, {
+        params: { idGroup: idGroup},
+      });
+      const savedShowtimes = response.data;
+      console.log('Saved showtimes from backend:', savedShowtimes);
+      if (savedShowtimes.length === 0) {
+        setMessage('No showtimes saved');
+        return;
+      }
+      const showtimeInfo = await Promise.all(
+        savedShowtimes.map(async ({ idShow, idEvent, day }) => {
+          
+          const localDate = new Date(day);
+          const dateFi = localDate.toLocaleDateString('fi-FI'); // esim. "8.10.2025"
+          const [d, m, y] = dateFi.split('.');
+          const formattedDate = `${d.padStart(2, '0')}.${m.padStart(2, '0')}.${y}`;
+          const url = `https://www.finnkino.fi/xml/Schedule/?eventID=${idEvent}&dt=${formattedDate}`;
+          
+          const response = await axios.get(url);
+          const shows = parseXML(response.data);
+
+          return shows.find(s => String(s.ID) === String(idShow));
+        })
+      );
+
+      const validShows = showtimeInfo.filter(Boolean);
+      if(validShows.length === 0) {
+        setMessage('No upcoming showtimes found')
+      }
+      const sortedShows = validShows.sort((a, b) => new Date(a.dttmShowStart) - new Date(b.dttmShowStart));
+      
+      setShowData(sortedShows);
+    } catch (error) {
+      console.error('Error fetching group showtimes', error);
+      setMessage('Error in search');
+    }
+  };
+  fetchGroupShowtimes();
+}, []);
+
+
+
+
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" sx={{ paddingY: 2 }} align="center">
@@ -165,12 +233,9 @@ export const GroupPage = () => {
             )}
           </Box>
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Shared showtimes
-            </Typography>
-            <Typography variant="body" sx={{ my: 2 }}>
-              No showtimes shared yet
-            </Typography>
+            <Typography>Shared showtimes</Typography>
+            {message && <Typography color="error">{message}</Typography>}
+            <ShowtimeList times={showData} hideIcon={true} />
           </Box>
         </Grid>
         <Divider

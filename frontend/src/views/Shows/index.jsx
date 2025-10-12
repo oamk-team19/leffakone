@@ -74,16 +74,23 @@ export const Movies = () => {
             display: 'flex',
             mb: 1,
             width: '100%',
+            
         }}
         >
-          <Box>
             <CardMedia
               component="img"
               image={decodeHTMLEntities(movie?.Images.EventLargeImagePortrait)}
               alt={decodeHTMLEntities(movie?.Title)}
-              sx={{ width: 400}}
+              sx={{ width: {
+                      xs: 200,
+                      sm: 400,
+                      md: 600,
+                      lg: 1000
+              },
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: 10 }}
             />
-          </Box>
           <CardContent sx={{
             flexGrow: 1,
             display: 'flex',
@@ -115,9 +122,6 @@ export const Movies = () => {
           </Box>
           </CardContent>
         </Card>
-        <Box>
-            <Typography variant="h5">Jotakin lisätietoja ?</Typography>
-        </Box>
       </Box>
     )
 }

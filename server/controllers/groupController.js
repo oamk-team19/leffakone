@@ -12,6 +12,7 @@ import {
   leaveGroupQuery,
   searchPending,
   searchFavoriteList,
+  getSearchAllRequests,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -205,3 +206,14 @@ export const getSearchfavorite = async (req, res) => {
   }
 
 }
+
+export const searchAllRequests = async (req, res) => {
+  try {
+    const { idUser } = req.query;
+    const result = await getSearchAllRequests(idUser);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('SearchAllRequests failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};

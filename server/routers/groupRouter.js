@@ -13,6 +13,7 @@ import {
   leaveGroup,
   getSearchPending,
   getSearchfavorite,
+  searchAllRequests,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -30,5 +31,6 @@ groupRouter.get('/groups', getGroups);
 groupRouter.get('/mygroups/:idUser', getMyGroups);
 groupRouter.get('/searchPending', getSearchPending);
 groupRouter.get('/searchfavorite/:idgroup', getSearchfavorite);
+groupRouter.get('/searchAllRequests', searchAllRequests);
 
 export default groupRouter;

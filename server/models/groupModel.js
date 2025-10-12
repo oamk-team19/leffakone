@@ -274,3 +274,18 @@ export const searchFavoriteList = async (idGroup) => {
     throw error;
   }
 };
+
+// Search user's approved and rejected group requests
+export const getSearchAllRequests = async (usersid) => {
+  try {
+    const userResult = await pool.query(
+      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1;',
+      [usersid]
+    );
+
+    return userResult.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+

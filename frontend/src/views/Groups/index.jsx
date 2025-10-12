@@ -8,6 +8,9 @@ import {
   ListItemText,
   TextField,
   Typography,
+  Stack,
+  Pagination,
+  Paper,
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -23,7 +26,28 @@ export const Groups = () => {
   const [myGroups, setMyGroups] = useState([]);
   const [createGroup, setCreateGroup] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [requestAlreadySent, setRequestSent] = useState([]);
   const navigate = useNavigate();
+
+  //For pagination
+  const groupsPerPage = 5;
+  const [page, setPages] = useState(1);
+  const [myGroupsPage, setMyGroupsPage] = useState(1);
+  const groupsPerPageMyGroups = 5;
+
+  const startPage = (page - 1) * groupsPerPage;
+  const endPage = startPage + groupsPerPage;
+  const currentPages = groups.slice(startPage, endPage);
+  const startMyGroupsIndex = (myGroupsPage - 1) * groupsPerPageMyGroups;
+  const endMyGroupsIndex = startMyGroupsIndex + groupsPerPageMyGroups;
+  const currentMyGroups = myGroups.slice(startMyGroupsIndex, endMyGroupsIndex);
+
+  const handlePages = (event, value) => {
+    setPages(value);
+  };
+  const handleMyGroupsPageChange = (event, value) => {
+    setMyGroupsPage(value);
+  };
 
   function toggle() {
     setCreateGroup((createGroup) => !createGroup);
@@ -31,7 +55,9 @@ export const Groups = () => {
 
   const getGroups = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/group/groups`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/group/groups`
+      );
       setGroups(res.data);
     } catch (error) {
       if (error.response.status === 409) {
@@ -45,7 +71,7 @@ export const Groups = () => {
   const getMyGroups = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3001/group/mygroups/${user.user.id}`
+        `${import.meta.env.VITE_API_URL}/group/mygroups/${user.user.id}`
       );
       setMyGroups(res.data);
     } catch (error) {
@@ -57,6 +83,18 @@ export const Groups = () => {
     }
   };
 
+  const getPendingGroupRequests = async () => {
+    try {
+      //Get all pending requests
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/group/requests/pending/${user.user.id}`
+      );
+      setRequestSent(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getGroups();
   }, []);
@@ -65,6 +103,7 @@ export const Groups = () => {
     if (user.user.id) {
       setIsLoggedIn(true);
       getMyGroups();
+      getPendingGroupRequests();
       console.log(myGroups);
     } else {
       console.log('User id not available');
@@ -75,10 +114,13 @@ export const Groups = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('http://localhost:3001/group/create', {
-        groupName: groupName,
-        idUser: user.user.id,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/group/create`,
+        {
+          groupName: groupName,
+          idUser: user.user.id,
+        }
+      );
     } catch (error) {
       if (error.response.status === 409) {
         alert(error.response.data.error);
@@ -93,12 +135,32 @@ export const Groups = () => {
 
   const handleJoinGroup = async (groupname) => {
     try {
-      const res = await axios.post('http://localhost:3001/group/request', {
-        groupName: groupname,
-        idUser: user.user.id,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/group/request`,
+        {
+          groupName: groupname,
+          idUser: user.user.id,
+        }
+      );
       console.log(res);
       alert('Request sent!');
+      getPendingGroupRequests();
+    } catch (error) {
+      if (error.response.status === 409) {
+        alert(error.response.data.error);
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleCancelRequest = async (idGroup) => {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/group/requests/delete/${user.user.id}/${idGroup}`
+      );
+      console.log(res);
+      getPendingGroupRequests();
     } catch (error) {
       if (error.response.status === 409) {
         alert(error.response.data.error);
@@ -139,11 +201,11 @@ export const Groups = () => {
                     alignItems={'center'}
                     gap={2}
                   >
-                    <Button variant="contained" type="submit">
-                      Submit
-                    </Button>
                     <Button variant="contained" onClick={toggle}>
                       Cancel
+                    </Button>
+                    <Button variant="contained" type="submit">
+                      Submit
                     </Button>
                   </Box>
                 </>
@@ -157,81 +219,169 @@ export const Groups = () => {
         </Box>
       </form>
 
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 7 }}>
-          <Typography variant="h5" sx={{ paddingY: 2 }} align="left">
-            All groups
-          </Typography>
-          <List>
-            {groups.map((group, id) => (
-              <ListItem key={id}>
-                <ListItemText primary={group.groupname} />
-                {isLoggedIn ? (
-                  myGroups.some((g) => g.groupname === group.groupname) ? (
-                    <>
+      <Box
+        sx={{ p: 4 }}
+        align="center"
+        display={'flex'}
+        flexDirection={'column-reverse'}
+      >
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Typography
+              variant="h5"
+              sx={{ paddingY: 2, textAlign: { xs: 'center', md: 'left' } }}
+            >
+              All groups
+            </Typography>
+            <List>
+              {currentPages.map((group, id) => (
+                <Paper
+                  key={id}
+                  elevation={2}
+                  sx={{
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    backgroundColor:
+                      id % 2 === 1 ? 'rgba(0,0,0,0.1)' : 'transparent',
+                    '&:hover': { backgroundColor: 'rgba(225, 185, 197, 0.1)' },
+                  }}
+                >
+                  <ListItemText
+                    primary={
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        color="text.primary"
+                      >
+                        {group.groupname}
+                      </Typography>
+                    }
+                  />
+                  {isLoggedIn ? (
+                    myGroups.some((g) => g.groupname === group.groupname) ? (
+                      <>
+                        <Button
+                          variant="outlined"
+                          endIcon={<ArrowForwardIosIcon />}
+                          onClick={() => navigate(`/group/${group.idgroup}`)}
+                        >
+                          Already a member
+                        </Button>
+                      </>
+                    ) : requestAlreadySent.some(
+                        (r) => r.group_idgroup === group.idgroup
+                      ) ? (
                       <Button
                         variant="outlined"
-                        endIcon={<ArrowForwardIosIcon />}
-                        onClick={() => navigate(`/group/${group.idgroup}`)}
+                        startIcon={<PersonAddIcon />}
+                        onClick={() => handleCancelRequest(group.idgroup)}
                       >
-                        Already a member
+                        Cancel request
                       </Button>
-                    </>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        startIcon={<PersonAddIcon />}
+                        onClick={() => handleJoinGroup(group.groupname)}
+                      >
+                        Send request
+                      </Button>
+                    )
                   ) : (
                     <Button
                       variant="outlined"
                       startIcon={<PersonAddIcon />}
-                      onClick={() => handleJoinGroup(group.groupname)}
+                      disabled
                     >
                       Send request
                     </Button>
-                  )
-                ) : (
-                  <Button
-                    variant="outlined"
-                    startIcon={<PersonAddIcon />}
-                    disabled
-                  >
-                    Send request
-                  </Button>
-                )}
-              </ListItem>
-            ))}
-          </List>
-        </Grid>
-        <Divider
-          size={{ xs: 0, md: 1 }}
-          orientation="vertical"
-          variant="middle"
-          flexItem
-        />
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Typography variant="h5" sx={{ margin: 4 }} align="left">
-            My Groups
-          </Typography>
-          {isLoggedIn ? (
-            <List>
-              {myGroups.length > 0 ? (
-                myGroups.map((group, id) => (
-                  <ListItem key={id}>
-                    <Link to={`/group/${group.idgroup}`}>
-                      <ListItemText primary={group.groupname} />
-                    </Link>
-                  </ListItem>
-                ))
-              ) : (
-                <Typography variant="body1" align="left">
-                  You have not joined any groups yet.
-                </Typography>
-              )}
+                  )}
+                </Paper>
+              ))}
             </List>
-          ) : (
-            <Typography variant="h6" align="left">
-              Log in to start joining groups
+            <Box display="flex" justifyContent="center">
+              <Stack spacing={2}>
+                <Pagination
+                  count={Math.ceil(groups.length / groupsPerPage)}
+                  page={page}
+                  onChange={handlePages}
+                ></Pagination>
+              </Stack>
+            </Box>
+          </Grid>
+          <Divider
+            size={{ xs: 0, md: 1 }}
+            orientation="vertical"
+            variant="middle"
+            flexItem
+          />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Typography
+              variant="h5"
+              sx={{ paddingY: 2, textAlign: { xs: 'center', md: 'left' } }}
+            >
+              My Groups
             </Typography>
-          )}
+            {isLoggedIn ? (
+              <List>
+                {myGroups.length > 0 ? (
+                  currentMyGroups.map((group, id) => (
+                    <Paper
+                      key={id}
+                      elevation={2}
+                      sx={{
+                        mb: 1,
+                        p: 1.5,
+                        borderRadius: 2,
+                        backgroundColor:
+                          id % 2 === 1 ? 'rgba(0,0,0,0.05)' : 'transparent',
+                        '&:hover': {
+                          backgroundColor: 'rgba(225, 185, 197, 0.1)',
+                        },
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                      }}
+                      onClick={() => navigate(`/group/${group.idgroup}`)}
+                    >
+                      <ListItem>
+                        <ListItemText
+                          primary={
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight="bold"
+                              color="text.primary"
+                              sx={{ fontSize: '1rem' }} // Slightly smaller heading
+                            >
+                              {group.groupname}
+                            </Typography>
+                          }
+                        />
+                        <ArrowForwardIosIcon fontSize="small" />
+                      </ListItem>
+                    </Paper>
+                  ))
+                ) : (
+                  <Typography variant="body1" align="left">
+                    You have not joined any groups yet.
+                  </Typography>
+                )}
+              </List>
+            ) : (
+              <Typography variant="h6" align="left">
+                Log in to start joining groups
+              </Typography>
+            )}
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Pagination
+                count={Math.ceil(myGroups.length / groupsPerPageMyGroups)}
+                page={myGroupsPage}
+                onChange={handleMyGroupsPageChange}
+              />
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };

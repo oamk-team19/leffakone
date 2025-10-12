@@ -6,6 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Paper,
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,6 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 import ShowtimeCard from '../../components/ShowtimeCard';
 import ShowtimeList from '../../components/ShowtimeList';
+import FavoriteList from '../../components/FavoriteList';
 
 export const GroupPage = () => {
   const user = useUser();
@@ -28,24 +30,41 @@ export const GroupPage = () => {
 
 
 
-  /*
+  
   const responseMovieArray = [];
+  const [searchResults, setSearchResults] = useState([]);
 
-  get-pyyntö /group/searchfavorite',params: { idGroup: 1 },
-
-  tuloksen muokkaus 
-  for (let index = 0; index < response.data.length; index++) {
+  useEffect(() => {
+    const searchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/group/searchfavorite/${idGroup}`
+        );
+        console.log(response);
+        //Show favorite list
+        if (!response.data.error) {
+          //Edit data to array
+          for (let index = 0; index < response.data.length; index++) {
             responseMovieArray.push(response.data[index].movie_idMovie);
           }
           setSearchResults(responseMovieArray);
-         
-  */
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.log('Error in getting a favorite list: ' + error);
+        setSearchResults([]); // Default movies if error
+      }
+    };
+
+    searchFavorites();
+  }, []);
 
   useEffect(() => {
     const getGroupCreator = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/creator/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/creator/${idGroup}`
         );
         if (res.data === user.user.id) {
           setIsCreator(true);
@@ -65,7 +84,7 @@ export const GroupPage = () => {
     const getGroupName = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/name/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/name/${idGroup}`
         );
         setGroupName(res.data);
       } catch (error) {
@@ -83,7 +102,7 @@ export const GroupPage = () => {
     const getGroupMembers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/members/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/members/${idGroup}`
         );
         setGroupMembers(res.data);
       } catch (error) {
@@ -102,10 +121,13 @@ export const GroupPage = () => {
     if (shouldDelete) {
       try {
         console.log(user.user.id);
-        const res = await axios.delete('http://localhost:3001/group/delete', {
-          data: { idGroup: idGroup, idUser: user.user.id },
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const res = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/group/delete`,
+          {
+            data: { idGroup: idGroup, idUser: user.user.id },
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
         console.log(res);
         navigate('/');
       } catch (error) {
@@ -120,7 +142,7 @@ export const GroupPage = () => {
       try {
         console.log(user.user.id);
         const res = await axios.delete(
-          'http://localhost:3001/group/leavegroup',
+          `${import.meta.env.VITE_API_URL}/group/leavegroup`,
           {
             data: { idGroup: idGroup, idUser: user.user.id },
             headers: { 'Content-Type': 'application/json' },
@@ -204,9 +226,11 @@ useEffect(() => {
             <Typography variant="h6" sx={{ mb: 2 }}>
               Shared movies
             </Typography>
-            <Typography variant="body" sx={{ my: 2 }}>
-              No movies shared yet
-            </Typography>
+            {searchResults && searchResults.length > 0 ? (
+              <FavoriteList favoriteMovies={searchResults} />
+            ) : (
+              <Typography>No favorite movies yet!</Typography>
+            )}
           </Box>
           <Box sx={{ mb: 4 }}>
             <Typography>Shared showtimes</Typography>
@@ -224,10 +248,22 @@ useEffect(() => {
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6">Members</Typography>
             <List>
-              {groupMembers.map((member, i) => (
-                <ListItem key={i}>
+              {groupMembers.map((member, id) => (
+                <Paper
+                  key={id}
+                  elevation={2}
+                  sx={{
+                    mb: 1,
+                    p: 1.5,
+                    borderRadius: 2,
+                    backgroundColor:
+                      id % 2 === 1 ? 'rgba(0,0,0,0.05)' : 'transparent',
+                    fontSize: '0.9rem',
+                  }}
+                  onClick={() => navigate(`/group/${group.idgroup}`)}
+                >
                   <ListItemText primary={member.username} />
-                </ListItem>
+                </Paper>
               ))}
             </List>
           </Box>

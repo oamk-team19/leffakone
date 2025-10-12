@@ -14,20 +14,24 @@ import reviewRouter from './routers/reviewRouter.js';
 import groupRouter from './routers/groupRouter.js';
 import showtimeRouter from './routers/showtimeRouter.js';
 
-
-
 dotenv.config();
 
 const env = process.env.NODE_ENV;
 const port = process.env.PORT || 3001;
 const jwt_secret = process.env.JWT_SECRET;
 
-if (env === "development") {
+if (env === 'development') {
   await dbMigrate();
 }
 
+const corsOptions = {
+  origin: process.env.CLIENT_URL, // Replace with your frontend's actual origin
+  credentials: true, // Allow cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers from the client
+};
 const app = express();
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -43,18 +47,18 @@ app.use((req, res, next) => {
 
   res.authorizationHeader = (email) => {
     const access_token = jwt.sign({ user: email }, jwt_secret, {
-      expiresIn: '1m',
+      expiresIn: '15m',
     });
     return res.header('Authorization', 'Bearer ' + access_token);
   };
 
   res.refreshToken = (email) => {
     const refresh_token = jwt.sign({ user: email }, jwt_secret, {
-      expiresIn: '2m',
+      expiresIn: '30m',
     });
 
     return res.cookie('refreshToken', refresh_token, {
-      maxAge: 1000 * 60 * 2,
+      maxAge: 1000 * 60 * 30,
     });
   };
 
@@ -85,11 +89,9 @@ app.use('/auth', authRouter); //for signin and signup
 app.use('/group', groupRouter); //for group actions
 app.use('/user', userRouter);
 app.use('/movie', movieinfoRouter);
-app.use('/video',trailerRouter);
-app.use('/review', reviewRouter);
 app.use('/video', trailerRouter);
-app.use('/showtime', showtimeRouter)
-
+app.use('/showtime', showtimeRouter);
+app.use('/review', reviewRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

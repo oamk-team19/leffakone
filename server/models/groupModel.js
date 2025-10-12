@@ -247,8 +247,7 @@ export const searchPending = async (idUser) => {
     //console.log(pendings.rows)
 
     if (pendings.rows.length === 0) {
-      return {message: 'No pending requests'};
-    
+      return { message: 'No pending requests' };
     }
 
     return pendings.rows;
@@ -266,10 +265,36 @@ export const searchFavoriteList = async (idGroup) => {
     );
 
     if (searched.rows.length === 0) {
-      return { error: 'Not find user by id from users' }
+      return { error: 'Not find user by id from users' };
     }
 
     return searched.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const myPendingRequests = async (idUser) => {
+  try {
+    const result = await pool.query(
+      `SELECT group_idgroup FROM user_group WHERE user_iduser=$1 AND grouprequest=$2`,
+      [idUser, 'pending']
+    );
+
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const dropRequest = async (idUser, idGroup) => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM user_group WHERE user_iduser=$1 AND group_idgroup=$2`,
+      [idUser, idGroup]
+    );
+
+    return result.rows[0];
   } catch (error) {
     throw error;
   }

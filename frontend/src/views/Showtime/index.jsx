@@ -32,130 +32,131 @@ export const Showtime = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('info')
 
   const xmlToJson = useCallback((node) => {
-    const json = {}
+    const json = {};
 
-    let children = [...node.children]
+    let children = [...node.children];
     //console.log(node.nodeName)
     //console.log(node.innerHTML)
 
-    if (!children.length) return node.innerHTML
+    if (!children.length) return node.innerHTML;
 
     for (let child of children) {
-      const hasSiblings = children.filter(c => c.nodeName === child.nodeName).length > 1
+      const hasSiblings =
+        children.filter((c) => c.nodeName === child.nodeName).length > 1;
 
       if (hasSiblings) {
         if (json[child.nodeName] === undefined) {
-          json[child.nodeName] = [xmlToJson(child)]
+          json[child.nodeName] = [xmlToJson(child)];
         } else {
-          json[child.nodeName].push(xmlToJson(child))
+          json[child.nodeName].push(xmlToJson(child));
         }
       } else {
-        json[child.nodeName] = xmlToJson(child)
+        json[child.nodeName] = xmlToJson(child);
       }
     }
-    return json
-  }, [])
+    return json;
+  }, []);
 
-  const parseXML = useCallback((xml) => {
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(xml, 'application/xml')
-    return xmlToJson(xmlDoc)
-  }, [xmlToJson])
+  const parseXML = useCallback(
+    (xml) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xml, 'application/xml');
+      return xmlToJson(xmlDoc);
+    },
+    [xmlToJson]
+  );
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/TheatreAreas/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.TheatreAreas.TheatreArea)
-        setAreas(json.TheatreAreas.TheatreArea)
+        const json = parseXML(xml);
+        console.log(json.TheatreAreas.TheatreArea);
+        setAreas(json.TheatreAreas.TheatreArea);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
-
-
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/ScheduleDates/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.Dates.dateTime)
-        setDays(json.Dates.dateTime)
+        const json = parseXML(xml);
+        console.log(json.Dates.dateTime);
+        setDays(json.Dates.dateTime);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   useEffect(() => {
     fetch('https://www.finnkino.fi/xml/Events/')
-      .then(response => response.text())
-      .then(xml => {
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        console.log(json.Events.Event)
-        setMovies(json.Events.Event)
+        const json = parseXML(xml);
+        console.log(json.Events.Event);
+        setMovies(json.Events.Event);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [parseXML])
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [parseXML]);
 
   const showTimes = () => {
-    fetch(`https://www.finnkino.fi/xml/Schedule/?area=${selectedArea}&dt=${selectedDay}&eventID=${selectedMovie}`)
-      .then(response => response.text())
-      .then(xml => {
+    fetch(
+      `https://www.finnkino.fi/xml/Schedule/?area=${selectedArea}&dt=${selectedDay}&eventID=${selectedMovie}`
+    )
+      .then((response) => response.text())
+      .then((xml) => {
         //console.log(xml)
         //getFinnnkinoTheaters(xml)
-        const json = parseXML(xml)
-        const shows = json.Schedule.Shows.Show
+        const json = parseXML(xml);
+        const shows = json.Schedule.Shows.Show;
         //console.log(json.Schedule.Shows.Show)
 
-        const now = new Date()
-        let filteredShows = []
-
+        const now = new Date();
+        let filteredShows = [];
 
         if (Array.isArray(shows)) {
-          filteredShows = shows.filter(show => new Date(show.dttmShowStart) > now)
+          filteredShows = shows.filter(
+            (show) => new Date(show.dttmShowStart) > now
+          );
         } else if (shows && new Date(shows.dttmShowStart) > now) {
-          filteredShows = [shows]
+          filteredShows = [shows];
         }
 
         if (filteredShows.length === 0) {
           setMessage('No upcoming showtimes found for the selected criteria.')
         } else {
-          setMessage('')
+          setMessage('');
         }
 
-        setTimes(filteredShows)
-
-
-
+        setTimes(filteredShows);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleSelect1 = (event) => {
-    setSelectedArea(event.target.value)
-  }
+    setSelectedArea(event.target.value);
+  };
   const handleSelectDay = (event) => {
-    setSelectedDay(event.target.value)
-  }
+    setSelectedDay(event.target.value);
+  };
 
-  
-const handleSelectMovie = (event) => {
-  setSelectedMovie(event.target.value)
-}
+  const handleSelectMovie = (event) => {
+    setSelectedMovie(event.target.value);
+  };
 
 
 
@@ -277,6 +278,7 @@ const handleSelectMovie = (event) => {
           alignItems="center"
           flexDirection="column"
           minHeight="30vh"
+          gap={8}
         >
           <Typography variant="h4">Search showtimes</Typography>
         </Box > 
@@ -388,5 +390,5 @@ const handleSelectMovie = (event) => {
         </Snackbar>
       </Box>
     </>
-  )
+  );
 };

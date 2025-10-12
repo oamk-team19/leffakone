@@ -11,18 +11,28 @@ import NotInterestedIcon from '@mui/icons-material/NotInterested';
 
 export function NotificationsBell() {
   const { user, setUser } = useUser();
-  const [notificationStatus, setNotificationStatus] = useState(0);
+  const [notificationArray, setNotificationArray] = useState([]);
   const [pendingsArray, setPendingsArray] = useState([]);
-  const [approvedArray, setApprovedArray] = useState([]);
-  const [rejectedArray, setRejectedArray] = useState([]);
+  const [lengthOfNotificationArray, setLengthOfNotificationArray] = useState(0);
+  const [lengthOfPendingsArray, setLengthOfPendingsArray] = useState(0);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleMenuItem = () => {
+    //Muuta trueksi seenrequest
+    try {
+    } catch (error) {}
+
+    //Sulje menuitem jos se ei poistu muutoksessa
+    console.log('menu');
   };
 
   const handleClickYes = async (username, groupnameR) => {
@@ -52,6 +62,27 @@ export function NotificationsBell() {
   useEffect(() => {
     if (!user.id) return;
 
+    const getAllRequests = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:3001/group/searchAllRequests',
+          { params: { idUser: user.id } }
+        );
+
+        console.log(response.data);
+        setNotificationArray(response.data);
+
+        //Check is array empty
+        if (response.data.length > 0) {
+          setLengthOfNotificationArray(response.data.length);
+        } else {
+          setLengthOfNotificationArray(0);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const getSearchPendingRequests = async () => {
       try {
         //Get all pending requests
@@ -62,101 +93,84 @@ export function NotificationsBell() {
         console.log(response.data);
         setPendingsArray(response.data);
 
-        if (notificationStatus < response.data.length) {
-          //Huomioi aika
-          //console.log('New pending request');
-          
-          setNotificationStatus(response.data.length);
-          //näytä uusi pyyntö
+        //Check is array empty
+        if (response.data.length > 0) {
+          setLengthOfPendingsArray(response.data.length);
+        } else {
+          setLengthOfPendingsArray(0);
         }
       } catch (error) {
         console.log(error);
       }
     };
 
-    const getApproved = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:3001/user/searchApproved',
-          {
-            params: { idUser: user.id },
-          }
-        );
-        console.log(response.data);
-        setApprovedArray(response.data);
-        notificationStatus = notificationStatus + response.data.length
-        setNotificationStatus(response.data.length)
-      } catch (error) {
-        console.log('Error in getting approved requests: ' + error);
-      }
-    };
-
-    const getRejected = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:3001/user/searchRejected',
-          {
-            params: { idUser: user.id },
-          }
-        );
-        setRejectedArray(response.data);
-        console.log(response.data);
-        setNotificationStatus(response.data.length)
-      } catch (error) {
-        console.log('Error in getting rejected requests: ' + error);
-      }
-    };
-
+    getAllRequests();
     getSearchPendingRequests();
-    getApproved();
-    getRejected();
 
-    const interval = setInterval(getSearchPendingRequests, 15000); //every 15 seconds
-    const interval2 = setInterval(getApproved, 15000);
-    const interval3 = setInterval(getRejected, 15000);
+    const interval = setInterval(getAllRequests, 15000); //every 15 seconds gets data from db
+    const interval2 = setInterval(getSearchPendingRequests, 15000);
 
     return () => {
       clearInterval(interval);
       clearInterval(interval2);
-      clearInterval(interval3);
     };
   }, []);
 
   return (
     <>
       <ButtonIcon onClick={handleClick}>
-        <Badge color="error" badgeContent={notificationStatus}>
+        <Badge
+          color="error"
+          badgeContent={lengthOfNotificationArray + lengthOfPendingsArray}
+        >
           <NotificationsIcon />
         </Badge>
       </ButtonIcon>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        {notificationArray.length > 0 &&
+          notificationArray.map((notification) => {
+            if (
+              notification.grouprequest === 'approved' &&
+              notification.seenrequest === false
+            ) {
+              return (
+                <MenuItem onClick={handleMenuItem}>
+                  {'You have been accepted to ' + notification.groupname}
+                </MenuItem>
+              );
+            } else if (
+              notification.grouprequest === 'rejected' &&
+              notification.seenrequest === false
+            ) {
+              return (
+                <MenuItem onClick={handleMenuItem}>
+                  {'You have not been accepted to ' + notification.groupname}
+                </MenuItem>
+              );
+            }
+          })}
+
         {pendingsArray.length > 0 &&
-          pendingsArray.map((req) => (
+          pendingsArray.map((notification) => (
             <MenuItem>
-              {req.username + ' wants to join to group ' + req.groupname}
+              {notification.username +
+                ' wants to join to group ' +
+                notification.groupname}
               <ButtonIcon
-                onClick={() => handleClickYes(req.username, req.groupname)}
+                onClick={() =>
+                  handleClickYes(notification.username, notification.groupname)
+                }
               >
                 <CheckIcon color="success" />
               </ButtonIcon>
               <ButtonIcon
-                onClick={() => handleClickNo(req.username, req.groupname)}
+                onClick={() =>
+                  handleClickNo(notification.username, notification.groupname)
+                }
               >
                 <NotInterestedIcon color="error" />
               </ButtonIcon>
-            </MenuItem>
-          ))}
-
-        {approvedArray.length > 0 &&
-          approvedArray.map((req) => (
-            <MenuItem>{'You have been accepted to ' + req.groupname}</MenuItem>
-          ))}
-
-        {rejectedArray.length > 0 &&
-          rejectedArray.map((req) => (
-            <MenuItem>
-              {'You have not been accepted to ' + req.groupname}
             </MenuItem>
           ))}
       </Menu>

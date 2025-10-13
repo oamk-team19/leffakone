@@ -1,7 +1,7 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Badge from '@mui/material/Badge';
 import ButtonIcon from '@mui/material/IconButton';
-import { Menu, MenuItem, Button } from '@mui/material';
+import { Menu, MenuItem, Button, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from '../context/useUser';
@@ -27,7 +27,7 @@ export function NotificationsBell() {
   };
 
   const handleMenuItem = async (groupId, index) => {
-    //Muuta trueksi seenrequest
+    //Change trueksi seenrequest
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/group/seenrequest`,
@@ -131,7 +131,7 @@ export function NotificationsBell() {
           `${import.meta.env.VITE_API_URL}/group/searchPending`,
           { params: { idUser: user.id } }
         );
-        console.log('Pending requests: ' + response.data);
+        console.log(response.data);
         setPendingsArray(response.data);
 
         //Check is array empty
@@ -181,7 +181,9 @@ export function NotificationsBell() {
                     handleMenuItem(notification.group_idgroup, index)
                   }
                 >
-                  {'You have been accepted to ' + notification.groupname}
+                  <Typography>
+                    {'You have been accepted to ' + notification.groupname}
+                  </Typography>
                 </MenuItem>
               );
             } else if (
@@ -203,9 +205,11 @@ export function NotificationsBell() {
         {pendingsArray.length > 0 &&
           pendingsArray.map((notification) => (
             <MenuItem>
-              {notification.username +
-                ' wants to join to group ' +
-                notification.groupname}
+              <Typography sx={{whiteSpace: 'normal'}}>
+                {notification.username +
+                  ' wants to join to group ' +
+                  notification.groupname}
+              </Typography>
               <ButtonIcon
                 onClick={() =>
                   handleClickYes(notification.username, notification.groupname)

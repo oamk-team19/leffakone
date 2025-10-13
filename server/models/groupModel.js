@@ -279,7 +279,7 @@ export const searchFavoriteList = async (idGroup) => {
 export const getSearchAllRequests = async (usersid) => {
   try {
     const userResult = await pool.query(
-      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1;',
+      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1 AND user_group.seenrequest=false;',
       [usersid]
     );
 
@@ -289,3 +289,14 @@ export const getSearchAllRequests = async (usersid) => {
   }
 };
 
+export const updateSeenRequestDb = async (idUser, groupName) => {
+  try {
+    const result = await pool.query(
+      'UPDATE user_group SET seenrequest = true FROM users WHERE users.iduser = user_group.user_iduser AND users.iduser = $1 AND group_idgroup=$2',
+      [idUser, groupName]
+    );
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
+};

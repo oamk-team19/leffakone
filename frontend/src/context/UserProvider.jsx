@@ -5,7 +5,9 @@ import { UserContext } from './UserContext';
 export default function UserProvider({ children }) {
   const userFromStorage = sessionStorage.getItem('user');
   const [user, setUser] = useState(
-    userFromStorage ? JSON.parse(userFromStorage) : { email: '', id: '', token: '' }
+    userFromStorage
+      ? JSON.parse(userFromStorage)
+      : { email: '', id: '', token: '' }
   );
 
   const LogOut = () => {

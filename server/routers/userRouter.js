@@ -17,4 +17,3 @@ userRouter.post('/favorite', auth, addFavorite);
 userRouter.delete('/favorite', auth, removeFavorite);
 
 export default userRouter;
-

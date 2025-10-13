@@ -14,6 +14,7 @@ import {
   getSearchPending,
   getSearchfavorite,
   searchAllRequests,
+  updateSeenRequest,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -24,6 +25,7 @@ groupRouter.delete('/leavegroup', leaveGroup);
 groupRouter.post('/request', groupRequest);
 groupRouter.put('/approve', approveRequest);
 groupRouter.put('/reject', rejectRequest);
+groupRouter.put('/seenrequest', updateSeenRequest);
 groupRouter.get('/members/:idgroup', getGroupMembers);
 groupRouter.get('/name/:idgroup', getGroupName);
 groupRouter.get('/creator/:idgroup', getGroupCreator);

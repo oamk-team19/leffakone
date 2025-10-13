@@ -26,13 +26,34 @@ export function NotificationsBell() {
     setAnchorEl(null);
   };
 
-  const handleMenuItem = () => {
+  const handleMenuItem = async (groupId, index) => {
     //Muuta trueksi seenrequest
     try {
-    } catch (error) {}
+      const response = await axios.put(
+        'http://localhost:3001/group/seenrequest',
+        {
+          groupName: groupId,
+          idUser: user.id,
+        }
+      );
+      console.log(response.status + ' Successfull update in seenrequest');
+
+      //Update number in the icon
+      if (lengthOfNotificationArray > 0) {
+        setLengthOfNotificationArray(lengthOfNotificationArray - 1);
+      }
+
+      notificationArray.slice(index, 1);
+
+      const removedNotification = notificationArray.filter(
+        (_, i) => i !== index
+      );
+      setNotificationArray(removedNotification);
+    } catch (error) {
+      console.log('Error in updating to true' + error);
+    }
 
     //Sulje menuitem jos se ei poistu muutoksessa
-    console.log('menu');
   };
 
   const handleClickYes = async (username, groupnameR) => {
@@ -42,6 +63,11 @@ export function NotificationsBell() {
         idUser: username,
       });
       console.log(response);
+
+      //Update number in the icon
+      if (lengthOfPendingsArray > 0) {
+        setLengthOfPendingsArray(lengthOfPendingsArray - 1);
+      }
     } catch (error) {
       console.log('Error in approving' + error);
     }
@@ -54,13 +80,24 @@ export function NotificationsBell() {
         idUser: username,
       });
       console.log(response);
+      //Update number in the icon
+      if (lengthOfPendingsArray > 0) {
+        setLengthOfPendingsArray(lengthOfPendingsArray - 1);
+      }
     } catch (error) {
       console.log('Error in rejecting' + error);
     }
   };
 
   useEffect(() => {
-    if (!user.id) return;
+    if (!user.id) {
+      //Remove data when no users id
+      setLengthOfNotificationArray(0);
+      setLengthOfPendingsArray(0);
+      setNotificationArray(0);
+      setPendingsArray(0);
+      return;
+    }
 
     const getAllRequests = async () => {
       try {
@@ -114,7 +151,7 @@ export function NotificationsBell() {
       clearInterval(interval);
       clearInterval(interval2);
     };
-  }, []);
+  }, [user.id]);
 
   return (
     <>
@@ -129,13 +166,17 @@ export function NotificationsBell() {
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {notificationArray.length > 0 &&
-          notificationArray.map((notification) => {
+          notificationArray.map((notification, index) => {
             if (
               notification.grouprequest === 'approved' &&
               notification.seenrequest === false
             ) {
               return (
-                <MenuItem onClick={handleMenuItem}>
+                <MenuItem
+                  onClick={() =>
+                    handleMenuItem(notification.group_idgroup, index)
+                  }
+                >
                   {'You have been accepted to ' + notification.groupname}
                 </MenuItem>
               );
@@ -144,7 +185,11 @@ export function NotificationsBell() {
               notification.seenrequest === false
             ) {
               return (
-                <MenuItem onClick={handleMenuItem}>
+                <MenuItem
+                  onClick={() =>
+                    handleMenuItem(notification.group_idgroup, index)
+                  }
+                >
                   {'You have not been accepted to ' + notification.groupname}
                 </MenuItem>
               );

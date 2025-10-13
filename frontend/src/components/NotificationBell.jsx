@@ -30,7 +30,7 @@ export function NotificationsBell() {
     //Muuta trueksi seenrequest
     try {
       const response = await axios.put(
-        'http://localhost:3001/group/seenrequest',
+        `${import.meta.env.VITE_API_URL}/group/seenrequest`,
         {
           groupName: groupId,
           idUser: user.id,
@@ -52,8 +52,6 @@ export function NotificationsBell() {
     } catch (error) {
       console.log('Error in updating to true' + error);
     }
-
-    //Sulje menuitem jos se ei poistu muutoksessa
   };
 
   const handleClickYes = async (username, groupnameR) => {
@@ -108,7 +106,7 @@ export function NotificationsBell() {
     const getAllRequests = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:3001/group/searchAllRequests',
+          `${import.meta.env.VITE_API_URL}/group/searchAllRequests`,
           { params: { idUser: user.id } }
         );
 

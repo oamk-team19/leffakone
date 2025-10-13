@@ -1,7 +1,7 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Badge from '@mui/material/Badge';
 import ButtonIcon from '@mui/material/IconButton';
-import { Menu, MenuItem, Button } from '@mui/material';
+import { Menu, MenuItem, Button, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from '../context/useUser';
@@ -27,10 +27,10 @@ export function NotificationsBell() {
   };
 
   const handleMenuItem = async (groupId, index) => {
-    //Muuta trueksi seenrequest
+    //Change trueksi seenrequest
     try {
       const response = await axios.put(
-        'http://localhost:3001/group/seenrequest',
+        `${import.meta.env.VITE_API_URL}/group/seenrequest`,
         {
           groupName: groupId,
           idUser: user.id,
@@ -52,8 +52,6 @@ export function NotificationsBell() {
     } catch (error) {
       console.log('Error in updating to true' + error);
     }
-
-    //Sulje menuitem jos se ei poistu muutoksessa
   };
 
   const handleClickYes = async (username, groupnameR) => {
@@ -85,7 +83,7 @@ export function NotificationsBell() {
           idUser: username,
         }
       );
-      console.log(response);
+      //console.log(response);
       //Update number in the icon
       if (lengthOfPendingsArray > 0) {
         setLengthOfPendingsArray(lengthOfPendingsArray - 1);
@@ -100,20 +98,25 @@ export function NotificationsBell() {
       //Remove data when no users id
       setLengthOfNotificationArray(0);
       setLengthOfPendingsArray(0);
-      setNotificationArray(0);
-      setPendingsArray(0);
+      setNotificationArray([]);
+      setPendingsArray([]);
       return;
     }
 
     const getAllRequests = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:3001/group/searchAllRequests',
+          `${import.meta.env.VITE_API_URL}/group/searchAllRequests`,
           { params: { idUser: user.id } }
         );
 
-        console.log(response.data);
-        setNotificationArray(response.data);
+        //console.log(response.data);
+
+        if (response.data.length > 0) {
+          setNotificationArray(response.data);
+        } else {
+          setNotificationArray([]);
+        }
 
         //Check is array empty
         if (response.data.length > 0) {
@@ -133,8 +136,12 @@ export function NotificationsBell() {
           `${import.meta.env.VITE_API_URL}/group/searchPending`,
           { params: { idUser: user.id } }
         );
-        console.log('Pending requests: ' + response.data);
-        setPendingsArray(response.data);
+        //console.log(response.data);
+        if (response.data.length > 0) {
+          setPendingsArray(response.data);
+        } else {
+          setPendingsArray([]);
+        }
 
         //Check is array empty
         if (response.data.length > 0) {
@@ -142,6 +149,7 @@ export function NotificationsBell() {
         } else {
           setLengthOfPendingsArray(0);
         }
+        return pendingsArray;
       } catch (error) {
         console.log(error);
       }
@@ -171,60 +179,80 @@ export function NotificationsBell() {
       </ButtonIcon>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {notificationArray.length > 0 &&
-          notificationArray.map((notification, index) => {
-            if (
-              notification.grouprequest === 'approved' &&
-              notification.seenrequest === false
-            ) {
-              return (
-                <MenuItem
-                  onClick={() =>
-                    handleMenuItem(notification.group_idgroup, index)
-                  }
-                >
-                  {'You have been accepted to ' + notification.groupname}
-                </MenuItem>
-              );
-            } else if (
-              notification.grouprequest === 'rejected' &&
-              notification.seenrequest === false
-            ) {
-              return (
-                <MenuItem
-                  onClick={() =>
-                    handleMenuItem(notification.group_idgroup, index)
-                  }
-                >
-                  {'You have not been accepted to ' + notification.groupname}
-                </MenuItem>
-              );
+        {[...notificationArray, ...pendingsArray].length > 0 &&
+          [...notificationArray, ...pendingsArray].map(
+            (notification, index) => {
+              if (
+                notification.grouprequest === 'approved' &&
+                notification.seenrequest === false
+              ) {
+                return (
+                  <MenuItem
+                    onClick={() =>
+                      handleMenuItem(notification.group_idgroup, index)
+                    }
+                  >
+                    <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                      {'You have been accepted to ' + notification.groupname}
+                    </Typography>
+                  </MenuItem>
+                );
+              } else if (
+                notification.grouprequest === 'rejected' &&
+                notification.seenrequest === false
+              ) {
+                return (
+                  <MenuItem
+                    onClick={() =>
+                      handleMenuItem(notification.group_idgroup, index)
+                    }
+                  >
+                    {' '}
+                    <Typography
+                      sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                    >
+                      {'You have not been accepted to ' +
+                        notification.groupname}
+                    </Typography>
+                  </MenuItem>
+                );
+              } else if (notification.username && notification.groupname) {
+                return (
+                  <MenuItem>
+                    <Typography
+                      sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                    >
+                      {notification.username +
+                        ' wants to join to group ' +
+                        notification.groupname}
+                    </Typography>{' '}
+                    <ButtonIcon
+                      onClick={() =>
+                        handleClickYes(
+                          notification.username,
+                          notification.groupname
+                        )
+                      }
+                    >
+                      <CheckIcon color="success" />
+                    </ButtonIcon>
+                    <ButtonIcon
+                      onClick={() =>
+                        handleClickNo(
+                          notification.username,
+                          notification.groupname
+                        )
+                      }
+                    >
+                      <NotInterestedIcon color="error" />
+                    </ButtonIcon>
+                  </MenuItem>
+                );
+              }
             }
-          })}
-
-        {pendingsArray.length > 0 &&
-          pendingsArray.map((notification) => (
-            <MenuItem>
-              {notification.username +
-                ' wants to join to group ' +
-                notification.groupname}
-              <ButtonIcon
-                onClick={() =>
-                  handleClickYes(notification.username, notification.groupname)
-                }
-              >
-                <CheckIcon color="success" />
-              </ButtonIcon>
-              <ButtonIcon
-                onClick={() =>
-                  handleClickNo(notification.username, notification.groupname)
-                }
-              >
-                <NotInterestedIcon color="error" />
-              </ButtonIcon>
-            </MenuItem>
-          ))}
+          )}
       </Menu>
     </>
   );
 }
+

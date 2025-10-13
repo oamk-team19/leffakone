@@ -278,8 +278,8 @@ export const searchFavoriteList = async (idGroup) => {
 export const getSearchAllRequests = async (usersid) => {
   try {
     const userResult = await pool.query(
-      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1 AND user_group.seenrequest=false;',
-      [usersid]
+      'SELECT user_group.*, groups.groupname, users.username FROM "user_group" JOIN groups ON groups.idgroup = user_group.group_idgroup JOIN users ON users.iduser = user_group.user_iduser WHERE "user_iduser"=$1 AND user_group.seenrequest=false AND user_group.grouprequest!=$2;',
+      [usersid, 'pending']
     );
 
     return userResult.rows;

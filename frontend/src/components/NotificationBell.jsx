@@ -15,6 +15,7 @@ export function NotificationsBell() {
   const [pendingsArray, setPendingsArray] = useState([]);
   const [lengthOfNotificationArray, setLengthOfNotificationArray] = useState(0);
   const [lengthOfPendingsArray, setLengthOfPendingsArray] = useState(0);
+  const [arrays, setArrays] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -83,7 +84,7 @@ export function NotificationsBell() {
           idUser: username,
         }
       );
-      console.log(response);
+      //console.log(response);
       //Update number in the icon
       if (lengthOfPendingsArray > 0) {
         setLengthOfPendingsArray(lengthOfPendingsArray - 1);
@@ -98,8 +99,8 @@ export function NotificationsBell() {
       //Remove data when no users id
       setLengthOfNotificationArray(0);
       setLengthOfPendingsArray(0);
-      setNotificationArray(0);
-      setPendingsArray(0);
+      setNotificationArray([]);
+      setPendingsArray([]);
       return;
     }
 
@@ -111,7 +112,12 @@ export function NotificationsBell() {
         );
 
         console.log(response.data);
-        setNotificationArray(response.data);
+
+        if (response.data.length > 0) {
+          setNotificationArray(response.data);
+        } else {
+          setNotificationArray([]);
+        }
 
         //Check is array empty
         if (response.data.length > 0) {
@@ -132,7 +138,11 @@ export function NotificationsBell() {
           { params: { idUser: user.id } }
         );
         console.log(response.data);
-        setPendingsArray(response.data);
+        if (response.data.length > 0) {
+          setPendingsArray(response.data);
+        } else {
+          setPendingsArray([]);
+        }
 
         //Check is array empty
         if (response.data.length > 0) {
@@ -140,6 +150,7 @@ export function NotificationsBell() {
         } else {
           setLengthOfPendingsArray(0);
         }
+        return pendingsArray;
       } catch (error) {
         console.log(error);
       }
@@ -169,43 +180,87 @@ export function NotificationsBell() {
       </ButtonIcon>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {notificationArray.length > 0 &&
-          notificationArray.map((notification, index) => {
-            if (
-              notification.grouprequest === 'approved' &&
-              notification.seenrequest === false
-            ) {
-              return (
-                <MenuItem
-                  onClick={() =>
-                    handleMenuItem(notification.group_idgroup, index)
-                  }
-                >
-                  <Typography>
-                    {'You have been accepted to ' + notification.groupname}
-                  </Typography>
-                </MenuItem>
-              );
-            } else if (
-              notification.grouprequest === 'rejected' &&
-              notification.seenrequest === false
-            ) {
-              return (
-                <MenuItem
-                  onClick={() =>
-                    handleMenuItem(notification.group_idgroup, index)
-                  }
-                >
-                  {'You have not been accepted to ' + notification.groupname}
-                </MenuItem>
-              );
+        {[...notificationArray, ...pendingsArray].length > 0 &&
+          [...notificationArray, ...pendingsArray].map(
+            (notification, index) => {
+              if (
+                notification.grouprequest === 'approved' &&
+                notification.seenrequest === false
+              ) {
+                return (
+                  <MenuItem
+                    onClick={() =>
+                      handleMenuItem(notification.group_idgroup, index)
+                    }
+                  >
+                    <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                      {'You have been accepted to ' + notification.groupname}
+                    </Typography>
+                  </MenuItem>
+                );
+              } else if (
+                notification.grouprequest === 'rejected' &&
+                notification.seenrequest === false
+              ) {
+                return (
+                  <MenuItem
+                    onClick={() =>
+                      handleMenuItem(notification.group_idgroup, index)
+                    }
+                  >
+                    {' '}
+                    <Typography
+                      sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                    >
+                      {'You have not been accepted to ' +
+                        notification.groupname}
+                    </Typography>
+                  </MenuItem>
+                );
+              } else if (notification.username && notification.groupname) {
+                return (
+                  <MenuItem>
+                    <Typography
+                      sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                    >
+                      {notification.username +
+                        ' wants to join to group ' +
+                        notification.groupname}
+                    </Typography>{' '}
+                    <ButtonIcon
+                      onClick={() =>
+                        handleClickYes(
+                          notification.username,
+                          notification.groupname
+                        )
+                      }
+                    >
+                      <CheckIcon color="success" />
+                    </ButtonIcon>
+                    <ButtonIcon
+                      onClick={() =>
+                        handleClickNo(
+                          notification.username,
+                          notification.groupname
+                        )
+                      }
+                    >
+                      <NotInterestedIcon color="error" />
+                    </ButtonIcon>
+                  </MenuItem>
+                );
+              }
             }
-          })}
+          )}
+      </Menu>
+    </>
+  );
+}
 
-        {pendingsArray.length > 0 &&
-          pendingsArray.map((notification) => (
-            <MenuItem>
-              <Typography sx={{whiteSpace: 'normal'}}>
+/* 
+
+ <MenuItem>
+              <Typography sx={{whiteSpace: 'normal', fontSize: '0.8rem'}}>
                 {notification.username +
                   ' wants to join to group ' +
                   notification.groupname}
@@ -226,7 +281,5 @@ export function NotificationsBell() {
               </ButtonIcon>
             </MenuItem>
           ))}
-      </Menu>
-    </>
-  );
-}
+
+*/

@@ -197,3 +197,4 @@ export const searchFavoriteListByEmail = async (email) => {
     throw error;
   }
 };
+

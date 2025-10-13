@@ -12,6 +12,8 @@ import {
   leaveGroupQuery,
   searchPending,
   searchFavoriteList,
+  getSearchAllRequests,
+  updateSeenRequestDb,
   myPendingRequests,
   dropRequest,
 } from '../models/groupModel.js';
@@ -226,7 +228,6 @@ export const deleteRequest = async (req, res) => {
   try {
     const { idUser, idGroup } = req.params;
     console.log('deleting request');
-
     const newRequest = await dropRequest(idUser, idGroup);
     res.status(200).json(newRequest);
   } catch (error) {
@@ -234,3 +235,33 @@ export const deleteRequest = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+}
+
+export const searchAllRequests = async (req, res) => {
+  try {
+    const { idUser } = req.query;
+    const result = await getSearchAllRequests(idUser);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('SearchAllRequests failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateSeenRequest = async (req, res) => {
+  try {
+    const { groupName, idUser } = req.body;
+
+    const newRequest = await updateSeenRequestDb(idUser, groupName);
+
+    if (newRequest.error) {
+      return res.status(409).json({ error: newRequest.error });
+    }
+    res.status(201).json(newRequest);
+  } catch (error) {
+    console.error('Update failed: ', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+

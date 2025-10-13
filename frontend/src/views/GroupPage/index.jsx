@@ -172,7 +172,7 @@ export const GroupPage = () => {
 useEffect(() => {
   const fetchGroupShowtimes = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/showtime`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/showtime`, {
         params: { idGroup: idGroup},
       });
       const savedShowtimes = response.data;

@@ -174,7 +174,7 @@ describe('Testing user management', () => {
 
     const response = await fetch('http://localhost:3001/user/deleteuser', {
       method: 'delete',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: token },
       body: JSON.stringify(newUser),
     });
 

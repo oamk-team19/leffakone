@@ -10,7 +10,7 @@ import { auth } from '../helpers/auth.js';
 
 const userRouter = Router();
 
-userRouter.delete('/deleteuser', deleteuser);
+userRouter.delete('/deleteuser', auth, deleteuser);
 userRouter.get('/searchfavorite', searchfavorite);
 userRouter.get('/favorite', auth, searchFavoriteByEmail);
 userRouter.post('/favorite', auth, addFavorite);

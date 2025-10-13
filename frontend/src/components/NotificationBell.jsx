@@ -15,7 +15,6 @@ export function NotificationsBell() {
   const [pendingsArray, setPendingsArray] = useState([]);
   const [lengthOfNotificationArray, setLengthOfNotificationArray] = useState(0);
   const [lengthOfPendingsArray, setLengthOfPendingsArray] = useState(0);
-  const [arrays, setArrays] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);

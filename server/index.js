@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import reviewRouter from './routers/reviewRouter.js';
 import groupRouter from './routers/groupRouter.js';
+import showtimeRouter from './routers/showtimeRouter.js';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ if (env === 'development') {
 }
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // Replace with your frontend's actual origin
+  origin: process.env.CLIENT_URL, // Replace with your frontend's actual origin
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers from the client
@@ -89,8 +90,8 @@ app.use('/group', groupRouter); //for group actions
 app.use('/user', userRouter);
 app.use('/movie', movieinfoRouter);
 app.use('/video', trailerRouter);
+app.use('/showtime', showtimeRouter);
 app.use('/review', reviewRouter);
-app.use('/video', trailerRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

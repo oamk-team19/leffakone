@@ -51,7 +51,7 @@ export const MainPage = () => {
       const fetchMovies = async () => {
         try {
           const response = await axios.get(
-            'http://localhost:3001/movies/search',
+            `${import.meta.env.VITE_API_URL}/movies/search`,
             {
               params: { query: debouncedSearchQuery },
             }
@@ -99,7 +99,7 @@ export const MainPage = () => {
     const fetchFavorites = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:3001/user/favorite',
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
           {
             withCredentials: true,
             headers: {
@@ -121,7 +121,7 @@ export const MainPage = () => {
       // Movie is in favorites, remove it (DELETE)
       try {
         const response = await axios.delete(
-          'http://localhost:3001/user/favorite',
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
           {
             data: { movieId: movieId },
             withCredentials: true,
@@ -141,7 +141,7 @@ export const MainPage = () => {
       // Movie is not in favorites, add it (POST)
       try {
         const response = await axios.post(
-          'http://localhost:3001/user/favorite',
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
           {
             movieId: movieId,
           },

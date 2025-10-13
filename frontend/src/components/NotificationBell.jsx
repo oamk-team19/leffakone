@@ -58,10 +58,13 @@ export function NotificationsBell() {
 
   const handleClickYes = async (username, groupnameR) => {
     try {
-      const response = await axios.put('http://localhost:3001/group/approve', {
-        groupName: groupnameR,
-        idUser: username,
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/group/approve`,
+        {
+          groupName: groupnameR,
+          idUser: username,
+        }
+      );
       console.log(response);
 
       //Update number in the icon
@@ -75,10 +78,13 @@ export function NotificationsBell() {
 
   const handleClickNo = async (username, groupnameR) => {
     try {
-      const response = await axios.put('http://localhost:3001/group/reject', {
-        groupName: groupnameR,
-        idUser: username,
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/group/reject`,
+        {
+          groupName: groupnameR,
+          idUser: username,
+        }
+      );
       console.log(response);
       //Update number in the icon
       if (lengthOfPendingsArray > 0) {
@@ -124,10 +130,10 @@ export function NotificationsBell() {
       try {
         //Get all pending requests
         const response = await axios.get(
-          'http://localhost:3001/group/searchPending',
+          `${import.meta.env.VITE_API_URL}/group/searchPending`,
           { params: { idUser: user.id } }
         );
-        console.log(response.data);
+        console.log('Pending requests: ' + response.data);
         setPendingsArray(response.data);
 
         //Check is array empty

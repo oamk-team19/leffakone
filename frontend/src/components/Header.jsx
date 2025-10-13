@@ -184,6 +184,13 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
+              <MenuItem
+                component={NavLink}
+                to="/login"
+                onClick={handleCloseUserMenu}
+              >
+                <Typography sx={{ textAlign: 'center' }}>Sign In</Typography>
+              </MenuItem>
               {/* LOGGED USER MENU ITEMS - TO BE IMPLEMENTED
               settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>

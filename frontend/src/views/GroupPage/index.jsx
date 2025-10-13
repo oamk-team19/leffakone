@@ -6,6 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Paper,
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,6 +14,8 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
+import ShowtimeCard from '../../components/ShowtimeCard';
+import ShowtimeList from '../../components/ShowtimeList';
 import FavoriteList from '../../components/FavoriteList';
 
 export const GroupPage = () => {
@@ -21,6 +24,13 @@ export const GroupPage = () => {
   const [groupMembers, setGroupMembers] = useState([]);
   const [groupName, setGroupName] = useState('');
   const { idGroup } = useParams();
+  const [showData, setShowData] = useState([]);
+  const [message, setMessage] = useState('');
+
+
+
+
+  
   const responseMovieArray = [];
   const [searchResults, setSearchResults] = useState([]);
 
@@ -28,7 +38,7 @@ export const GroupPage = () => {
     const searchFavorites = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/group/searchfavorite/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/searchfavorite/${idGroup}`
         );
         console.log(response);
         //Show favorite list
@@ -54,7 +64,7 @@ export const GroupPage = () => {
     const getGroupCreator = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/creator/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/creator/${idGroup}`
         );
         if (res.data === user.user.id) {
           setIsCreator(true);
@@ -74,7 +84,7 @@ export const GroupPage = () => {
     const getGroupName = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/name/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/name/${idGroup}`
         );
         setGroupName(res.data);
       } catch (error) {
@@ -92,7 +102,7 @@ export const GroupPage = () => {
     const getGroupMembers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3001/group/members/${idGroup}`
+          `${import.meta.env.VITE_API_URL}/group/members/${idGroup}`
         );
         setGroupMembers(res.data);
       } catch (error) {
@@ -111,10 +121,13 @@ export const GroupPage = () => {
     if (shouldDelete) {
       try {
         console.log(user.user.id);
-        const res = await axios.delete('http://localhost:3001/group/delete', {
-          data: { idGroup: idGroup, idUser: user.user.id },
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const res = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/group/delete`,
+          {
+            data: { idGroup: idGroup, idUser: user.user.id },
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
         console.log(res);
         navigate('/');
       } catch (error) {
@@ -129,7 +142,7 @@ export const GroupPage = () => {
       try {
         console.log(user.user.id);
         const res = await axios.delete(
-          'http://localhost:3001/group/leavegroup',
+          `${import.meta.env.VITE_API_URL}/group/leavegroup`,
           {
             data: { idGroup: idGroup, idUser: user.user.id },
             headers: { 'Content-Type': 'application/json' },
@@ -142,6 +155,65 @@ export const GroupPage = () => {
       }
     }
   };
+
+  const parseXML = (xmlString) => {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlString, 'text/xml');
+  const shows = Array.from(xml.getElementsByTagName('Show')).map(show => ({
+    ID: show.getElementsByTagName('ID')[0].textContent,
+    Title: show.getElementsByTagName('Title')[0].textContent,
+    dttmShowStart: show.getElementsByTagName('dttmShowStart')[0].textContent,
+    Theatre: show.getElementsByTagName('Theatre')[0].textContent,
+    EventID: show.getElementsByTagName('EventID')[0].textContent,
+  }));
+  return shows;
+};
+
+useEffect(() => {
+  const fetchGroupShowtimes = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/showtime`, {
+        params: { idGroup: idGroup},
+      });
+      const savedShowtimes = response.data;
+      console.log('Saved showtimes from backend:', savedShowtimes);
+      if (savedShowtimes.length === 0) {
+        setMessage('No showtimes saved');
+        return;
+      }
+      const showtimeInfo = await Promise.all(
+        savedShowtimes.map(async ({ idShow, idEvent, day }) => {
+          
+          const localDate = new Date(day);
+          const dateFi = localDate.toLocaleDateString('fi-FI'); // esim. "8.10.2025"
+          const [d, m, y] = dateFi.split('.');
+          const formattedDate = `${d.padStart(2, '0')}.${m.padStart(2, '0')}.${y}`;
+          const url = `https://www.finnkino.fi/xml/Schedule/?eventID=${idEvent}&dt=${formattedDate}`;
+          
+          const response = await axios.get(url);
+          const shows = parseXML(response.data);
+
+          return shows.find(s => String(s.ID) === String(idShow));
+        })
+      );
+
+      const validShows = showtimeInfo.filter(Boolean);
+      if(validShows.length === 0) {
+        setMessage('No upcoming showtimes found')
+      }
+      const sortedShows = validShows.sort((a, b) => new Date(a.dttmShowStart) - new Date(b.dttmShowStart));
+      
+      setShowData(sortedShows);
+    } catch (error) {
+      console.error('Error fetching group showtimes', error);
+      setMessage('Error in search');
+    }
+  };
+  fetchGroupShowtimes();
+}, []);
+
+
+
 
   return (
     <Box sx={{ p: 4 }}>
@@ -161,12 +233,9 @@ export const GroupPage = () => {
             )}
           </Box>
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Shared showtimes
-            </Typography>
-            <Typography variant="body" sx={{ my: 2 }}>
-              No showtimes shared yet
-            </Typography>
+            <Typography>Shared showtimes</Typography>
+            {message && <Typography color="error">{message}</Typography>}
+            <ShowtimeList times={showData} hideIcon={true} />
           </Box>
         </Grid>
         <Divider
@@ -179,10 +248,22 @@ export const GroupPage = () => {
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6">Members</Typography>
             <List>
-              {groupMembers.map((member, i) => (
-                <ListItem key={i}>
+              {groupMembers.map((member, id) => (
+                <Paper
+                  key={id}
+                  elevation={2}
+                  sx={{
+                    mb: 1,
+                    p: 1.5,
+                    borderRadius: 2,
+                    backgroundColor:
+                      id % 2 === 1 ? 'rgba(0,0,0,0.05)' : 'transparent',
+                    fontSize: '0.9rem',
+                  }}
+                  onClick={() => navigate(`/group/${group.idgroup}`)}
+                >
                   <ListItemText primary={member.username} />
-                </ListItem>
+                </Paper>
               ))}
             </List>
           </Box>

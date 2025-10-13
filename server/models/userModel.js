@@ -22,6 +22,25 @@ export const dataForSignIn = async (email) => {
 // Insert user registration data into db
 export const insertRegistration = async (email, username, hashedPassword) => {
   try {
+    const validateEmail = (email) => {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+
+    if (validateEmail(email)) {
+      console.log('Valid email address!');
+    } else {
+      console.log('Invalid email address!');
+      return { error: 'Invalid email address!' };
+    }
+    if (username.length < 1) {
+      console.log('Username field is empty!');
+      return { error: 'Username field is empty!' };
+    }
+
     const emailCheck = await pool.query(
       'SELECT email FROM users WHERE email=$1',
       [email]

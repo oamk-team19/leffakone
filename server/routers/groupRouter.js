@@ -15,6 +15,8 @@ import {
   getSearchfavorite,
   searchAllRequests,
   updateSeenRequest,
+  getMyPendingRequests,
+  deleteRequest,
 } from '../controllers/groupController.js';
 
 const groupRouter = Router();
@@ -34,5 +36,7 @@ groupRouter.get('/mygroups/:idUser', getMyGroups);
 groupRouter.get('/searchPending', getSearchPending);
 groupRouter.get('/searchfavorite/:idgroup', getSearchfavorite);
 groupRouter.get('/searchAllRequests', searchAllRequests);
+groupRouter.get('/requests/pending/:idUser', getMyPendingRequests);
+groupRouter.delete('/requests/delete/:idUser/:idGroup', deleteRequest);
 
 export default groupRouter;

@@ -2,7 +2,7 @@
 import axios from "axios"
 import React from "react"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Box, Typography, Card, CardMedia, CardContent, IconButton, Tooltip, Button, TextField, Rating, Stack} from "@mui/material"
 import FormatListBulletedAddIcon from '@mui/icons-material/FormatListBulletedAdd';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -21,7 +21,7 @@ export const MovieInfo = () => {
     const { user } = useUser()
     const isLoggedIn = !!user.token
     const [reviews, setReviews] = useState([])
-
+    const navigate = useNavigate()
 
     const handleTextChange = (event) => {
       const newText = event.target.value;
@@ -36,7 +36,7 @@ export const MovieInfo = () => {
         const fetchMovie = async () => {
             try {
             const response = await axios.get(
-                'http://localhost:3001/movie/info',
+                `${import.meta.env.VITE_API_URL}/movie/info`,
                 {
                     params: {id: id}
                 }
@@ -54,7 +54,7 @@ export const MovieInfo = () => {
         const fetchTrailer = async () => {
             try {
             const response = await axios.get(
-                'http://localhost:3001/video/trailer',
+                `${import.meta.env.VITE_API_URL}/video/trailer`,
                 {
                     params: {id: id}
                 }
@@ -84,7 +84,7 @@ export const MovieInfo = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/review/create', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/review/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reviewData)
@@ -94,7 +94,7 @@ export const MovieInfo = () => {
         const savedReview = await response.json();
         console.log('Review saved:', savedReview);
 
-        const updatedReviews = await axios.get('http://localhost:3001/review', {
+        const updatedReviews = await axios.get(`${import.meta.env.VITE_API_URL}/review`, {
         params: { idMovie: id }
         });
         setReviews(updatedReviews.data);
@@ -110,7 +110,7 @@ export const MovieInfo = () => {
   };
 
     useEffect(() => {
-      axios.get('http://localhost:3001/review/',
+      axios.get(`${import.meta.env.VITE_API_URL}/review/`,
         {
           params: {idMovie: id}
         }
@@ -216,11 +216,19 @@ export const MovieInfo = () => {
               marginBottom: '2rem'
             }}
           >
+          <Tooltip title={isLoggedIn ? "Write a review" : "Login to review"}>
             <Button 
-              variant="contained"
-              disabled={!isLoggedIn} 
-              onClick={() => setShowReviewForm(true)}
-            >Review movie</Button>
+              variant="contained" 
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login')
+                } else {
+                  setShowReviewForm(true)}
+                }
+              } 
+            >Review movie
+            </Button>
+          </Tooltip>
             {showReviewForm && (
             <>
             <TextField 

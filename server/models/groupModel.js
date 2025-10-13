@@ -285,7 +285,9 @@ export const getSearchAllRequests = async (usersid) => {
     return userResult.rows;
       } catch (error) {
     throw error;
-  }
+      }
+  };
+
 export const myPendingRequests = async (idUser) => {
   try {
     const result = await pool.query(

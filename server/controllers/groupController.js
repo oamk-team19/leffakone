@@ -236,8 +236,6 @@ export const deleteRequest = async (req, res) => {
   }
 };
 
-}
-
 export const searchAllRequests = async (req, res) => {
   try {
     const { idUser } = req.query;

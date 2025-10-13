@@ -257,29 +257,3 @@ export function NotificationsBell() {
   );
 }
 
-/* 
-
- <MenuItem>
-              <Typography sx={{whiteSpace: 'normal', fontSize: '0.8rem'}}>
-                {notification.username +
-                  ' wants to join to group ' +
-                  notification.groupname}
-              </Typography>
-              <ButtonIcon
-                onClick={() =>
-                  handleClickYes(notification.username, notification.groupname)
-                }
-              >
-                <CheckIcon color="success" />
-              </ButtonIcon>
-              <ButtonIcon
-                onClick={() =>
-                  handleClickNo(notification.username, notification.groupname)
-                }
-              >
-                <NotInterestedIcon color="error" />
-              </ButtonIcon>
-            </MenuItem>
-          ))}
-
-*/

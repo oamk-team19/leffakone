@@ -18,6 +18,8 @@ import TheatersIcon from '@mui/icons-material/Theaters';
 import { NavLink } from 'react-router-dom';
 import { ThemeToggleButton } from './ThemeSelector';
 import { NotificationsBell } from './NotificationBell';
+import { useUser } from '../context/useUser';
+import axios from 'axios';
 
 const tabs = [
   {
@@ -35,6 +37,7 @@ const tabs = [
 ];
 
 const Header = () => {
+  const { user, LogOut } = useUser();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -52,7 +55,6 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
   return (
     <AppBar position="sticky">
       <Container maxWidth="xl">
@@ -116,26 +118,13 @@ const Header = () => {
                 </MenuItem>
               ))}
             </Menu>
+            <TheatersIcon
+              fontSize={'large'}
+              color="secondary"
+              sx={{ display: { xs: 'flex', md: 'none' }, ml: 1, mt: 0.5 }}
+            />
           </Box>
-          <TheatersIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            MovieMachine
-          </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {tabs.map((tab) => (
               <Button
@@ -162,44 +151,78 @@ const Header = () => {
             }}
           >
             <ThemeToggleButton></ThemeToggleButton>
-            <NotificationsBell />
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem
-                component={NavLink}
-                to="/login"
-                onClick={handleCloseUserMenu}
-              >
-                <Typography sx={{ textAlign: 'center' }}>Sign In</Typography>
-              </MenuItem>
-              {/* LOGGED USER MENU ITEMS - TO BE IMPLEMENTED
-              settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))*/}
-            </Menu>
+            {user.id && <NotificationsBell />}
+            {user.id ? (
+              <>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/2.jpg"
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem
+                    component={NavLink}
+                    to="/login"
+                    onClick={handleCloseUserMenu}
+                  >
+                    <NavLink
+                      to="/profile"
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      Profile
+                    </NavLink>
+                  </MenuItem>
+                  <MenuItem component={NavLink} to="/signout">
+                    <NavLink
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                      onClick={async () => {
+                        try {
+                          await axios.post(
+                            `${import.meta.env.VITE_API_URL}/auth/signout`,
+                            {},
+                            { withCredentials: true }
+                          );
+                          LogOut();
+                          navigate('/login');
+                        } catch (error) {
+                          console.log('Error while signing out: ', error);
+                          return;
+                        }
+                      }}
+                    >
+                      Logout
+                    </NavLink>
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button color="secondary" variant="outlined">
+                <NavLink
+                  to="/login"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  Login
+                </NavLink>
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

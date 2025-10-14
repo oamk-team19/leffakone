@@ -198,3 +198,18 @@ export const searchFavoriteListByEmail = async (email) => {
   }
 };
 
+export const getUserNameByIdDb = async (idUser) => {
+  console.log('getUserNameByIdDb called with idUser:', idUser);
+  let result;
+  try {
+    result = await pool.query('SELECT username FROM users WHERE iduser = $1', [
+      idUser,
+    ]);
+    if (result.rows.length === 0) {
+      return null; // User not found
+    }
+  } catch (error) {
+    throw error;
+  }
+  return result.rows[0];
+};

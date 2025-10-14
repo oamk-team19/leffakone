@@ -17,7 +17,9 @@ export const Profile = () => {
 
   const handleClick = () => {
     //Copy URI to clipboard
-    navigator.clipboard.writeText(`${import.meta.env.VITE_CLIENT_URL}/profile`);
+    navigator.clipboard.writeText(
+      `${import.meta.env.VITE_CLIENT_URL}/favorites/${user.id}`
+    );
     setOpen(true);
   };
 

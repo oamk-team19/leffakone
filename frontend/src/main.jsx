@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react';
 import { CssBaseline } from '@mui/material';
 import { getRosyTheme } from './theme.js';
 import { ColorModeContext } from './context/themeContext.js';
+import { FavoritePage } from './views/FavoritePage';
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: '/shows/:id',
         element: <Movies />,
+      },
+      {
+        path: '/favorites/:idUser',
+        element: <FavoritePage />,
       },
       {
         element: <ProtectedRoute />,

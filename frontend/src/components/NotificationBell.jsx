@@ -176,6 +176,13 @@ export function NotificationsBell() {
     };
   }, [user.id]);
 
+  useEffect(() => {
+    //Close notification bell if empty
+    if (notificationArray.length === 0 && pendingsArray.length === 0 && open) {
+      handleClose();
+    }
+  }, [notificationArray, pendingsArray]);
+
   return (
     <>
       <ButtonIcon onClick={handleClick}>
@@ -188,7 +195,7 @@ export function NotificationsBell() {
       </ButtonIcon>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {[...notificationArray, ...pendingsArray].length > 0 &&
+        {[...notificationArray, ...pendingsArray].length > 0 ? (
           [...notificationArray, ...pendingsArray].map(
             (notification, index) => {
               if (
@@ -263,16 +270,17 @@ export function NotificationsBell() {
                     </ButtonIcon>
                   </MenuItem>
                 );
-              } else {
-                <MenuItem>
-                  {' '}
-                  <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
-                    {'No new notifications'}
-                  </Typography>
-                </MenuItem>;
               }
             }
-          )}
+          )
+        ) : (
+          <MenuItem>
+            {' '}
+            <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+              {'No notifications'}
+            </Typography>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

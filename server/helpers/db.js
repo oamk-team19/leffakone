@@ -21,15 +21,24 @@ const dbConfig = {
 
 const pool = new Pool(dbConfig);
 
-pool.on('connect', () => {
-  console.log(
-    `Connected to the database ${dbConfig.database} on port ${dbConfig.port} successfully.`
-  );
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error(
+      `Couldn't connect to the database ${dbConfig.database} on port ${dbConfig.port}. Error:`,
+      err.message
+    );
+  } else {
+    console.log(
+      `Connected to the database ${dbConfig.database} on port ${dbConfig.port} successfully.`
+    );
+    release();
+  }
 });
 
+// Only log errors, not every connection
 pool.on('error', (err) => {
   console.error(
-    `Couldn't connect to the database ${dbConfig.host} on port ${dbConfig.port}. Error:`,
+    `Database pool error on ${dbConfig.host}:${dbConfig.port}:`,
     err.message
   );
 });

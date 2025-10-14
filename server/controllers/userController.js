@@ -4,6 +4,7 @@ import {
   addFavoriteDb,
   removeFavoriteDb,
   searchFavoriteListByEmail,
+  getUserNameByIdDb,
 } from '../models/userModel.js';
 import { searchFavoriteList } from '../models/userModel.js';
 
@@ -12,7 +13,7 @@ export const deleteuser = async (req, res) => {
     const { email } = req.body;
 
     if (email.length === 0) {
-      return res.status(409).json({ error: "No email given." });
+      return res.status(409).json({ error: 'No email given.' });
     }
     const result = await deleteUserDb(email);
 
@@ -44,7 +45,7 @@ export const addFavorite = async (req, res) => {
     if (result.error) {
       return res.status(409).json({ error: result.error });
     }
-  } catch { }
+  } catch {}
   res.status(200).send({ msg: 'favorite added' });
 };
 
@@ -68,6 +69,22 @@ export const searchFavoriteByEmail = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error('Favorite list failed in authcontroller', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserNameById = async (req, res) => {
+  console.log('getUserNameById called');
+  try {
+    const { id } = req.params;
+    const user = await getUserNameByIdDb(id);
+    if (user) {
+      res.status(200).json({ username: user.username });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user by ID:', error.message);
     res.status(500).json({ error: error.message });
   }
 };

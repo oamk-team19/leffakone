@@ -1,35 +1,49 @@
-import { useCallback, useEffect, useState } from 'react'
-import React from 'react'
-import { Button, MenuItem, Select, FormControl, InputLabel,
-  Box, Typography, Tooltip, IconButton, Snackbar, Alert
- } from '@mui/material'
+import { useCallback, useEffect, useState } from 'react';
+import React from 'react';
+import {
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Box,
+  Typography,
+  Tooltip,
+  IconButton,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 
 import ShowtimeList from '../../components/ShowtimeList';
 import FormatListBulletedAddIcon from '@mui/icons-material/FormatListBulletedAdd';
-import GroupSelectModal from '../../components/GroupSelectModal'
-import { useUser } from "../../context/useUser"
+import GroupSelectModal from '../../components/GroupSelectModal';
+import { useUser } from '../../context/useUser';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export const Showtime = () => {
-  const [areas, setAreas] = useState([])
-  const [times, setTimes] = useState([])
-  const [movies, setMovies] = useState([])
-  const [days, setDays] = useState([])
-  const [message, setMessage] = useState('')
-  const [selectedArea, setSelectedArea] = useState('')
-  const [selectedDay, setSelectedDay] = useState('')
-  const [selectedMovie, setSelectedMovie] = useState('all')
-  const [open, setOpen] = useState(false)
-  const [selectedShow, setSelectedShow] = useState(null)
-  const { user } = useUser()
+  const [areas, setAreas] = useState([]);
+  const [times, setTimes] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [days, setDays] = useState([]);
+  const [message, setMessage] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedDay, setSelectedDay] = useState('');
+  const [selectedMovie, setSelectedMovie] = useState('all');
+  const [open, setOpen] = useState(false);
+  const [selectedShow, setSelectedShow] = useState(null);
+  const { user } = useUser();
   const [myGroups, setMyGroups] = useState([]);
-  const navigate = useNavigate()
-  const isLoggedIn = !!user?.token
-  const tooltipText = isLoggedIn ? myGroups.length > 0 ? "Add to group" : "Join group" : "Login to add group";
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
-  const [snackbarMessage, setSnackbarMessage] = useState('')
-  const [snackbarSeverity, setSnackbarSeverity] = useState('info')
+  const navigate = useNavigate();
+  const isLoggedIn = !!user?.token;
+  const tooltipText = isLoggedIn
+    ? myGroups.length > 0
+      ? 'Add to group'
+      : 'Join group'
+    : 'Login to add group';
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
   const xmlToJson = useCallback((node) => {
     const json = {};
@@ -135,7 +149,7 @@ export const Showtime = () => {
         }
 
         if (filteredShows.length === 0) {
-          setMessage('No upcoming showtimes found for the selected criteria.')
+          setMessage('No upcoming showtimes found for the selected criteria.');
         } else {
           setMessage('');
         }
@@ -158,13 +172,9 @@ export const Showtime = () => {
     setSelectedMovie(event.target.value);
   };
 
-
-
   const handleOpenGroupList = (show) => {
-
-    setSelectedShow(show)
-    setOpen(true)
-
+    setSelectedShow(show);
+    setOpen(true);
   };
 
   const handleClose = () => {
@@ -174,29 +184,32 @@ export const Showtime = () => {
 
   const actionButton = (show) => (
     <Tooltip title={tooltipText}>
-      <IconButton aria-label="add-to-group" 
-        onClick={() =>{
+      <IconButton
+        aria-label="add-to-group"
+        onClick={() => {
           if (!isLoggedIn) {
-            navigate('/login')
-          } else if (myGroups.length === 0){
-            navigate('/groups')     
+            navigate('/login');
+          } else if (myGroups.length === 0) {
+            navigate('/groups');
           } else {
-            handleOpenGroupList(show)
+            handleOpenGroupList(show);
           }
-          }}
-          >
+        }}
+      >
         <FormatListBulletedAddIcon />
       </IconButton>
     </Tooltip>
   );
 
+  const handleSelectGroup = async (group) => {
+    const formattedDay = new Date(selectedShow.dttmShowStart)
+      .toISOString()
+      .split('T')[0];
 
-    const handleSelectGroup = async (group) => {
-      const formattedDay = new Date(selectedShow.dttmShowStart).toISOString().split('T')[0]
-
-      
-      try {
-        const response = await fetch('http://localhost:3001/showtime/create', {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/showtime/create`,
+        {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -207,44 +220,41 @@ export const Showtime = () => {
             idGroup: group.idgroup,
             day: formattedDay,
           }),
-        });
-        if(response.status === 409) {
-          setSnackbarMessage('This show already added to this group.')
-          setSnackbarSeverity("warning")
-          setSnackbarOpen(true)
-          handleClose()
-          return
         }
-        if(!response.ok) {
-          throw new Error('Showtime saving failed');
-        }
-        const data = await response.json();
-        console.log('Showtime saved:', data);
-        setSnackbarMessage(`Show added to "${group.groupname}"`)
-        setSnackbarSeverity("success")
-        setSnackbarOpen(true)
-        
-      } catch (error) {
-        console.error('Error saving showtime:', error);
-        setSnackbarMessage("Saving failed. Check connectin or try again")
-        setSnackbarSeverity("error")
-        setSnackbarOpen(true)
+      );
+      if (response.status === 409) {
+        setSnackbarMessage('This show already added to this group.');
+        setSnackbarSeverity('warning');
+        setSnackbarOpen(true);
+        handleClose();
+        return;
       }
+      if (!response.ok) {
+        throw new Error('Showtime saving failed');
+      }
+      const data = await response.json();
+      console.log('Showtime saved:', data);
+      setSnackbarMessage(`Show added to "${group.groupname}"`);
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Error saving showtime:', error);
+      setSnackbarMessage('Saving failed. Check connectin or try again');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
 
-      
-
-      handleClose();
-    
+    handleClose();
   };
 
-    const getMyGroups = async () => {
+  const getMyGroups = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:3001/group/mygroups/${user.id}`
+        `${import.meta.env.VITE_API_URL}/group/mygroups/${user.id}`
       );
       setMyGroups(res.data);
     } catch (error) {
-      console.error("Virhe ryhmien haussa:", error);
+      console.error('Virhe ryhmien haussa:', error);
       if (error.response.status === 409) {
         alert(error.response.data.error);
       } else {
@@ -257,21 +267,20 @@ export const Showtime = () => {
     if (user?.id) {
       getMyGroups();
     } else {
-      console.log("user ei vielä saatavilla");
+      console.log('user ei vielä saatavilla');
     }
   }, [user]);
 
- 
-
   return (
     <>
-      <Box sx={{
-
-        minHeight: '100vh',
-        border: 'none',
-        outline: 'none',
-        boxShadow: 'none'
-      }}>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          border: 'none',
+          outline: 'none',
+          boxShadow: 'none',
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
@@ -281,7 +290,7 @@ export const Showtime = () => {
           gap={8}
         >
           <Typography variant="h4">Search showtimes</Typography>
-        </Box > 
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -289,76 +298,76 @@ export const Showtime = () => {
             flexWrap: 'wrap',
             justifyContent: 'center',
             alignItems: 'center',
-            mt: 2
-             }}
+            mt: 2,
+          }}
         >
-        <FormControl sx={{ width: 200 , mb: 2, mr: 1}} size='small'>
-          <InputLabel id="area-select-label">Select Area/Theater</InputLabel>
-          <Select
-            labelId="area-select-label"
-            id="area-select"
-            value={selectedArea}
-            label="Select Area/Theater"
-            onChange={handleSelect1}
-          >
-            {areas.map((area, index) => (
-              <MenuItem key={area.ID} value={area.ID} 
-              >
-                {index === 0 ? 'All areas/theaters' : area.Name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: 200, mb:2, mr:1 }} size='small'>
-          <InputLabel id="day-select-label">Select day</InputLabel>
-          <Select
-            labelId="day-select-label"
-            id="day-select"
-            value={selectedDay}
-            label="Select day"
-            onChange={handleSelectDay}
-          >
-            {days.map((date, index) => {
-              const dayObj = new Date(date)
-              const day = String(dayObj.getDate()).padStart(2, '0')
-              const month = String(dayObj.getMonth() + 1).padStart(2, '0')
-              const year = dayObj.getFullYear()
-              const formattedDate = `${day}.${month}.${year}`
-
-              return (
-                <MenuItem key={index} value={formattedDate}>
-                  {dayObj.toLocaleDateString('fi-FI')}
+          <FormControl sx={{ width: 200, mb: 2, mr: 1 }} size="small">
+            <InputLabel id="area-select-label">Select Area/Theater</InputLabel>
+            <Select
+              labelId="area-select-label"
+              id="area-select"
+              value={selectedArea}
+              label="Select Area/Theater"
+              onChange={handleSelect1}
+            >
+              {areas.map((area, index) => (
+                <MenuItem key={area.ID} value={area.ID}>
+                  {index === 0 ? 'All areas/theaters' : area.Name}
                 </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: 200, mb: 2, mr: 1 }} size='small'>
-          <InputLabel id="movie-select-label">Select movie</InputLabel>
-          <Select
-            labelId="movie-select-label"
-            id="movie-select"
-            value={selectedMovie}
-            label="Valitse elokuva"
-            onChange={handleSelectMovie}
-          >
-            <MenuItem value="all">All movies</MenuItem>
-            {movies.map((movie) => (
-              <MenuItem key={movie.ID} value={movie.ID}>
-                {movie.Title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box sx={{mb: 2}}>
-        <Button variant="contained"
-         size='large'
-          onClick={showTimes}
-          sx={{ width:200, height: 40}}
-          >
-          Show showtimes
-        </Button>
-        </Box>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: 200, mb: 2, mr: 1 }} size="small">
+            <InputLabel id="day-select-label">Select day</InputLabel>
+            <Select
+              labelId="day-select-label"
+              id="day-select"
+              value={selectedDay}
+              label="Select day"
+              onChange={handleSelectDay}
+            >
+              {days.map((date, index) => {
+                const dayObj = new Date(date);
+                const day = String(dayObj.getDate()).padStart(2, '0');
+                const month = String(dayObj.getMonth() + 1).padStart(2, '0');
+                const year = dayObj.getFullYear();
+                const formattedDate = `${day}.${month}.${year}`;
+
+                return (
+                  <MenuItem key={index} value={formattedDate}>
+                    {dayObj.toLocaleDateString('fi-FI')}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: 200, mb: 2, mr: 1 }} size="small">
+            <InputLabel id="movie-select-label">Select movie</InputLabel>
+            <Select
+              labelId="movie-select-label"
+              id="movie-select"
+              value={selectedMovie}
+              label="Valitse elokuva"
+              onChange={handleSelectMovie}
+            >
+              <MenuItem value="all">All movies</MenuItem>
+              {movies.map((movie) => (
+                <MenuItem key={movie.ID} value={movie.ID}>
+                  {movie.Title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box sx={{ mb: 2 }}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={showTimes}
+              sx={{ width: 200, height: 40 }}
+            >
+              Show showtimes
+            </Button>
+          </Box>
         </Box>
         <Box>
           {message && (
@@ -366,7 +375,11 @@ export const Showtime = () => {
               {message}
             </Typography>
           )}
-          <ShowtimeList times={times} actionButton={actionButton} hideIcon={false} />
+          <ShowtimeList
+            times={times}
+            actionButton={actionButton}
+            hideIcon={false}
+          />
           <GroupSelectModal
             open={open}
             onClose={handleClose}
@@ -380,13 +393,13 @@ export const Showtime = () => {
           onClose={() => setSnackbarOpen(false)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
-          sx={{ width: '100%' }}
-        >
-          {snackbarMessage}
-        </Alert>
+          <Alert
+            onClose={() => setSnackbarOpen(false)}
+            severity={snackbarSeverity}
+            sx={{ width: '100%' }}
+          >
+            {snackbarMessage}
+          </Alert>
         </Snackbar>
       </Box>
     </>

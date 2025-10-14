@@ -172,9 +172,23 @@ export const Groups = () => {
 
   return (
     <Box sx={{ p: 4 }} align="center">
-      <Typography variant="h4" sx={{ paddingY: 2 }} align="center">
-        Groups
-      </Typography>
+      <Paper
+        elevation={2}
+        sx={{
+          mb: 2,
+          borderRadius: 2,
+          backgroundColor: 'rgba(0,0,0,0.05)',
+          fontSize: '0.95rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: { xs: 60, md: 70 },
+        }}
+      >
+        <Typography variant="h5" align="center">
+          Groups
+        </Typography>
+      </Paper>
       <form onSubmit={handleSubmit}>
         <Box
           display={'flex'}

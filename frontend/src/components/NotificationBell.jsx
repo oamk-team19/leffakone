@@ -36,60 +36,69 @@ export function NotificationsBell() {
           idUser: user.id,
         }
       );
-      console.log(response.status + ' Successfull update in seenrequest');
+      //console.log(response.status + ' Successfull update in seenrequest');
 
-      //Update number in the icon
-      if (lengthOfNotificationArray > 0) {
-        setLengthOfNotificationArray(lengthOfNotificationArray - 1);
-      }
-
-      notificationArray.slice(index, 1);
-
-      const removedNotification = notificationArray.filter(
-        (_, i) => i !== index
-      );
-      setNotificationArray(removedNotification);
+      updateView('notification', index); //Update number in the icon
     } catch (error) {
       console.log('Error in updating to true' + error);
     }
   };
 
-  const handleClickYes = async (username, groupnameR) => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/group/approve`,
-        {
-          groupName: groupnameR,
-          idUser: username,
-        }
-      );
-      console.log(response);
+  const handleClickYesOrNo = async (user_iduser, groupnameR, index, choice) => {
+    if (choice === 'yes') {
+      try {
+        const response = await axios.put(
+          `${import.meta.env.VITE_API_URL}/group/approve`,
+          {
+            groupName: groupnameR,
+            idUser: user_iduser,
+          }
+        );
+        console.log('Approved successfully ' + response.data);
 
-      //Update number in the icon
-      if (lengthOfPendingsArray > 0) {
-        setLengthOfPendingsArray(lengthOfPendingsArray - 1);
+        updateView('pending', index);
+      } catch (error) {
+        console.log('Error in approving' + error);
       }
-    } catch (error) {
-      console.log('Error in approving' + error);
+    } else if (choice === 'no') {
+      try {
+        const response = await axios.put(
+          `${import.meta.env.VITE_API_URL}/group/reject`,
+          {
+            groupName: groupnameR,
+            idUser: user_iduser,
+          }
+        );
+        console.log('Rejected successfully ' + response.data);
+        updateView('pending', index);
+      } catch (error) {
+        console.log('Error in rejecting' + error);
+      }
+    } else {
+      console.log('Choice not defined');
     }
   };
 
-  const handleClickNo = async (username, groupnameR) => {
-    try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/group/reject`,
-        {
-          groupName: groupnameR,
-          idUser: username,
-        }
+  const updateView = async (array, index) => {
+    //Update number in the icon
+    if (array === 'notification') {
+      if (lengthOfNotificationArray > 0) {
+        setLengthOfNotificationArray(lengthOfNotificationArray - 1);
+      }
+
+      const removedNotification = notificationArray.filter(
+        (_, i) => i !== index
       );
-      //console.log(response);
-      //Update number in the icon
+      setNotificationArray(removedNotification);
+    } else if (array === 'pending') {
       if (lengthOfPendingsArray > 0) {
         setLengthOfPendingsArray(lengthOfPendingsArray - 1);
       }
-    } catch (error) {
-      console.log('Error in rejecting' + error);
+
+      //pendingsArray.splice(index, 1);
+
+      const removedPending = pendingsArray.filter((_, i) => i !== index);
+      setPendingsArray(removedPending);
     }
   };
 
@@ -136,7 +145,7 @@ export function NotificationsBell() {
           `${import.meta.env.VITE_API_URL}/group/searchPending`,
           { params: { idUser: user.id } }
         );
-        //console.log(response.data);
+        console.log(response.data);
         if (response.data.length > 0) {
           setPendingsArray(response.data);
         } else {
@@ -192,7 +201,9 @@ export function NotificationsBell() {
                       handleMenuItem(notification.group_idgroup, index)
                     }
                   >
-                    <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                    <Typography
+                      sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                    >
                       {'You have been accepted to ' + notification.groupname}
                     </Typography>
                   </MenuItem>
@@ -228,9 +239,11 @@ export function NotificationsBell() {
                     </Typography>{' '}
                     <ButtonIcon
                       onClick={() =>
-                        handleClickYes(
-                          notification.username,
-                          notification.groupname
+                        handleClickYesOrNo(
+                          notification.user_iduser,
+                          notification.groupname,
+                          index,
+                          'yes'
                         )
                       }
                     >
@@ -238,9 +251,11 @@ export function NotificationsBell() {
                     </ButtonIcon>
                     <ButtonIcon
                       onClick={() =>
-                        handleClickNo(
-                          notification.username,
-                          notification.groupname
+                        handleClickYesOrNo(
+                          notification.user_iduser,
+                          notification.groupname,
+                          index,
+                          'no'
                         )
                       }
                     >
@@ -248,6 +263,13 @@ export function NotificationsBell() {
                     </ButtonIcon>
                   </MenuItem>
                 );
+              } else {
+                <MenuItem>
+                  {' '}
+                  <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                    {'No new notifications'}
+                  </Typography>
+                </MenuItem>;
               }
             }
           )}
@@ -255,4 +277,3 @@ export function NotificationsBell() {
     </>
   );
 }
-

@@ -123,35 +123,48 @@ export const MovieInfo = () => {
     }, [id])
 
     return (
-      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2}}>
+      <Box sx={{     
+              flexShrink: 0,
+              width: {
+                  xs: '100%',
+                  sm: '100%'}
+      }}> 
       
         <Card 
          
           sx={{
             display: 'flex',
+            flexDirection: {
+              xs: 'column',
+              sm: 'row',
+            },
+            
             mb: 1,
             ml: 1,
             width: '100%',
             boxShadow: 'none'
         }}
         >
-          <Box>
+          <Box   sx={{
+                  flexShrink: 0,
+                  width: {
+                    xs: '100%',
+                    sm: 300
+                    },
+                  mr: {
+                    sm: 2
+                  }
+          }}>
             {/* <Typography variant="h5">Kuva</Typography> */}
             {movie?.poster_path && (
             <CardMedia
               component="img"
               image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie?.title}
-              sx={{ width: {
-                      xs: 600,
-                      sm: 800,
-                      md: 1000,
-                      lg: 1200
-              },
-                    minWidth: 200,
-                    maxWidth: '100%',
+              sx={{ width: '100%',
                     height: 'auto',
-                    borderRadius: 10 }}
+                    objectFit: 'cover',
+                    borderRadius: 2 }}
             />
             )}
           </Box>
@@ -307,6 +320,6 @@ export const MovieInfo = () => {
             </Stack>
           </Box>
         </Box>
-      </Box> 
+       </Box>  
     )
 }

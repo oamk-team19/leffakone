@@ -66,31 +66,48 @@ export const Movies = () => {
 
     return (
       
-      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2}}>
+      <Box sx={{
+             flexShrink: 0,
+              width: {
+                  xs: '100%',
+                  sm: '100%'}}}>
       
         <Card 
          
           sx={{
             display: 'flex',
+            flexDirection:{
+              xs: 'column',
+              sm: 'row',
+            },
             mb: 1,
+            ml: 1,
             width: '100%',
             
         }}
         >
+        <Box   
+          sx={{
+            flexShrink: 0,
+            width: {
+              xs: '100%',
+              sm: 300
+              },
+            mr: {
+              sm: 2
+               }
+                    }}>
             <CardMedia
               component="img"
               image={decodeHTMLEntities(movie?.Images.EventLargeImagePortrait)}
               alt={decodeHTMLEntities(movie?.Title)}
-              sx={{ width: {
-                      xs: 200,
-                      sm: 400,
-                      md: 600,
-                      lg: 1000
-              },
-                      height: '100%',
-                      objectFit: 'cover',
-                      borderRadius: 10 }}
+              sx={{ 
+                  width: '100%',
+                  height: 'auto',
+                  objectFit: 'cover',
+                  borderRadius: 2 }}
             />
+            </Box>
           <CardContent sx={{
             flexGrow: 1,
             display: 'flex',

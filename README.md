@@ -53,6 +53,10 @@ npm run test
 
 We use [Rosé Pine](https://rosepinetheme.com/) for beautiful, soft color themes.
 
-# For hosting
+## ERD diagram
 
-To start your own Movie Machine server,
+![ERD-diagram](/images/ERD_final.png)
+
+## Original wireframe - Not up to date
+
+[wireframe](https://app.moqups.com/uw0Fr1CB6zTjlEm0xWESn6jhjYU2lAki/view/page/ad64222d5)

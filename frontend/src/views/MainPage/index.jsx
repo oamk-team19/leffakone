@@ -28,6 +28,7 @@ import { useUser } from '../../context/useUser';
 import { Link } from 'react-router-dom';
 
 import { getLangs } from '../../utils/langCodes';
+import AddToGroup from '../../components/AddToGroup';
 
 const IMG_HEIGHT = 200;
 const IMG_WIDTH = IMG_HEIGHT / 1.5;
@@ -328,6 +329,7 @@ export const MainPage = () => {
                       ))}
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
+                    <AddToGroup movieId={movie.id} />
                     <IconButton>
                       {favorites.some((fav) => fav === movie.id) ? (
                         <FavoriteIcon

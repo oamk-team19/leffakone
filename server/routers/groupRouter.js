@@ -17,8 +17,9 @@ import {
   updateSeenRequest,
   getMyPendingRequests,
   deleteRequest,
+  addMovieToGroup,
 } from '../controllers/groupController.js';
-
+import { auth } from '../helpers/auth.js';
 const groupRouter = Router();
 
 groupRouter.post('/create', createGroup);
@@ -38,5 +39,6 @@ groupRouter.get('/searchfavorite/:idgroup', getSearchfavorite);
 groupRouter.get('/searchAllRequests', searchAllRequests);
 groupRouter.get('/requests/pending/:idUser', getMyPendingRequests);
 groupRouter.delete('/requests/delete/:idUser/:idGroup', deleteRequest);
+groupRouter.post('/favorite/:groupid', auth, addMovieToGroup);
 
 export default groupRouter;

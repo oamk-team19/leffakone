@@ -18,13 +18,16 @@ import {
 } from '@mui/material';
 import FormatListBulletedAddIcon from '@mui/icons-material/FormatListBulletedAdd';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import GenreChip from '../../components/GenreChip';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useUser } from '../../context/useUser';
+import AddToGroup from '../../components/AddToGroup';
 
 export const MovieInfo = () => {
   const [movie, setMovie] = useState(null);
   const [trailer, setTrailer] = useState();
+  const [favorites, setFavorites] = useState([]);
   const { id } = useParams();
   const [value, setValue] = React.useState(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -61,6 +64,27 @@ export const MovieInfo = () => {
     };
     fetchMovie();
   }, [id]);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${user.token}`,
+            },
+          }
+        );
+        setFavorites(response.data || []);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+      }
+    };
+    fetchFavorites();
+  }, []);
 
   useEffect(() => {
     const fetchTrailer = async () => {
@@ -126,6 +150,52 @@ export const MovieInfo = () => {
     }
   };
 
+  const addOrRemoveFavorite = (id) => async () => {
+    if (favorites.some((fav) => fav === id)) {
+      // Movie is in favorites, remove it (DELETE)
+      try {
+        const response = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
+          {
+            data: { movieId: id },
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `${user.token}`,
+            },
+          }
+        );
+        console.log('Removed favorite:', response.data);
+        // Update local state
+        setFavorites(favorites.filter((fav) => fav !== id));
+      } catch (error) {
+        console.error('Error removing favorite:', error);
+      }
+    } else {
+      // Movie is not in favorites, add it (POST)
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/user/favorite`,
+          {
+            movieId: id,
+          },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        console.log('Added favorite:', response.data);
+        // Update local state
+        setFavorites([...favorites, id]);
+      } catch (error) {
+        console.error('Error adding favorite:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/review/`, {
@@ -138,50 +208,55 @@ export const MovieInfo = () => {
         alert(error.response.data ? error.response.data.message : error);
       });
   }, [id]);
+  console.log('favorites:', favorites);
+  return (
+    <Box
+      sx={{
+        flexShrink: 0,
+        width: {
+          xs: '100%',
+          sm: '100%',
+        },
+      }}
+    >
+      <Card
+        sx={{
+          display: 'flex',
+          flexDirection: {
+            xs: 'column',
+            sm: 'row',
+          },
 
-    return (
-      <Box sx={{     
-              flexShrink: 0,
-              width: {
-                  xs: '100%',
-                  sm: '100%'}
-      }}> 
-      
-        <Card 
-         
-          sx={{
-            display: 'flex',
-            flexDirection: {
-              xs: 'column',
-              sm: 'row',
-            },
-            
-            mb: 1,
-            ml: 1,
-            width: '100%',
-            boxShadow: 'none'
+          mb: 1,
+          ml: 1,
+          width: '100%',
+          boxShadow: 'none',
         }}
+      >
+        <Box
+          sx={{
+            flexShrink: 0,
+            width: {
+              xs: '100%',
+              sm: 300,
+            },
+            mr: {
+              sm: 2,
+            },
+          }}
         >
-          <Box   sx={{
-                  flexShrink: 0,
-                  width: {
-                    xs: '100%',
-                    sm: 300
-                    },
-                  mr: {
-                    sm: 2
-                  }
-          }}>
-            {/* <Typography variant="h5">Kuva</Typography> */}
-            {movie?.poster_path && (
+          {/* <Typography variant="h5">Kuva</Typography> */}
+          {movie?.poster_path && (
             <CardMedia
               component="img"
               image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie?.title}
-              sx={{ width: '100%',
-                    height: 'auto',
-                    objectFit: 'cover',
-                    borderRadius: 2 }}
+              sx={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'cover',
+                borderRadius: 2,
+              }}
             />
           )}
         </Box>
@@ -208,13 +283,29 @@ export const MovieInfo = () => {
           </Box>
           <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             <Tooltip title="Add to group">
-              <IconButton aria-label="delete">
-                <FormatListBulletedAddIcon />
-              </IconButton>
+              <AddToGroup movieId={id} />
             </Tooltip>
             <Tooltip title="Add to favorites">
               <IconButton aria-label="delete">
-                <FavoriteBorderIcon />
+                <IconButton>
+                  {favorites.some((fav) => fav === Number(id)) ? (
+                    <FavoriteIcon
+                      color="error"
+                      fontSize="large"
+                      onClick={addOrRemoveFavorite(Number(id))}
+                    />
+                  ) : (
+                    <FavoriteBorderIcon
+                      color={
+                        favorites.some((fav) => fav === Number(id))
+                          ? 'error'
+                          : 'inherit'
+                      }
+                      fontSize="large"
+                      onClick={addOrRemoveFavorite(Number(id))}
+                    />
+                  )}
+                </IconButton>
               </IconButton>
             </Tooltip>
             {trailer && (

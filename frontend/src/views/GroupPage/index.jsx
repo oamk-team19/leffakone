@@ -36,14 +36,10 @@ export const GroupPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/group/searchfavorite/${idGroup}`
         );
-        console.log(response);
+
         //Show favorite list
         if (!response.data.error) {
-          //Edit data to array
-          for (let index = 0; index < response.data.length; index++) {
-            responseMovieArray.push(response.data[index].movie_idMovie);
-          }
-          setSearchResults(responseMovieArray);
+          setSearchResults(response.data.map((item) => item.movie_idMovie));
         } else {
           setSearchResults([]);
         }

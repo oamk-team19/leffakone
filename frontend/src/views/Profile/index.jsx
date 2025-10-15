@@ -66,13 +66,13 @@ export const Profile = () => {
           withCredentials: true,
         }
       );
-      buttonPressedLogOut();
+      signout();
     } catch (error) {
       console.log('Error in deleting the user: ' + error);
     }
   };
 
-  const buttonPressedLogOut = async () => {
+  const signout = async () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/signout`,
@@ -95,17 +95,20 @@ export const Profile = () => {
         alignItems={'center'}
         gap={2}
       >
-
-        <Typography variant="h4" sx={{ paddingY: 2 }} >My profile</Typography>
-        <Typography variant="h6" sx={{ mb: 2 }}>My favorite movie list</Typography>  
+        <Typography variant="h4" sx={{ paddingY: 2 }}>
+          My profile
+        </Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          My favorite movie list
+        </Typography>
 
         {searchResults && searchResults.length > 0 ? (
           <FavoriteList favoriteMovies={searchResults} />
         ) : (
-          <Typography >No favorite movies yet!</Typography>
+          <Typography>No favorite movies yet!</Typography>
         )}
 
-        <Button startIcon={<ShareIcon />} onClick={handleClick}>
+        <Button gap={2} startIcon={<ShareIcon />} onClick={handleClick}>
           Share my favorite list
         </Button>
         <Snackbar
@@ -116,16 +119,13 @@ export const Profile = () => {
         />
 
         <Button
+          gap={2}
           variant="outlined"
           startIcon={<DeleteIcon />}
           color="error"
           onClick={buttonPressedDeleteMe}
         >
           Delete my profile
-        </Button>
-
-        <Button variant="contained" onClick={buttonPressedLogOut}>
-          Sign out
         </Button>
       </Box>
     </div>

@@ -22,6 +22,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import GenreChip from '../../components/GenreChip';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useUser } from '../../context/useUser';
+import AddToGroup from '../../components/AddToGroup';
 
 export const MovieInfo = () => {
   const [movie, setMovie] = useState(null);
@@ -282,9 +283,7 @@ export const MovieInfo = () => {
           </Box>
           <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             <Tooltip title="Add to group">
-              <IconButton aria-label="delete">
-                <FormatListBulletedAddIcon />
-              </IconButton>
+              <AddToGroup movieId={id} />
             </Tooltip>
             <Tooltip title="Add to favorites">
               <IconButton aria-label="delete">

@@ -283,10 +283,10 @@ export const getSearchAllRequests = async (usersid) => {
     );
 
     return userResult.rows;
-      } catch (error) {
+  } catch (error) {
     throw error;
-      }
-  };
+  }
+};
 
 export const myPendingRequests = async (idUser) => {
   try {
@@ -320,6 +320,26 @@ export const dropRequest = async (idUser, idGroup) => {
     );
 
     return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addMovieToGroupDb = async (groupid, movieid) => {
+  try {
+    const existingEntry = await pool.query(
+      'SELECT * FROM group_movie WHERE group_idgroup=$1 AND "movie_idMovie"=$2',
+      [groupid, movieid]
+    );
+    if (existingEntry.rows.length > 0) {
+      return { message: 'Movie already in group favorites' };
+    } else {
+      const result = await pool.query(
+        'INSERT INTO group_movie (group_idgroup, "movie_idMovie") VALUES ($1, $2) RETURNING *',
+        [groupid, movieid]
+      );
+      return result.rows[0];
+    }
   } catch (error) {
     throw error;
   }

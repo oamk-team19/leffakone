@@ -16,6 +16,7 @@ import {
   updateSeenRequestDb,
   myPendingRequests,
   dropRequest,
+  addMovieToGroupDb,
 } from '../models/groupModel.js';
 
 export const createGroup = async (req, res) => {
@@ -263,3 +264,17 @@ export const updateSeenRequest = async (req, res) => {
   }
 };
 
+export const addMovieToGroup = async (req, res) => {
+  try {
+    const { groupid } = req.params;
+    const { movieId } = req.body;
+    const result = await addMovieToGroupDb(groupid, movieId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(
+      'Adding movie to group failed in groupController',
+      error.message
+    );
+    res.status(500).json({ error: error.message });
+  }
+};

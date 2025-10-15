@@ -150,11 +150,12 @@ export function NotificationsBell() {
 
   return (
     <>
+    {user.id &&
       <ButtonIcon onClick={handleClick}>
         <Badge color="error" badgeContent={requests.length + pendings.length}>
           <NotificationsIcon />
         </Badge>
-      </ButtonIcon>
+      </ButtonIcon> }
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {notifications.length > 0 ? (

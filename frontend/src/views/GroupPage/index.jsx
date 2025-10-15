@@ -27,7 +27,6 @@ export const GroupPage = () => {
   const [showData, setShowData] = useState([]);
   const [message, setMessage] = useState('');
 
-  const responseMovieArray = [];
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {

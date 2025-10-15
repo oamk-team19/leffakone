@@ -4,9 +4,9 @@ import {
   Skeleton,
   Typography,
   Box,
-  Link,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const BASE_IMG_HEIGHT = 500;
@@ -17,9 +17,12 @@ const MovieCard = ({ movie }) => {
   useEffect(() => {
     const fetchMovie = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/movie/info`, {
-          params: { id: movie },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/movie/info`,
+          {
+            params: { id: movie },
+          }
+        );
         setMovieDetails(response.data);
         console.log(response.data);
       } catch (error) {
@@ -43,7 +46,7 @@ const MovieCard = ({ movie }) => {
 
   return (
     <Link
-      to={`/movie/${movieDetails?.id}`}
+      to={`/movies/${movieDetails?.id}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
       <Card
@@ -116,7 +119,6 @@ const MovieCard = ({ movie }) => {
               >
                 {movieDetails?.title}
               </Typography>
-
               {/* Additional content that appears on hover */}
               <Box
                 className="overlay-content"

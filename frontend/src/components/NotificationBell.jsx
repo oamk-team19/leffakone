@@ -152,7 +152,7 @@ export function NotificationsBell() {
     <>
     {user.id &&
       <ButtonIcon onClick={handleClick}>
-        <Badge color="error" badgeContent={requests.length + pendings.length}>
+        <Badge color="error" badgeContent={notifications.length}>
           <NotificationsIcon />
         </Badge>
       </ButtonIcon> }

@@ -93,13 +93,14 @@ export const Profile = () => {
         alignItems={'center'}
         gap={2}
       >
-        <h2>My profile</h2>
-        <h3>My favorite movie list</h3>
+
+        <Typography variant="h4" sx={{ paddingY: 2 }} >My profile</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>My favorite movie list</Typography>  
 
         {searchResults && searchResults.length > 0 ? (
           <FavoriteList favoriteMovies={searchResults} />
         ) : (
-          <Typography>No favorite movies yet!</Typography>
+          <Typography >No favorite movies yet!</Typography>
         )}
 
         <Button startIcon={<ShareIcon />} onClick={handleClick}>

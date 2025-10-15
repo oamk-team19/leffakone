@@ -37,7 +37,7 @@ export function NotificationsBell() {
       );
       //console.log(response.status + ' Successfull update in seenrequest');
 
-      updateView('notification', index); //Update number in the icon
+      updateView(index); //Update number in the icon
     } catch (error) {
       console.log('Error in updating to true' + error);
     }
@@ -55,7 +55,7 @@ export function NotificationsBell() {
         );
         console.log('Approved successfully ' + response.data);
 
-        updateView('pending', index);
+        updateView(index);
       } catch (error) {
         console.log('Error in approving' + error);
       }
@@ -69,7 +69,7 @@ export function NotificationsBell() {
           }
         );
         console.log('Rejected successfully ' + response.data);
-        updateView('pending', index);
+        updateView(index);
       } catch (error) {
         console.log('Error in rejecting' + error);
       }
@@ -78,16 +78,9 @@ export function NotificationsBell() {
     }
   };
 
-  const updateView = async (array, index) => {
-    //Update number in the icon
-    if (array === 'notification') {
-      const removedNotification = requests.filter((_, i) => i !== index);
-      setRequests(removedNotification);
-    } else if (array === 'pending') {
-      //pendings.splice(index, 1);
-      const removedPending = pendings.filter((_, i) => i !== index);
-      setPendings(removedPending);
-    }
+  const updateView = async (index) => {
+      const removedNotification = notifications.filter((_, i) => i !== index);
+      setNotifications(removedNotification);
   };
 
   useEffect(() => {
@@ -172,6 +165,7 @@ export function NotificationsBell() {
             ) {
               return (
                 <MenuItem
+                  key={index}
                   onClick={() =>
                     handleMenuItem(notification.group_idgroup, index)
                   }
@@ -187,6 +181,7 @@ export function NotificationsBell() {
             ) {
               return (
                 <MenuItem
+                  key={index}
                   onClick={() =>
                     handleMenuItem(notification.group_idgroup, index)
                   }
@@ -199,7 +194,7 @@ export function NotificationsBell() {
               );
             } else if (notification.username && notification.groupname) {
               return (
-                <MenuItem>
+                <MenuItem key={index}>
                   <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
                     {notification.username +
                       ' wants to join to group ' +

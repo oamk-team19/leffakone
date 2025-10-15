@@ -15,12 +15,40 @@ export const Profile = () => {
   const [open, setOpen] = useState(false);
   const responseMovieArray = [];
 
-  const handleClick = () => {
-    //Copy URI to clipboard
-    navigator.clipboard.writeText(
-      `${import.meta.env.VITE_CLIENT_URL}/favorites/${user.id}`
-    );
-    setOpen(true);
+  const handleClick = async () => {
+    const textToCopy = `${import.meta.env.VITE_CLIENT_URL}/favorites/${user.id}`;
+    
+    try {
+      // Try modern clipboard API first (requires HTTPS)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+        setOpen(true);
+        return;
+      }
+      
+      // Fallback method for older browsers or non-HTTPS
+      const textArea = document.createElement('textarea');
+      textArea.value = textToCopy;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      if (successful) {
+        setOpen(true);
+      } else {
+        console.error('Fallback copy method failed');
+        // Could show an error message to user here
+      }
+    } catch (error) {
+      console.error('Copy failed:', error);
+      // Could show an error message to user here
+    }
   };
 
   const handleClose = (event, reason) => {

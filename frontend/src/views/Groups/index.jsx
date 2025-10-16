@@ -91,7 +91,7 @@ export const Groups = () => {
       );
       setRequestSent(response.data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -104,9 +104,8 @@ export const Groups = () => {
       setIsLoggedIn(true);
       getMyGroups();
       getPendingGroupRequests();
-      console.log(myGroups);
     } else {
-      console.log('User id not available');
+      console.error('User id not available');
     }
   }, [user.user.id]);
 
@@ -142,7 +141,6 @@ export const Groups = () => {
           idUser: user.user.id,
         }
       );
-      console.log(res);
       alert('Request sent!');
       getPendingGroupRequests();
     } catch (error) {
@@ -159,7 +157,6 @@ export const Groups = () => {
       const res = await axios.delete(
         `${import.meta.env.VITE_API_URL}/group/requests/delete/${user.user.id}/${idGroup}`
       );
-      console.log(res);
       getPendingGroupRequests();
     } catch (error) {
       if (error.response.status === 409) {

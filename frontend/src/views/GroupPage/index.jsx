@@ -12,11 +12,12 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useMatch, useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 import ShowtimeCard from '../../components/ShowtimeCard';
 import ShowtimeList from '../../components/ShowtimeList';
 import FavoriteList from '../../components/FavoriteList';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 
 export const GroupPage = () => {
   const user = useUser();
@@ -28,6 +29,7 @@ export const GroupPage = () => {
   const [message, setMessage] = useState('');
 
   const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const searchFavorites = async () => {
@@ -43,7 +45,7 @@ export const GroupPage = () => {
           setSearchResults([]);
         }
       } catch (error) {
-        console.log('Error in getting a favorite list: ' + error);
+        console.error('Error in getting a favorite list: ' + error);
         setSearchResults([]); // Default movies if error
       }
     };
@@ -89,21 +91,22 @@ export const GroupPage = () => {
     getGroupName();
   }, [idGroup]);
 
-  useEffect(() => {
-    const getGroupMembers = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/group/members/${idGroup}`
-        );
-        setGroupMembers(res.data);
-      } catch (error) {
-        if (error.response.status === 409) {
-          alert(error.response.data.error);
-        } else {
-          console.error(error);
-        }
+  const getGroupMembers = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/group/members/${idGroup}`
+      );
+      setGroupMembers(res.data);
+    } catch (error) {
+      if (error.response.status === 409) {
+        alert(error.response.data.error);
+      } else {
+        console.error(error);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     getGroupMembers();
   }, [idGroup]);
 
@@ -111,7 +114,6 @@ export const GroupPage = () => {
     const shouldDelete = confirm('Are you sure you want to delete group?');
     if (shouldDelete) {
       try {
-        console.log(user.user.id);
         const res = await axios.delete(
           `${import.meta.env.VITE_API_URL}/group/delete`,
           {
@@ -119,7 +121,6 @@ export const GroupPage = () => {
             headers: { 'Content-Type': 'application/json' },
           }
         );
-        console.log(res);
         navigate('/');
       } catch (error) {
         console.error('Error deleting group: ' + error);
@@ -131,7 +132,6 @@ export const GroupPage = () => {
     const shouldLeave = confirm('Are you sure you want to leave group?');
     if (shouldLeave) {
       try {
-        console.log(user.user.id);
         const res = await axios.delete(
           `${import.meta.env.VITE_API_URL}/group/leavegroup`,
           {
@@ -143,6 +143,23 @@ export const GroupPage = () => {
         navigate('/');
       } catch (error) {
         console.error('Error leaving group: ' + error);
+      }
+    }
+  };
+
+  const removeUser = async (idUser) => {
+    const shouldDelete = confirm(
+      'Are you sure you want to remove user from group?'
+    );
+    if (shouldDelete) {
+      try {
+        const res = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/group/requests/delete/${idUser}/${idGroup}`
+        );
+        console.log(res);
+        getGroupMembers();
+      } catch (error) {
+        console.error('Error removing user: ' + error);
       }
     }
   };
@@ -245,7 +262,7 @@ export const GroupPage = () => {
             {searchResults && searchResults.length > 0 ? (
               <FavoriteList favoriteMovies={searchResults} />
             ) : (
-              <Typography>No favorite movies yet!</Typography>
+              <Typography color="error">No favorite movies yet!</Typography>
             )}
           </Box>
           <Box sx={{ mb: 4 }}>
@@ -289,9 +306,20 @@ export const GroupPage = () => {
                       id % 2 === 1 ? 'rgba(0,0,0,0.05)' : 'transparent',
                     fontSize: '0.9rem',
                   }}
-                  onClick={() => navigate(`/group/${group.idgroup}`)}
                 >
-                  <ListItemText primary={member.username} />
+                  <Box display={'flex'} flexDirection={'row'}>
+                    <ListItemText primary={member.username} />
+                    {isCreator && member.iduser !== user.user.id && (
+                      <Button
+                        variant="outlined"
+                        startIcon={<PersonRemoveIcon />}
+                        color="error"
+                        onClick={() => removeUser(member.iduser)}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </Box>
                 </Paper>
               ))}
             </List>

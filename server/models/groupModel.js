@@ -136,7 +136,7 @@ export const groupMembers = async (idGroup) => {
     const userIds = membersQuery.rows.map((row) => row.user_iduser);
 
     const result = await pool.query(
-      'SELECT username FROM users WHERE iduser=ANY($1)',
+      'SELECT username, iduser FROM users WHERE iduser=ANY($1)',
       [userIds]
     );
     return result.rows;

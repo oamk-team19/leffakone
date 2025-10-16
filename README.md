@@ -59,6 +59,8 @@ We use [Rosé Pine](https://rosepinetheme.com/) for beautiful, soft color themes
 
 ## Other dokuments 
 
+- [Published project](http://167.99.42.185/) - Up until October 31th
+
 - [Original wireframe](https://app.moqups.com/uw0Fr1CB6zTjlEm0xWESn6jhjYU2lAki/view/page/ad64222d5) - Not up to date
 
 - [Rest API dokumentation](https://documenter.getpostman.com/view/41144299/2sB3QMLUiA)

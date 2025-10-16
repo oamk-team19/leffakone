@@ -4,7 +4,6 @@ import {
   Divider,
   Grid,
   List,
-  ListItem,
   ListItemText,
   Paper,
   Typography,
@@ -12,7 +11,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useMatch, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../context/useUser';
 import ShowtimeCard from '../../components/ShowtimeCard';
 import ShowtimeList from '../../components/ShowtimeList';

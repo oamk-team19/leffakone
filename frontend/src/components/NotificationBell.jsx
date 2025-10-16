@@ -8,6 +8,7 @@ import { useUser } from '../context/useUser';
 import * as React from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import CelebrationIcon from '@mui/icons-material/Celebration';
 
 export function NotificationsBell() {
   const { user, setUser } = useUser();
@@ -79,8 +80,8 @@ export function NotificationsBell() {
   };
 
   const updateView = async (index) => {
-      const removedNotification = notifications.filter((_, i) => i !== index);
-      setNotifications(removedNotification);
+    const removedNotification = notifications.filter((_, i) => i !== index);
+    setNotifications(removedNotification);
   };
 
   useEffect(() => {
@@ -150,12 +151,13 @@ export function NotificationsBell() {
 
   return (
     <>
-    {user.id &&
-      <ButtonIcon onClick={handleClick}>
-        <Badge color="error" badgeContent={notifications.length}>
-          <NotificationsIcon />
-        </Badge>
-      </ButtonIcon> }
+      {user.id && (
+        <ButtonIcon onClick={handleClick}>
+          <Badge color="error" badgeContent={notifications.length}>
+            <NotificationsIcon />
+          </Badge>
+        </ButtonIcon>
+      )}
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {notifications.length > 0 ? (
@@ -171,9 +173,13 @@ export function NotificationsBell() {
                     handleMenuItem(notification.group_idgroup, index)
                   }
                 >
-                  <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                  <Typography
+                    color="success"
+                    sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                  >
                     {'You have been accepted to ' + notification.groupname}
                   </Typography>
+                  <CelebrationIcon color="success" />
                 </MenuItem>
               );
             } else if (
@@ -188,7 +194,10 @@ export function NotificationsBell() {
                   }
                 >
                   {' '}
-                  <Typography sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}>
+                  <Typography
+                    color="error"
+                    sx={{ whiteSpace: 'normal', fontSize: '0.9rem' }}
+                  >
                     {'You have not been accepted to ' + notification.groupname}
                   </Typography>
                 </MenuItem>

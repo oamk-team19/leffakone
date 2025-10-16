@@ -57,6 +57,14 @@ We use [Rosé Pine](https://rosepinetheme.com/) for beautiful, soft color themes
 
 ![ERD-diagram](/images/ERD_final.png)
 
-## Original wireframe - Not up to date
+## Other dokuments 
 
-[wireframe](https://app.moqups.com/uw0Fr1CB6zTjlEm0xWESn6jhjYU2lAki/view/page/ad64222d5)
+- [Original wireframe](https://app.moqups.com/uw0Fr1CB6zTjlEm0xWESn6jhjYU2lAki/view/page/ad64222d5) - Not up to date
+
+- [Rest API dokumentation](https://documenter.getpostman.com/view/41144299/2sB3QMLUiA)
+
+- [Backlog](https://github.com/orgs/oamk-team19/projects/1/views/1?sortedBy%5Bdirection%5D=desc&sortedBy%5BcolumnId%5D=Status)
+
+- [Hours worked in Excel ](https://unioulu-my.sharepoint.com/:x:/g/personal/c3kapa03_students_oamk_fi/EaIKe_6KvjxLk9AsnjMtwHoBwLqbZT0zQyYn6IRgh9EY-A?e=HLrAU8)
+
+- [Powerpoint presentation](https://unioulu-my.sharepoint.com/:p:/g/personal/c3kapa03_students_oamk_fi/EaxAt-xJv25AngPVV2Ntj6MBZKpsbFD2RMmUts766uh1PQ?e=LLEwHZ)
